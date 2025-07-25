@@ -1,0 +1,32 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<!--    MythTV Backend Section-->
+    <PreferenceCategory
+        android:title="@string/pref_title_backend">
+
+        <EditTextPreference
+            android:key="pref_backend"
+            android:title="@string/pref_title_backend_ip"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_title_backend_ip"/>
+
+        <EditTextPreference
+            android:key="pref_http_port"
+            android:title="@string/pref_title_http_port"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_title_http_port"
+            android:defaultValue="6544"/>
+
+        <EditTextPreference
+            android:key="pref_max_vids"
+            android:title="@string/pref_max_vids"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_max_vids"
+            android:defaultValue="20000"/>
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

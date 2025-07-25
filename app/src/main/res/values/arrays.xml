@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Words to be stripped from the front of titles for sorting
+        Must be in UPPER CASE-->
+    <string-array name="title_sort_articles">
+        <item>@string/sort_exclude_1</item>
+        <item>@string/sort_exclude_2</item>
+        <item>@string/sort_exclude_3</item>
+    </string-array>
+</resources>

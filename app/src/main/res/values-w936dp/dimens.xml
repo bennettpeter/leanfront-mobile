@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="item_transform_image_length">160dp</dimen>
+    <dimen name="item_transform_image_height">90dp</dimen>
+</resources>
