@@ -1,6 +1,8 @@
 package org.mythtv.mobfront.ui.videolist;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.VolumeShaper;
 import android.os.Bundle;
@@ -37,11 +39,13 @@ import org.mythtv.mobfront.data.Video;
 import org.mythtv.mobfront.data.VideoContract;
 import org.mythtv.mobfront.databinding.FragmentVideolistBinding;
 import org.mythtv.mobfront.databinding.ItemVideolistBinding;
+import org.mythtv.mobfront.ui.playback.PlaybackActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
 /**
  * Fragment that demonstrates a responsive layout pattern where the format of the content
  * transforms depending on the size of the screen. Specifically this Fragment shows items in
@@ -196,6 +200,15 @@ public class VideoListFragment extends Fragment {
             ActionBar bar = ((AppCompatActivity)getActivity()).getSupportActionBar();
             bar.setSubtitle(videoListModel.title);
             bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP|ActionBar.DISPLAY_SHOW_TITLE);
+        }
+        else if (videoListModel.pageType == VideoListModel.TYPE_SERIES) {
+            Activity activity = getActivity();
+            Intent intent = new Intent(activity, PlaybackActivity.class);
+            intent.putExtra(PlaybackActivity.VIDEO, videoListModel.videoList.get(position));
+//            intent.putExtra(PlaybackActivity.VIDEO, taskRunner.getVideo());
+//            intent.putExtra(PlaybackActivity.BOOKMARK, bookmark);
+//            intent.putExtra(PlaybackActivity.POSBOOKMARK, posBookmark);
+            activity.startActivity(intent);
         }
     }
 
