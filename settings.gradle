@@ -21,3 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "MythTV-mobile"
 include ':app'
+
+gradle.ext.androidxMediaModulePrefix = 'media-'
+apply from: file("../media/core_settings.gradle")
+

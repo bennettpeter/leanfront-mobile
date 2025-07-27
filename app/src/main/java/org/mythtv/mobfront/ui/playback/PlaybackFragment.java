@@ -1,5 +1,6 @@
 package org.mythtv.mobfront.ui.playback;
 
+import androidx.annotation.OptIn;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.pm.PackageManager;
@@ -10,22 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.util.Util;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
-import androidx.media3.ui.SubtitleView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.databinding.FragmentPlaybackBinding;
-import org.mythtv.mobfront.databinding.FragmentVideolistBinding;
 
-import java.util.Collections;
 
 public class PlaybackFragment extends Fragment {
 
@@ -89,19 +84,20 @@ public class PlaybackFragment extends Fragment {
         }
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer(boolean enableControls) {
 //        Log.i(TAG, CLASS + " Initializing Player for " + mVideo.title + " " + mVideo.videoUrl);
 //        mTrackSelector = new DefaultTrackSelector(getContext());
-//        DefaultRenderersFactory rFactory = new DefaultRenderersFactory(getContext());
-//        int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
+//        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
+        DefaultRenderersFactory rFactory = new DefaultRenderersFactory(getContext());
+        int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
 //        if ("mediacodec".equals(mAudio))
 //            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
 //        else if ("ffmpeg".equals(mAudio))
 //            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
-//        rFactory.setExtensionRendererMode(extMode);
-//        rFactory.setEnableDecoderFallback(true);
-//        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
-        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext());
+        rFactory.setExtensionRendererMode(extMode);
+        rFactory.setEnableDecoderFallback(true);
+        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
 //        builder.setTrackSelector(mTrackSelector);
         viewModel.player = builder.build();
         binding.playerView.setPlayer(viewModel.player);
