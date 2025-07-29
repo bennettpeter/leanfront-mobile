@@ -65,15 +65,24 @@ public class SettingsFragment extends PreferenceFragmentCompat
             });
 
         findPreference("pref_max_vids")
-                .setOnPreferenceChangeListener((pref,action) -> {
-                    ((EditTextPreference)pref).setText(validateNumber(action, 1000, 90000, 10000));
-                    reloadDB = true;
-                    return false;
-                });
+            .setOnPreferenceChangeListener((pref,action) -> {
+                ((EditTextPreference)pref).setText(validateNumber(action, 1000, 90000, 10000));
+                reloadDB = true;
+                return false;
+            });
 
+        findPreference("pref_skip_back")
+            .setOnPreferenceChangeListener((pref,action) -> {
+                ((EditTextPreference)pref).setText(validateNumber(action, 1, 3600, 10));
+                return false;
+            });
 
-        //        addPreferencesFromResource(R.xml.pref_2);
-//        addPreferencesFromResource(R.xml.pref_2);
+        findPreference("pref_skip_fwd")
+            .setOnPreferenceChangeListener((pref,action) -> {
+                ((EditTextPreference)pref).setText(validateNumber(action, 1, 3600, 60));
+                return false;
+            });
+
     }
 
 //    public View onCreateView(@NonNull LayoutInflater inflater,

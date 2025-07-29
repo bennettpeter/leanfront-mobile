@@ -26,6 +26,26 @@
             android:dialogTitle="@string/pref_max_vids"
             android:defaultValue="20000"/>
 
+        <DropDownPreference
+            android:key="pref_audio"
+            android:title="@string/pref_ff_title"
+            android:entries="@array/audio_pref_entries"
+            app:useSimpleSummaryProvider="true"
+            android:entryValues="@array/audio_values"/>
+
+        <EditTextPreference
+            android:key="pref_skip_fwd"
+            android:title="@string/pref_title_skip_fwd"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_title_skip_fwd"
+            android:defaultValue="60"/>
+
+        <EditTextPreference
+            android:key="pref_skip_back"
+            android:title="@string/pref_title_skip_back"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_title_skip_back"
+            android:defaultValue="10"/>
 
     </PreferenceCategory>
 

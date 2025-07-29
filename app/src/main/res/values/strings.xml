@@ -12,16 +12,6 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_settings">Settings</string>
 
-    <string name="lorem_ipsum_title">Lorem Ipsum"</string>
-    <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and
-        typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever
-        since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
-        type specimen book"
-    </string>
-    <string name="fab_content_description">Represents a view to invoke an action</string>
-    <string name="image_view_item_transform_content_description">Represents an image view in the
-        item
-    </string>
     <string name="row_header_channels">Channels</string>
     <string name="group_all">All</string>
     <!-- Words to exclude from the start titles when sorting.
@@ -30,15 +20,28 @@
     <string name="sort_exclude_2">A</string>
     <string name="sort_exclude_3">AN</string>
     <!--    Settings-->
+
     <string name="pref_title_backend_ip">IP Address or DNS name</string>
     <string name="pref_title_backend">MythTV Backend</string>
     <string name="pref_title_myth_port">MythTV Backend Port</string>
     <string name="pref_title_http_port">Status Port</string>
     <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
+    <string name="pref_ff_title">Audio Decode</string>
+    <string name="pref_audio_auto">Auto select</string>
+    <string name="pref_audio_auto_desc">Use Mediacodec where possible, otherwise use FFmpeg.</string>
+    <string name="pref_audio_mediacodec">Mediacodec</string>
+    <string name="pref_audio_mediacodec_desc">Many types of audio, plays surround sound if set up in
+        Android settings.</string>
+    <string name="pref_audio_ffmpeg">FFmpeg</string>
+    <string name="pref_audio_ffmpeg_desc">Most types of audio, surround sound plays as stereo.</string>
+    <string name="pref_title_skip_fwd">Skip Forward Seconds</string>
+    <string name="pref_title_skip_back">Skip Back Seconds</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
     <string name="sdef_video_parental" translatable="false">4</string>
-
+    <string name="sdef_audio" translatable="false">auto</string>
+    <string name="sdef_skip_fwd" translatable="false">60</string>
+    <string name="sdef_skip_back" translatable="false">10</string>
 
 </resources>

@@ -212,6 +212,30 @@ public class VideoListFragment extends Fragment {
         }
     }
 
+    static String getEpisodeSubtitle(Video video) {
+        StringBuilder subtitle = new StringBuilder();
+//                if (video.isDamaged())
+//                    subtitle.append("\uD83D\uDCA5");
+        if (video.isWatched())
+            subtitle.append("\uD83D\uDC41");
+        // symbols for deleted - "🗑" "🗶" "␡"
+        if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
+                && "Deleted".equals(video.recGroup))
+            subtitle.append("\uD83D\uDDD1");
+        if (video.season != null && video.season.compareTo("0") > 0) {
+            subtitle.append('S').append(video.season).append('E').append(video.episode)
+                    .append(' ');
+        }
+        else if (video.airdate!= null) {
+            subtitle.append(video.airdate).append(" ");
+        }
+        if (video.subtitle == null || video.subtitle.trim().length() == 0)
+            subtitle.append(video.title);
+        else
+            subtitle.append(video.subtitle);
+        return subtitle.toString();
+    }
+
     private static class VideoListAdapter extends ListAdapter<Video, VideoListViewHolder> {
 
         private VideoListFragment fragment;
@@ -222,7 +246,7 @@ public class VideoListFragment extends Fragment {
                 public boolean areItemsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
                     if (oldItem.id == -1 && newItem.id == -1)
                         return oldItem.title.equals(newItem.title);
-                    return oldItem.id == newItem.id;
+                    return getEpisodeSubtitle(oldItem) == getEpisodeSubtitle(newItem);
                 }
 
                 @Override
@@ -246,20 +270,27 @@ public class VideoListFragment extends Fragment {
             if (video.type == Video.TYPE_SERIES)
                 holder.textView.setText(video.title);
             else if (video.type == Video.TYPE_EPISODE) {
-                StringBuilder subtitle = new StringBuilder();
-//                if (video.isDamaged())
-//                    subtitle.append("\uD83D\uDCA5");
-                if (video.isWatched())
-                    subtitle.append("\uD83D\uDC41");
-                // symbols for deleted - "🗑" "🗶" "␡"
-                if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
-                        && "Deleted".equals(video.recGroup))
-                    subtitle.append("\uD83D\uDDD1");
-                if (video.season != null && video.season.compareTo("0") > 0) {
-                    subtitle.append('S').append(video.season).append('E').append(video.episode)
-                            .append(' ');
-                }
-                subtitle.append(video.subtitle);
+//                StringBuilder subtitle = new StringBuilder();
+////                if (video.isDamaged())
+////                    subtitle.append("\uD83D\uDCA5");
+//                if (video.isWatched())
+//                    subtitle.append("\uD83D\uDC41");
+//                // symbols for deleted - "🗑" "🗶" "␡"
+//                if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
+//                        && "Deleted".equals(video.recGroup))
+//                    subtitle.append("\uD83D\uDDD1");
+//                if (video.season != null && video.season.compareTo("0") > 0) {
+//                    subtitle.append('S').append(video.season).append('E').append(video.episode)
+//                            .append(' ');
+//                }
+//                else if (video.airdate!= null) {
+//                    subtitle.append(video.airdate).append(" ");
+//                }
+//                if (video.subtitle == null || video.subtitle.trim().length() == 0)
+//                    subtitle.append(video.title);
+//                else
+//                    subtitle.append(video.subtitle);
+                String subtitle = getEpisodeSubtitle(video);
                 holder.textView.setText(subtitle);
             }
 //            holder.position = position;

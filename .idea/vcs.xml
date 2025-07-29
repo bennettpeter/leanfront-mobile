@@ -2,5 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../media" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../media/libraries/decoder_ffmpeg/src/main/jni/ffmpeg" vcs="Git" />
   </component>
 </project>

@@ -40,6 +40,7 @@ public class VideoListModel extends ViewModel {
     ArrayList <Video> videoList = new ArrayList<>();
     ArrayList <String> recGroups = new ArrayList<>();
     public static VideoListModel instance;
+    String allTitle = "";
 
     public VideoListModel() {
         addCloseable(() -> {
@@ -48,7 +49,9 @@ public class VideoListModel extends ViewModel {
         instance = this;
         videos = new MutableLiveData<>();
         pageType = TYPE_RECGROUP;
-        recGroup = MyApplication.getAppContext().getString(R.string.group_all);
+        Context context = MyApplication.getAppContext();
+        allTitle = context.getString(R.string.group_all) + "\t";
+        recGroup = allTitle;
         startFetch();
     }
     /**
@@ -58,7 +61,7 @@ public class VideoListModel extends ViewModel {
      *                   VideoContract.VideoEntry.RECTYPE_RECORDING or
      *                   VideoContract.VideoEntry.RECTYPE_VIDEO
      * @param recordedId Set to null, or recordedId if only one to be refreshed
-     * @param recGroup   Set to a recordimng group if only that one is to
+     * @param recGroup   Set to a recording group if only that one is to
      *                   be refreshed
      */
     public void startFetch(int rectype, String recordedId, String recGroup) {
@@ -82,9 +85,9 @@ public class VideoListModel extends ViewModel {
     }
     void loadRecGroupList() {
         recGroups.clear();
-        recGroups.add(MyApplication.getAppContext().getString(R.string.group_all));
-        // Load only a list of unique recgroups
+        recGroups.add(allTitle);
         Context context = MyApplication.getAppContext();
+        // Load only a list of unique recgroups
         VideoDbHelper dbh = VideoDbHelper.getInstance(context);
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
@@ -116,7 +119,7 @@ public class VideoListModel extends ViewModel {
         StringBuilder sql = new StringBuilder("SELECT title, MIN(card_image) FROM video "
             + "WHERE rectype = 1 ");
         String [] parms;
-        if (!MyApplication.getAppContext().getString(R.string.group_all).equals(recGroup)) {
+        if (!allTitle.equals(recGroup)) {
             sql.append("AND recgroup = ? ");
             parms = new String[]{recGroup};
         }
@@ -155,7 +158,7 @@ public class VideoListModel extends ViewModel {
         StringBuilder sql = new StringBuilder("SELECT * FROM video "
                 + "WHERE rectype = 1 ");
         String [] parms;
-        if (!"All".equals(recGroup)) {
+        if (!allTitle.equals(recGroup)) {
             sql.append("AND recgroup = ? ");
             parms = new String[]{recGroup, title};
         }

@@ -9,7 +9,6 @@
         android:id="@+id/image_view_item_videolist"
         android:layout_width="@dimen/item_transform_image_length"
         android:layout_height="@dimen/item_transform_image_height"
-        android:contentDescription="@string/image_view_item_transform_content_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

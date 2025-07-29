@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.databinding.FragmentPlaybackBinding;
 
 
@@ -26,6 +27,7 @@ public class PlaybackFragment extends Fragment {
 
     private PlaybackViewModel viewModel;
     private FragmentPlaybackBinding binding;
+    private String mAudio = Settings.getString("pref_audio");
 
     public static PlaybackFragment newInstance() {
         return new PlaybackFragment();
@@ -91,16 +93,21 @@ public class PlaybackFragment extends Fragment {
 //        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
         DefaultRenderersFactory rFactory = new DefaultRenderersFactory(getContext());
         int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
-//        if ("mediacodec".equals(mAudio))
-//            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
-//        else if ("ffmpeg".equals(mAudio))
-//            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
+        if ("mediacodec".equals(mAudio))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+        else if ("ffmpeg".equals(mAudio))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
         rFactory.setExtensionRendererMode(extMode);
         rFactory.setEnableDecoderFallback(true);
         ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
 //        builder.setTrackSelector(mTrackSelector);
+        int seekBack = Settings.getInt("pref_skip_back") * 1000;
+        builder.setSeekBackIncrementMs(seekBack);
+        int seekFwd = Settings.getInt("pref_skip_fwd") * 1000;
+        builder.setSeekForwardIncrementMs(seekFwd);
         viewModel.player = builder.build();
         binding.playerView.setPlayer(viewModel.player);
+
 
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
         viewModel.player.setMediaItem(mediaItem);
