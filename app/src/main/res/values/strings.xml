@@ -14,6 +14,8 @@
 
     <string name="row_header_channels">Channels</string>
     <string name="group_all">All</string>
+    <string name="group_videos">Videos</string>
+    <string name="recgroup_title">Recording Group</string>
     <!-- Words to exclude from the start titles when sorting.
     Must be in UPPER CASE-->
     <string name="sort_exclude_1">THE</string>

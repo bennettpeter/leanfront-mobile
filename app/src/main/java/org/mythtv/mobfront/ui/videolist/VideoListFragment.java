@@ -1,10 +1,8 @@
 package org.mythtv.mobfront.ui.videolist;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.media.VolumeShaper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -33,6 +30,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.Video;
@@ -42,8 +40,7 @@ import org.mythtv.mobfront.databinding.ItemVideolistBinding;
 import org.mythtv.mobfront.ui.playback.PlaybackActivity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 
 /**
 /**
@@ -69,9 +66,12 @@ public class VideoListFragment extends Fragment {
                 if (videoListModel.pageType == VideoListModel.TYPE_SERIES) {
                     videoListModel.pageType = VideoListModel.TYPE_RECGROUP;
                     videoListModel.loadRecGroup(videoListModel.recGroup);
-                    ActionBar bar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-                    bar.setSubtitle(videoListModel.recGroup);
-                    bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
+                    setActionBar();
+                }
+                else if (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
+                    && videoListModel.videoPath.length() > 0) {
+                    videoListModel.loadVideos("..");
+                    setActionBar();
                 }
                 else {
                     setEnabled(false);
@@ -116,8 +116,9 @@ public class VideoListFragment extends Fragment {
             @Override
             public void onPrepareMenu(@NonNull Menu menu) {
                 menu.removeGroup(R.id.recgroup_group);
-                if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP) {
-                    SubMenu sub = menu.addSubMenu(R.id.recgroup_group, R.id.recgroup_group, 1, "Recording Group");
+                if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP
+                    || videoListModel.pageType == VideoListModel.TYPE_VIDEODIR) {
+                    SubMenu sub = menu.addSubMenu(R.id.recgroup_group, R.id.recgroup_group, 1, R.string.recgroup_title);
                     if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
                         for (int ix = 0; ix < videoListModel.recGroups.size(); ix++)
                             sub.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
@@ -126,25 +127,15 @@ public class VideoListFragment extends Fragment {
                 MenuProvider.super.onPrepareMenu(menu);
             }
 
-//            @Override
-//            public void onMenuClosed(@NonNull Menu menu) {
-//                MenuProvider.super.onMenuClosed(menu);
-//                menu.clear();
-//            }
-
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
-//                switch (id) {
-//                    case 0:
                 if (id == 0) {
-                    // case 0 means a rec group was selected
+
                     videoListModel.loadRecGroup(menuItem.getTitle().toString());
-                    ((AppCompatActivity) getActivity()).getSupportActionBar()
-                            .setSubtitle(menuItem.getTitle().toString());
+                    setActionBar();
                     return true;
                 } else if (id == android.R.id.home) {
-//                    case android.R.id.home:
                     int orientation = requireActivity().getResources().getConfiguration().orientation;
                     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                         requireActivity().getOnBackPressedDispatcher().onBackPressed();
@@ -160,6 +151,18 @@ public class VideoListFragment extends Fragment {
         });
     }
 
+    void setActionBar() {
+        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        bar.setSubtitle(videoListModel.title);
+        if (videoListModel.pageType == VideoListModel.TYPE_SERIES
+            || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
+                && videoListModel.videoPath.length() > 0))
+            bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
+        else
+            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -171,10 +174,7 @@ public class VideoListFragment extends Fragment {
         else if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
             ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(videoListModel.title);
         videoListModel.refresh();
-        if (videoListModel.pageType == VideoListModel.TYPE_SERIES) {
-            ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
-        }
+        setActionBar();
     }
 
     @Override
@@ -197,9 +197,7 @@ public class VideoListFragment extends Fragment {
         if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP) {
             videoListModel.pageType = VideoListModel.TYPE_SERIES;
             videoListModel.loadTitle(videoListModel.videoList.get(position).title);
-            ActionBar bar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-            bar.setSubtitle(videoListModel.title);
-            bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP|ActionBar.DISPLAY_SHOW_TITLE);
+            setActionBar();
         }
         else if (videoListModel.pageType == VideoListModel.TYPE_SERIES) {
             Activity activity = getActivity();
@@ -209,6 +207,22 @@ public class VideoListFragment extends Fragment {
 //            intent.putExtra(PlaybackActivity.BOOKMARK, bookmark);
 //            intent.putExtra(PlaybackActivity.POSBOOKMARK, posBookmark);
             activity.startActivity(intent);
+        }
+        else if (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR) {
+//            videoListModel.pageType = VideoListModel.TYPE_SERIES;
+            if (videoListModel.videoList.get(position).type == Video.TYPE_VIDEODIR) {
+                videoListModel.loadVideos(videoListModel.videoList.get(position).title);
+                setActionBar();
+            }
+            else if (videoListModel.videoList.get(position).type == Video.TYPE_VIDEO) {
+                Activity activity = getActivity();
+                Intent intent = new Intent(activity, PlaybackActivity.class);
+                intent.putExtra(PlaybackActivity.VIDEO, videoListModel.videoList.get(position));
+//            intent.putExtra(PlaybackActivity.VIDEO, taskRunner.getVideo());
+//            intent.putExtra(PlaybackActivity.BOOKMARK, bookmark);
+//            intent.putExtra(PlaybackActivity.POSBOOKMARK, posBookmark);
+                activity.startActivity(intent);
+            }
         }
     }
 
@@ -229,10 +243,10 @@ public class VideoListFragment extends Fragment {
         else if (video.airdate!= null) {
             subtitle.append(video.airdate).append(" ");
         }
-        if (video.subtitle == null || video.subtitle.trim().length() == 0)
-            subtitle.append(video.title);
-        else
-            subtitle.append(video.subtitle);
+        if (video.subtitle == null || video.subtitle.trim().length() == 0
+                || video.type == Video.TYPE_VIDEO)
+            subtitle.append(video.title).append(": ");
+        subtitle.append(video.subtitle);
         return subtitle.toString();
     }
 
@@ -246,12 +260,12 @@ public class VideoListFragment extends Fragment {
                 public boolean areItemsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
                     if (oldItem.id == -1 && newItem.id == -1)
                         return oldItem.title.equals(newItem.title);
-                    return getEpisodeSubtitle(oldItem) == getEpisodeSubtitle(newItem);
+                    return oldItem.id == newItem.id;
                 }
-
                 @Override
                 public boolean areContentsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
-                    return oldItem.id == newItem.id;
+                    return getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem))
+                            && Objects.equals(oldItem.cardImageUrl, newItem.cardImageUrl);
                 }
             });
             this.fragment = fragment;
@@ -290,24 +304,45 @@ public class VideoListFragment extends Fragment {
 //                    subtitle.append(video.title);
 //                else
 //                    subtitle.append(video.subtitle);
-                String subtitle = getEpisodeSubtitle(video);
-                holder.textView.setText(subtitle);
+
+                holder.textView.setText(getEpisodeSubtitle(video));
             }
-//            holder.position = position;
-            String url = video.cardImageUrl;
-            Glide.with(fragment)
-                    .load(url)
-                    .timeout(10000)
-                    .into(holder.imageView);
+            else if (video.type == Video.TYPE_VIDEO) {
+                holder.textView.setText(getEpisodeSubtitle(video));
+            }
+            else if (video.type == Video.TYPE_VIDEODIR) {
+                holder.textView.setText(video.title);
+            }
+            else
+                holder.textView.setText(String.valueOf(video.type));
+
+            if (video.type == Video.TYPE_VIDEODIR) {
+                holder.imageView.setImageResource(R.drawable.ic_folder_24px);
+            }
+            else {
+
+                String url = video.cardImageUrl;
+                if (url == null) {
+                    holder.imageView.setImageResource(R.drawable.ic_movie_24px);
+                }
+                else {
+                    RequestOptions options = new RequestOptions()
+                            .error(R.drawable.ic_movie_24px);
+
+                    Glide.with(fragment)
+                            .load(url)
+                            .timeout(10000)
+                            .apply(options)
+                            .into(holder.imageView);
+                }
+            }
         }
     }
 
     private static class VideoListViewHolder extends RecyclerView.ViewHolder {
 
-//        private Fragment fragment;
         private final ImageView imageView;
         private final TextView textView;
-//        private int position;
 
         public VideoListViewHolder(ItemVideolistBinding binding, VideoListFragment fragment) {
             super(binding.getRoot());

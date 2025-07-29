@@ -41,6 +41,9 @@ public class VideoListModel extends ViewModel {
     ArrayList <String> recGroups = new ArrayList<>();
     public static VideoListModel instance;
     String allTitle = "";
+    String videosTitle = "";
+    // videoPath must not have any leading or trailing slash
+    String videoPath = "";
 
     public VideoListModel() {
         addCloseable(() -> {
@@ -52,6 +55,7 @@ public class VideoListModel extends ViewModel {
         Context context = MyApplication.getAppContext();
         allTitle = context.getString(R.string.group_all) + "\t";
         recGroup = allTitle;
+        videosTitle = context.getString(R.string.group_videos) + "\t";
         startFetch();
     }
     /**
@@ -104,11 +108,17 @@ public class VideoListModel extends ViewModel {
             }
         }
         csr.close();
+        recGroups.add(videosTitle);
     }
 
     void loadRecGroup(String recGroup) {
+        if (videosTitle.equals(recGroup)) {
+            loadVideos("");
+            return;
+        }
         pageType = TYPE_RECGROUP;
         this.recGroup = recGroup;
+        this.title = recGroup;
         videoList.clear();
         // Load only a list of unique titles
         Context context = MyApplication.getAppContext();
@@ -179,6 +189,81 @@ public class VideoListModel extends ViewModel {
         videos.postValue(videoList);
         csr.close();
 
+    }
+
+    // input dir is a subdirectory of the current videoPath
+    void loadVideos(String dir) {
+        videoList.clear();
+        pageType = TYPE_VIDEODIR;
+        if ("..".equals(dir)) {
+            int lsp = videoPath.lastIndexOf('/');
+            if (lsp >= 0)
+                videoPath = videoPath.substring(0,lsp);
+            else
+                videoPath = "";
+        }
+        else if (dir.length() > 0){
+            if (videoPath.length() > 0)
+                videoPath = videoPath + "/" + dir;
+            else
+                videoPath = dir;
+        }
+        Context context = MyApplication.getAppContext();
+        this.title =  context.getString(R.string.group_videos) + " " + videoPath;
+
+        VideoDbHelper dbh = VideoDbHelper.getInstance(context);
+        SQLiteDatabase db = dbh.getReadableDatabase();
+        if (db == null)
+            return;
+        String sql = "SELECT * FROM videoview "
+                + "WHERE rectype = 2 "
+                + "AND  filename like ? "
+                + "ORDER BY filename ";
+        String [] parms;
+        if (videoPath.length() > 0)
+            parms = new String[]{videoPath + "/%"};
+        else
+            parms = new String[]{"%"};
+        Cursor csr = db.rawQuery(sql.toString(), parms);
+        VideoCursorMapper mapper = new VideoCursorMapper();
+        String cursubdir = "";
+        int startPoint = videoPath.length();
+        if (startPoint > 0)
+            startPoint = 1;
+        if (csr.moveToFirst()) {
+            mapper.bindColumns(csr);
+            while (!csr.isAfterLast()) {
+                Video video = mapper.get(csr);
+                int lsp = video.filename.lastIndexOf('/');
+                if (lsp > videoPath.length()) {
+                    String subdir = video.filename.substring(videoPath.length()+startPoint, lsp);
+                    int lsps = subdir.lastIndexOf('/');
+                    if (lsps >= 0)
+                        subdir = subdir.substring(0,lsps);
+                    if (subdir.equals(cursubdir)) {
+                        csr.moveToNext();
+                        continue;
+                    }
+                    else {
+                        video = new Video.VideoBuilder()
+                                .id(-1).title(subdir)
+                                .subtitle(null)
+                                .cardImageUrl(video.cardImageUrl)
+                                .progflags("0")
+                                .build();
+                        video.type = Video.TYPE_VIDEODIR;
+                        cursubdir = subdir;
+                    }
+                }
+                else {
+                    video.type = Video.TYPE_VIDEO;
+                }
+                videoList.add(video);
+                csr.moveToNext();
+            }
+        }
+        videos.postValue(videoList);
+        csr.close();
     }
 
 }
