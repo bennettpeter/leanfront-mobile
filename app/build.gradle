@@ -59,5 +59,4 @@ dependencies {
     implementation project(':media-lib-ui')
     implementation project(':media-lib-decoder-ffmpeg')
 
-
 }

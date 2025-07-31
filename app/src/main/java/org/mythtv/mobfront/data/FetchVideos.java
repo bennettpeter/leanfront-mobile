@@ -65,7 +65,6 @@ public class FetchVideos implements Runnable{
     public static final String RECTYPE = "RecType";
     public static final String RECGROUP = "RecGroup";
     public static final String ISPROGRESSBAR = "IsProgressBar";
-//    public static ReentrantLock fullRunLock = new ReentrantLock();
     public static ReentrantLock fullRunLock = new ReentrantLock();
     private static ExecutorService executor = Executors.newCachedThreadPool();
     private Listener listener;
@@ -157,11 +156,7 @@ public class FetchVideos implements Runnable{
                         start[i] += pagesize;
                     }
                 }
-//                ContentValues[] downloadedVideoContentValues =
-//                        contentValuesList.toArray(new ContentValues[0]);
-//                contentValuesList = null; // This is to free the storage used
                 if (firstLoop) {
-//                    AsyncMainLoader.lock.lock();
                     try {
                         VideoDbHelper dbh = VideoDbHelper.getInstance(context);
                         SQLiteDatabase db = dbh.getWritableDatabase();
@@ -206,9 +201,6 @@ public class FetchVideos implements Runnable{
                 db.endTransaction();
                 if (!success)
                     break;
-
-//                getApplicationContext().getContentResolver().bulkInsert(VideoContract.VideoEntry.CONTENT_URI,
-//                        downloadedVideoContentValues);
                 actual += contentValuesList.size();
                 Log.i(TAG, CLASS + " Number of downloaded records: " + actual);
 
@@ -227,13 +219,6 @@ public class FetchVideos implements Runnable{
                 fullRunLock.unlock();
             if (listener != null)
                 listener.onPostExecute(this);
-//            MainFragment main = MainFragment.getActiveFragment();
-//            if (main != null) {
-//                Activity activity = main.getActivity();
-//                if (activity != null)
-//                    activity.runOnUiThread(
-//                            () -> main.fetchComplete(isProgressBar));
-//            }
         }
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -15,7 +14,6 @@ import org.mythtv.mobfront.data.Video;
 import org.mythtv.mobfront.data.VideoCursorMapper;
 import org.mythtv.mobfront.data.VideoDbHelper;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +21,6 @@ public class VideoListModel extends ViewModel {
 
 //    private final MutableLiveData<List<String>> mTexts;
     MutableLiveData<List<Video>> videos;
-    static int level = 0;
 //    ArrayList<Integer> typeList = new ArrayList();
     static final int TYPE_RECGROUP = 1;
     static final int TYPE_SERIES = 2;
@@ -34,10 +31,7 @@ public class VideoListModel extends ViewModel {
     String recGroup;
     // title of series being shown
     String title;
-    // Video directory being shown
-    String directory;
-    int focusedId;
-    ArrayList <Video> videoList = new ArrayList<>();
+    private final ArrayList <Video> videoList = new ArrayList<>();
     ArrayList <String> recGroups = new ArrayList<>();
     public static VideoListModel instance;
     String allTitle = "";
@@ -80,14 +74,18 @@ public class VideoListModel extends ViewModel {
     }
 
     void refresh() {
-        loadRecGroupList();
-        if (pageType == TYPE_RECGROUP)
-            loadRecGroup(recGroup);
-        else if (pageType == TYPE_SERIES)
-            loadTitle(title);
-        videos.postValue(videoList);
+        synchronized(this) {
+            loadRecGroupList();
+            if (pageType == TYPE_RECGROUP)
+                loadRecGroup(recGroup);
+            else if (pageType == TYPE_SERIES)
+                loadTitle();
+            else if (pageType == TYPE_VIDEODIR)
+                loadVideos();
+            videos.postValue(videoList);
+        }
     }
-    void loadRecGroupList() {
+    private void loadRecGroupList() {
         recGroups.clear();
         recGroups.add(allTitle);
         Context context = MyApplication.getAppContext();
@@ -111,14 +109,17 @@ public class VideoListModel extends ViewModel {
         recGroups.add(videosTitle);
     }
 
-    void loadRecGroup(String recGroup) {
+
+    void setRecGroup(String recGroup) {
         if (videosTitle.equals(recGroup)) {
-            loadVideos("");
+            setVideos("");
             return;
         }
         pageType = TYPE_RECGROUP;
         this.recGroup = recGroup;
         this.title = recGroup;
+    }
+    private void loadRecGroup(String recGroup) {
         videoList.clear();
         // Load only a list of unique titles
         Context context = MyApplication.getAppContext();
@@ -155,9 +156,12 @@ public class VideoListModel extends ViewModel {
         csr.close();
     }
 
-    void loadTitle(String title) {
+    void setTitle(String title) {
         pageType = TYPE_SERIES;
         this.title = title;
+    }
+
+    private void loadTitle() {
         videoList.clear();
         // Load only a list of unique titles
         Context context = MyApplication.getAppContext();
@@ -192,25 +196,29 @@ public class VideoListModel extends ViewModel {
     }
 
     // input dir is a subdirectory of the current videoPath
-    void loadVideos(String dir) {
-        videoList.clear();
+    void setVideos(String dir) {
         pageType = TYPE_VIDEODIR;
         if ("..".equals(dir)) {
             int lsp = videoPath.lastIndexOf('/');
             if (lsp >= 0)
-                videoPath = videoPath.substring(0,lsp);
+                videoPath = videoPath.substring(0, lsp);
             else
                 videoPath = "";
-        }
-        else if (dir.length() > 0){
+        } else if (dir.length() > 0) {
             if (videoPath.length() > 0)
                 videoPath = videoPath + "/" + dir;
             else
                 videoPath = dir;
         }
         Context context = MyApplication.getAppContext();
-        this.title =  context.getString(R.string.group_videos) + " " + videoPath;
+        this.title = context.getString(R.string.group_videos) + " " + videoPath;
+    }
 
+
+        // input dir is a subdirectory of the current videoPath
+    private void loadVideos() {
+        videoList.clear();
+        Context context = MyApplication.getAppContext();
         VideoDbHelper dbh = VideoDbHelper.getInstance(context);
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
@@ -224,7 +232,7 @@ public class VideoListModel extends ViewModel {
             parms = new String[]{videoPath + "/%"};
         else
             parms = new String[]{"%"};
-        Cursor csr = db.rawQuery(sql.toString(), parms);
+        Cursor csr = db.rawQuery(sql, parms);
         VideoCursorMapper mapper = new VideoCursorMapper();
         String cursubdir = "";
         int startPoint = videoPath.length();

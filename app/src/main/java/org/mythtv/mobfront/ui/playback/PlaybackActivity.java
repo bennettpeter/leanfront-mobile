@@ -9,6 +9,9 @@ import org.mythtv.mobfront.R;
 
 public class PlaybackActivity extends AppCompatActivity {
     public static final String VIDEO = "Video";
+    public static final String BOOKMARK = "bookmark";
+    public static final String POSBOOKMARK = "posbookmark";
+    public static final String FRAMERATE = "framerate";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -70,4 +70,7 @@ public class Action {
     public static final int REFRESH_FULL           = 67;
     public static final int FULL_MENU              = 68;
     public static final int FETCH_VIDEOS           = 69;
+    public static final int GET_BOOKMARK           = 70;
+    public static final int GET_STREAM_INFO        = 71;
+
 }

@@ -8,4 +8,6 @@ import org.mythtv.mobfront.data.Video;
 public class PlaybackViewModel extends ViewModel {
     Video video;
     ExoPlayer player;
+    long bookmark;
+    double frameRate;
 }

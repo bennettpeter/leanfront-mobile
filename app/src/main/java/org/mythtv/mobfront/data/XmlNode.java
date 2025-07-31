@@ -52,6 +52,7 @@ public class XmlNode {
     private HashMap<String, String> attributeMap = new HashMap<>();
     private String text = null;
     private XmlNode nextSibling;
+    private Exception exception;
 
     public static String getIpAndPort(String hostname) throws IOException, XmlPullParserException {
         String backendIP = Settings.getString("pref_backend");
@@ -237,10 +238,18 @@ public class XmlNode {
             return fetch(urlString,requestMethod);
         } catch(IOException | XmlPullParserException e) {
             Log.i(TAG, CLASS + " Unsupported url " + urlString);
-            return new XmlNode();
+            return new XmlNode(e);
         }
     }
 
+    private XmlNode() {}
+    private XmlNode(Exception e) {
+        exception = e;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
 
     public XmlNode getNode(String[] tag, int index) {
         XmlNode node = this;

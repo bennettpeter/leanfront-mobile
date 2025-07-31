@@ -3,6 +3,7 @@ package org.mythtv.mobfront.ui.playback;
 import androidx.annotation.OptIn;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.mythtv.mobfront.data.Action;
+import org.mythtv.mobfront.data.AsyncBackendCall;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.databinding.FragmentPlaybackBinding;
 
@@ -37,7 +40,10 @@ public class PlaybackFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(PlaybackViewModel.class);
-        viewModel.video = getActivity().getIntent().getParcelableExtra(PlaybackActivity.VIDEO);
+        Intent intent =  getActivity().getIntent();
+        viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
+        viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0l);
+        viewModel.frameRate = intent.getDoubleExtra(PlaybackActivity.FRAMERATE, 30l);
     }
 
     @Nullable
@@ -71,6 +77,7 @@ public class PlaybackFragment extends Fragment {
             if (binding.playerView != null) {
                 binding.playerView.onPause();
             }
+            setBookmark();
             releasePlayer();
         }
     }
@@ -82,6 +89,7 @@ public class PlaybackFragment extends Fragment {
             if (binding.playerView != null) {
                 binding.playerView.onPause();
             }
+            setBookmark();
             releasePlayer();
         }
     }
@@ -107,11 +115,11 @@ public class PlaybackFragment extends Fragment {
         builder.setSeekForwardIncrementMs(seekFwd);
         viewModel.player = builder.build();
         binding.playerView.setPlayer(viewModel.player);
-
-
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
         viewModel.player.setMediaItem(mediaItem);
         viewModel.player.prepare();
+        if (viewModel.bookmark > 0)
+            viewModel.player.seekTo(viewModel.bookmark);
         viewModel.player.play();
 
 //        mSubtitles = getActivity().findViewById(R.id.leanback_subtitles);
@@ -174,5 +182,17 @@ public class PlaybackFragment extends Fragment {
         }
     }
 
+    void setBookmark() {
+        if (viewModel.player == null)
+            return;
+        viewModel.bookmark = viewModel.player.getCurrentPosition();
+        long params[] = new long[2];
+        params[0] = viewModel.bookmark;
+        params[1] =  (long) (viewModel.frameRate * 100.0f) * params[0] / 100000;
+        AsyncBackendCall call = new AsyncBackendCall(getActivity(), null);
+        call.videos.add(viewModel.video);
+        call.params = params;
+        call.execute(Action.SET_BOOKMARK);
+    }
 
 }
