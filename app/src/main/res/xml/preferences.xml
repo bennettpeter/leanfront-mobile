@@ -25,8 +25,12 @@
             app:useSimpleSummaryProvider="true"
             android:dialogTitle="@string/pref_max_vids"
             android:defaultValue="20000"/>
+    </PreferenceCategory>
 
-        <DropDownPreference
+    <PreferenceCategory
+        android:title="@string/pref_title_playback">
+
+    <DropDownPreference
             android:key="pref_audio"
             android:title="@string/pref_ff_title"
             android:entries="@array/audio_pref_entries"

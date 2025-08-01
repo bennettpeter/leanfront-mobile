@@ -27,6 +27,7 @@
     <string name="pref_title_backend">MythTV Backend</string>
     <string name="pref_title_myth_port">MythTV Backend Port</string>
     <string name="pref_title_http_port">Status Port</string>
+    <string name="pref_title_playback">Playback</string>
     <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
     <string name="pref_ff_title">Audio Decode</string>
     <string name="pref_audio_auto">Auto select</string>
@@ -45,5 +46,7 @@
     <string name="sdef_audio" translatable="false">auto</string>
     <string name="sdef_skip_fwd" translatable="false">60</string>
     <string name="sdef_skip_back" translatable="false">10</string>
+    <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>
+
 
 </resources>

@@ -118,17 +118,18 @@ public class VideoListFragment extends Fragment {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
             }
+
             @Override
             public void onPrepareMenu(@NonNull Menu menu) {
                 menu.removeGroup(R.id.recgroup_group);
-                if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP
-                    || videoListModel.pageType == VideoListModel.TYPE_VIDEODIR) {
-                    SubMenu sub = menu.addSubMenu(R.id.recgroup_group, R.id.recgroup_group, 1, R.string.recgroup_title);
-                    if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
-                        for (int ix = 0; ix < videoListModel.recGroups.size(); ix++)
-                            sub.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
-                    }
+//                if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP
+//                    || videoListModel.pageType == VideoListModel.TYPE_VIDEODIR) {
+//                    SubMenu sub = menu.addSubMenu(R.id.recgroup_group, R.id.recgroup_group, 1, R.string.recgroup_title);
+                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+                    for (int ix = 0; ix < videoListModel.recGroups.size(); ix++)
+                        menu.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
                 }
+//                }
                 MenuProvider.super.onPrepareMenu(menu);
             }
             @Override
@@ -145,8 +146,10 @@ public class VideoListFragment extends Fragment {
                         return true;
                     }
                 } else if (id == R.id.menu_refresh) {
-                    binding.swiperefresh.setRefreshing(true);
-                    videoListModel.startFetch();
+                    if (binding != null && binding.swiperefresh != null) {
+                        binding.swiperefresh.setRefreshing(true);
+                        videoListModel.startFetch();
+                    }
                     return true;
                 }
                 return false;
@@ -157,12 +160,15 @@ public class VideoListFragment extends Fragment {
     void refresh() {
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         bar.setSubtitle(videoListModel.title);
-        if (videoListModel.pageType == VideoListModel.TYPE_SERIES
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if ((videoListModel.pageType == VideoListModel.TYPE_SERIES
             || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
-                && videoListModel.videoPath.length() > 0))
-            bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
-        else
-            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
+                && videoListModel.videoPath.length() > 0)))
+                bar.setDisplayHomeAsUpEnabled(true);
+            else
+                bar.setDisplayHomeAsUpEnabled(false);
+        }
         videoListModel.refresh();
     }
 
@@ -170,8 +176,10 @@ public class VideoListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (menuProvider != null)
+        if (menuProvider != null) {
             getActivity().addMenuProvider(menuProvider);
+//            getActivity().invalidateMenu();
+        }
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("MythTV");
         if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP)
             ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(videoListModel.recGroup);
@@ -224,20 +232,20 @@ public class VideoListFragment extends Fragment {
             XmlNode streamInfo = taskRunner.getXmlResult();
             double frameRate = 0.0;
             double avgFrameRate = 0.0;
+            if (streamInfo != null) {
+                XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
+                vsi = vsi.getNode("VideoStreamInfo");
+                while (vsi != null && !"V".equals(vsi.getString("CodecType")))
+                    vsi = vsi.getNextSibling();
+                frameRate = Double.valueOf(vsi.getString("FrameRate"));
+                avgFrameRate = Double.valueOf(vsi.getString("AvgFrameRate"));
+            }
+            if (frameRate == 0.0)
+                frameRate = avgFrameRate;
+            if (frameRate == 0.0)
+                frameRate = 30.0;
             if (bookmark[0] <= 0 && bookmark[1] > 0) {
                 // Need to convert pos bookmark
-                if (streamInfo != null) {
-                    XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
-                    vsi = vsi.getNode("VideoStreamInfo");
-                    while (vsi != null && !"V".equals(vsi.getString("CodecType")))
-                        vsi = vsi.getNextSibling();
-                    frameRate = Double.valueOf(vsi.getString("FrameRate"));
-                    avgFrameRate = Double.valueOf(vsi.getString("AvgFrameRate"));
-                }
-                if (frameRate == 0.0)
-                    frameRate = avgFrameRate;
-                if (frameRate == 0.0)
-                    frameRate = 30.0;
                 bookmark[0] = bookmark[1] * 100000 / (long) (frameRate * 100.0f);
             }
             Activity activity = getActivity();

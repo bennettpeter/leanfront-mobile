@@ -15,6 +15,8 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,7 @@ import org.mythtv.mobfront.data.Action;
 import org.mythtv.mobfront.data.AsyncBackendCall;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.databinding.FragmentPlaybackBinding;
+import org.mythtv.mobfront.player.MyExtractorsFactory;
 
 
 public class PlaybackFragment extends Fragment {
@@ -116,10 +119,14 @@ public class PlaybackFragment extends Fragment {
         viewModel.player = builder.build();
         binding.playerView.setPlayer(viewModel.player);
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
-        viewModel.player.setMediaItem(mediaItem);
+        MyExtractorsFactory extFactory = new MyExtractorsFactory();
+        DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
+                (getContext(), extFactory);
+        ProgressiveMediaSource mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
+        viewModel.player.setMediaSource(mediaSource, viewModel.bookmark);
         viewModel.player.prepare();
-        if (viewModel.bookmark > 0)
-            viewModel.player.seekTo(viewModel.bookmark);
+//        if (viewModel.bookmark > 0)
+//            viewModel.player.seekTo(viewModel.bookmark);
         viewModel.player.play();
 
 //        mSubtitles = getActivity().findViewById(R.id.leanback_subtitles);
@@ -186,6 +193,10 @@ public class PlaybackFragment extends Fragment {
         if (viewModel.player == null)
             return;
         viewModel.bookmark = viewModel.player.getCurrentPosition();
+        long duration = viewModel.player.getDuration();
+        // Clear bookmark if at end of video
+        if (duration - viewModel.bookmark < 3000)
+            viewModel.bookmark = 0;
         long params[] = new long[2];
         params[0] = viewModel.bookmark;
         params[1] =  (long) (viewModel.frameRate * 100.0f) * params[0] / 100000;

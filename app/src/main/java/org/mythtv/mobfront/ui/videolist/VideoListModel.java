@@ -50,6 +50,8 @@ public class VideoListModel extends ViewModel {
         allTitle = context.getString(R.string.group_all) + "\t";
         recGroup = allTitle;
         videosTitle = context.getString(R.string.group_videos) + "\t";
+        setRecGroup(allTitle);
+        refresh();
         startFetch();
     }
     /**
