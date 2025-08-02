@@ -16,6 +16,7 @@ navigationUi = "2.9.1"
 preference = "1.2.1"
 exifinterface = "1.4.1"
 swiperefreshlayout = "1.2.0-alpha01"
+media3Common = "1.8.0"
 
 [libraries]
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
@@ -36,6 +37,7 @@ navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

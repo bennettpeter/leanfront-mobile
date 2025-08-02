@@ -33,12 +33,13 @@ cd "$scriptpath"
 # Clear old builds
 #~ rm -rf ffmpeg/android-libs/*
 FFMPEG_PATH="$(pwd)/../ffmpeg"
+LIBYUV_PATH="$(pwd)/../libyuv"
 
 cd ../media
 FFMPEG_MODULE_PATH="$(pwd)/libraries/decoder_ffmpeg/src/main"
 NDK_PATH=$HOME/Android/android-ndk
 HOST_PLATFORM="linux-x86_64"
-ENABLED_DECODERS=(mp3 aac ac3 eac3 dca truehd mlp vorbis opus flac alac pcm_mulaw pcm_alaw)
+ENABLED_DECODERS=(mp3 aac ac3 eac3 dca truehd mlp vorbis opus flac alac pcm_mulaw pcm_alaw mpeg2video mpeg4)
 cd "${FFMPEG_MODULE_PATH}/jni"
 rm -rf ffmpeg
 ln -fs "$FFMPEG_PATH" ffmpeg
@@ -46,4 +47,11 @@ ln -fs "$FFMPEG_PATH" ffmpeg
 ./build_ffmpeg.sh \
   "${FFMPEG_MODULE_PATH}" "${NDK_PATH}" "${HOST_PLATFORM}" 21 "${ENABLED_DECODERS[@]}"
 
-echo "ffmpeg build successfully completed"
+echo Building yuvlib
+
+ln -fs "$LIBYUV_PATH" libyuv
+
+./build_yuv.sh \
+  "${FFMPEG_MODULE_PATH}" "${NDK_PATH}" 21
+
+echo "ffmpeg and libyuv build successfully completed"

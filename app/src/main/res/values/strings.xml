@@ -29,7 +29,7 @@
     <string name="pref_title_http_port">Status Port</string>
     <string name="pref_title_playback">Playback</string>
     <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
-    <string name="pref_ff_title">Audio Decode</string>
+    <string name="pref_ff_title">Audio/Video Decode</string>
     <string name="pref_audio_auto">Auto select</string>
     <string name="pref_audio_auto_desc">Use Mediacodec where possible, otherwise use FFmpeg.</string>
     <string name="pref_audio_mediacodec">Mediacodec</string>
