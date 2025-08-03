@@ -54,7 +54,7 @@ public class BackendCache  {
 
     public static void flush() {
         if (singleton != null)
-            singleton.init();
+            singleton = null;
     }
 
 }

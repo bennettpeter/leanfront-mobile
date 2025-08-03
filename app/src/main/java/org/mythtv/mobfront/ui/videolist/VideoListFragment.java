@@ -59,6 +59,7 @@ public class VideoListFragment extends Fragment {
     private VideoListModel videoListModel;
     private MenuProvider menuProvider;
     private ArrayList <Video> videoList = new ArrayList<>();
+    private long lastClick;
 
 
     @Override
@@ -205,6 +206,10 @@ public class VideoListFragment extends Fragment {
     }
 
     private void onItemClick(int position) {
+        long now = System.currentTimeMillis();
+        if (lastClick + 500 > now)
+            return;
+        lastClick = now;
         if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP) {
             videoListModel.pageType = VideoListModel.TYPE_SERIES;
             videoListModel.setTitle(videoList.get(position).title);

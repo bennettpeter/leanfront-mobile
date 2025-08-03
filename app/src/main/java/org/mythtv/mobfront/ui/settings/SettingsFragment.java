@@ -22,6 +22,7 @@ import androidx.preference.PreferenceScreen;
 
 import org.mythtv.mobfront.MainActivity;
 import org.mythtv.mobfront.R;
+import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.ui.videolist.VideoListModel;
 
 //import org.mythtv.mobfront.databinding.FragmentSettingsBinding;

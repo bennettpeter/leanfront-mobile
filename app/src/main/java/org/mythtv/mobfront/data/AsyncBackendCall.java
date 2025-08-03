@@ -32,8 +32,6 @@ public class AsyncBackendCall implements Runnable {
     private OnBackendCallListener listener;
 //    private View view;
     private final static ExecutorService executor = Executors.newCachedThreadPool();
-    // Whether Last Play works
-    static boolean lastPlay = true;
     final String TAG = "mfe";
     // provide activity or view. Whichever is not null will be used
     public AsyncBackendCall(@Nullable Activity activity, @Nullable OnBackendCallListener listener) {
@@ -182,7 +180,7 @@ public class AsyncBackendCall implements Runnable {
         XmlNode bkmrkData = null;
         long[] retValue = {0, -1};
         String method;
-        if (lastPlay)
+        if (BackendCache.getInstance().supportLastPlayPos)
             method = "GetLastPlayPos";
         else
             method = "GetSavedBookmark";
@@ -195,8 +193,8 @@ public class AsyncBackendCall implements Runnable {
                 retValue[0] = Long.parseLong(bkmrkData.getString());
             } catch (NumberFormatException e) {
                 Exception e2 = bkmrkData.getException();
-                if (lastPlay && e2 != null && e2 instanceof FileNotFoundException) {
-                    lastPlay = false;
+                if (BackendCache.getInstance().supportLastPlayPos && e2 != null && e2 instanceof FileNotFoundException) {
+                    BackendCache.getInstance().supportLastPlayPos = false;
                     Log.w(TAG,"AsyncBakendCall.fetchLastPlayPos failed will use bookmarks instead");
                     return fetchLastPlayPos(video);
                 }
@@ -243,7 +241,7 @@ public class AsyncBackendCall implements Runnable {
         XmlNode xmlResult = null;
         boolean found = false;
         String method;
-        if (lastPlay)
+        if (BackendCache.getInstance().supportLastPlayPos)
             method = "SetLastPlayPos";
         else
             method = "SetSavedBookmark";
