@@ -20,11 +20,33 @@
             android:defaultValue="6544"/>
 
         <EditTextPreference
+            android:key="pref_backend_userid"
+            android:title="@string/pref_title_backend_userid"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_title_backend_userid"
+            android:defaultValue=""/>
+
+        <EditTextPreference
+            android:key="pref_backend_passwd"
+            android:title="@string/pref_title_backend_passwd"
+            app:useSimpleSummaryProvider="false"
+            android:dialogTitle="@string/pref_title_backend_passwd"
+            android:defaultValue=""/>
+
+        <EditTextPreference
+            android:key="pref_backend_mac"
+            android:title="@string/pref_title_backend_mac"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_title_backend_userid"
+            android:defaultValue=""/>
+
+        <EditTextPreference
             android:key="pref_max_vids"
             android:title="@string/pref_max_vids"
             app:useSimpleSummaryProvider="true"
             android:dialogTitle="@string/pref_max_vids"
             android:defaultValue="20000"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

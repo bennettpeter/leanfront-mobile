@@ -1,50 +1,24 @@
 package org.mythtv.mobfront.ui.settings;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceGroup;
-import androidx.preference.PreferenceManager;
-import androidx.preference.PreferenceScreen;
 
-import org.mythtv.mobfront.MainActivity;
 import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.ui.videolist.VideoListModel;
 
-//import org.mythtv.mobfront.databinding.FragmentSettingsBinding;
-
 public class SettingsFragment extends PreferenceFragmentCompat
 {
 
-//    private FragmentSettingsBinding binding;
+    public static boolean isActive = false;
     private boolean reloadDB;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-//        PreferenceManager preferenceManager = getPreferenceManager();
-//        PreferenceScreen screen = preferenceManager.createPreferenceScreen(getContext());
-//        PreferenceCategory cat = new PreferenceCategory(getContext());
-//        cat.setTitle("MythTV Backend");
-//        screen.addPreference(cat);
-//        Preference ipAddress = new EditTextPreference(getContext());
-//        ipAddress.setTitle("IP Address or DNS name");
-//        ipAddress.setKey("pref_backend");
-//        cat.addPreference(ipAddress);
-//        setPreferenceScreen(screen);
         setPreferencesFromResource(R.xml.preferences,null);
         findPreference("pref_backend")
                 .setOnPreferenceChangeListener((pref,action) -> {
@@ -54,7 +28,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 newVal = newVal.replace("[","");
                 newVal = newVal.replace("]","");
                 ((EditTextPreference)pref).setText(newVal);
-//                MainActivity.startFetch(-1, null, null);
+                BackendCache.getInstance().authorization = null;
                 reloadDB = true;
                 return false;
             });
@@ -65,12 +39,29 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 return false;
             });
 
+        findPreference("pref_backend_userid")
+                .setOnPreferenceChangeListener((pref, action) -> {
+                    ((EditTextPreference) pref).setText(action.toString().trim());
+                    BackendCache.getInstance().authorization = null;
+                    reloadDB = true;
+                    return false;
+                });
+
+        findPreference("pref_backend_passwd")
+                .setOnPreferenceChangeListener((pref, action) -> {
+                    ((EditTextPreference) pref).setText(action.toString().trim());
+                    BackendCache.getInstance().authorization = null;
+                    reloadDB = true;
+                    return false;
+                });
+
         findPreference("pref_max_vids")
-            .setOnPreferenceChangeListener((pref,action) -> {
-                ((EditTextPreference)pref).setText(validateNumber(action, 1000, 90000, 10000));
-                reloadDB = true;
-                return false;
-            });
+                .setOnPreferenceChangeListener((pref,action) -> {
+                    ((EditTextPreference)pref).setText(validateNumber(action, 1000, 90000, 10000));
+                    reloadDB = true;
+                    return false;
+                });
+
 
         findPreference("pref_skip_back")
             .setOnPreferenceChangeListener((pref,action) -> {
@@ -84,33 +75,25 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 return false;
             });
 
+        if (!BackendCache.getInstance().loginNeeded) {
+            findPreference("pref_backend_userid").setVisible(false);
+            findPreference("pref_backend_passwd").setVisible(false);
+        }
     }
-
-//    public View onCreateView(@NonNull LayoutInflater inflater,
-//                             ViewGroup container, Bundle savedInstanceState) {
-//        SettingsViewModel settingsViewModel =
-//                new ViewModelProvider(this).get(SettingsViewModel.class);
-//
-//        binding = FragmentSettingsBinding.inflate(inflater, container, false);
-//        View root = binding.getRoot();
-//
-//        final TextView textView = binding.textSettings;
-//        settingsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-//        return root;
-//    }
-//
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        binding = null;
-//    }
-
 
     @Override
     public void onResume() {
+        isActive = true;
         reloadDB = false;
         super.onResume();
         ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
+        if (BackendCache.getInstance().loginNeeded) {
+            findPreference("pref_backend_userid").setVisible(true);
+            findPreference("pref_backend_passwd").setVisible(true);
+        } else {
+            findPreference("pref_backend_userid").setVisible(false);
+            findPreference("pref_backend_passwd").setVisible(false);
+        }
     }
 
     @Override
@@ -118,6 +101,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         if (reloadDB && VideoListModel.instance != null)
             VideoListModel.instance.startFetch();
         reloadDB = false;
+        isActive = false;
         super.onPause();
     }
 

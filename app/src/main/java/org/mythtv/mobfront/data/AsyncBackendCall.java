@@ -139,7 +139,7 @@ public class AsyncBackendCall implements Runnable {
                     try {
                         response = fetchLastPlayPos(video);
                     } catch (IOException | XmlPullParserException e) {
-                        response = new long[]{0, 0};
+                        response = new long[]{-1,-1};
                         e.printStackTrace();
                     }
                     break;

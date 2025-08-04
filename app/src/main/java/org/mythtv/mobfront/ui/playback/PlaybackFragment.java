@@ -12,18 +12,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.HttpDataSource;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.Action;
 import org.mythtv.mobfront.data.AsyncBackendCall;
+import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.databinding.FragmentPlaybackBinding;
 import org.mythtv.mobfront.player.MyExtractorsFactory;
@@ -34,6 +43,8 @@ public class PlaybackFragment extends Fragment {
     private PlaybackViewModel viewModel;
     private FragmentPlaybackBinding binding;
     private String mAudio = Settings.getString("pref_audio");
+    static final String TAG = "mfe";
+    static final String CLASS = "PlaybackFragment";
 
     public static PlaybackFragment newInstance() {
         return new PlaybackFragment();
@@ -118,10 +129,22 @@ public class PlaybackFragment extends Fragment {
         builder.setSeekForwardIncrementMs(seekFwd);
         viewModel.player = builder.build();
         binding.playerView.setPlayer(viewModel.player);
+        PlayerEventListener playerEventListener = new PlayerEventListener();
+        viewModel.player.addListener(playerEventListener);
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
+        String auth = BackendCache.getInstance().authorization;
+        DataSource.Factory dsFactory =
+            () -> {
+                HttpDataSource.Factory factory = new DefaultHttpDataSource.Factory();
+                HttpDataSource dataSource = factory.createDataSource();
+                if (auth != null && auth.length() > 0)
+                    dataSource.setRequestProperty("Authorization", auth);
+                return dataSource;
+            };
+
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
-                (getContext(), extFactory);
+                (dsFactory, extFactory);
         ProgressiveMediaSource mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
         viewModel.player.setMediaSource(mediaSource, viewModel.bookmark);
         viewModel.player.prepare();
@@ -162,7 +185,7 @@ public class PlaybackFragment extends Fragment {
 //        mPlayerGlue.setupSelectedListener();
     }
 
-    protected void releasePlayer() {
+        protected void releasePlayer() {
         if (viewModel.player != null) {
 //            updateTrackSelectorParameters();
 //            updateStartPosition();
@@ -205,5 +228,18 @@ public class PlaybackFragment extends Fragment {
         call.params = params;
         call.execute(Action.SET_BOOKMARK);
     }
+
+    class PlayerEventListener implements Player.Listener {
+
+        @Override
+        public void onPlayerError(@NonNull PlaybackException ex)
+        {
+            Log.e(TAG, CLASS + " Player Error ", ex);
+            Toast.makeText(getContext(), R.string.pberror_unexpected, Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
 
 }

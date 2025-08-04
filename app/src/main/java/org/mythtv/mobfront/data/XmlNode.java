@@ -208,7 +208,7 @@ public class XmlNode {
             if (respCode == 401) {
                 // MythTask will process login
                 if (!urlString.endsWith("/Myth/DelayShutdown"))
-                    MainActivity.restartMythTask();
+                    MainActivity.getInstance().restartMythTask();
                 throw new IOException("Unauthorized: 401", e);
             }
             throw e;
@@ -217,7 +217,7 @@ public class XmlNode {
             Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
                     + " " + urlConnection.getResponseMessage());
             if (!urlString.endsWith("/Myth/DelayShutdown"))
-                MainActivity.restartMythTask();
+                MainActivity.getInstance().restartMythTask();
             throw e;
         } finally {
             if (urlConnection != null)

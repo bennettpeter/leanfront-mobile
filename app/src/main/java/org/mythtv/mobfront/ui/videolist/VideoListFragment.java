@@ -8,11 +8,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -29,11 +29,14 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
 
 import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.Action;
 import org.mythtv.mobfront.data.AsyncBackendCall;
+import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.data.Video;
 import org.mythtv.mobfront.data.VideoContract;
 import org.mythtv.mobfront.data.XmlNode;
@@ -59,7 +62,6 @@ public class VideoListFragment extends Fragment {
     private VideoListModel videoListModel;
     private MenuProvider menuProvider;
     private ArrayList <Video> videoList = new ArrayList<>();
-    private long lastClick;
 
 
     @Override
@@ -123,9 +125,6 @@ public class VideoListFragment extends Fragment {
             @Override
             public void onPrepareMenu(@NonNull Menu menu) {
                 menu.removeGroup(R.id.recgroup_group);
-//                if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP
-//                    || videoListModel.pageType == VideoListModel.TYPE_VIDEODIR) {
-//                    SubMenu sub = menu.addSubMenu(R.id.recgroup_group, R.id.recgroup_group, 1, R.string.recgroup_title);
                 if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
                     for (int ix = 0; ix < videoListModel.recGroups.size(); ix++)
                         menu.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
@@ -206,10 +205,6 @@ public class VideoListFragment extends Fragment {
     }
 
     private void onItemClick(int position) {
-        long now = System.currentTimeMillis();
-        if (lastClick + 500 > now)
-            return;
-        lastClick = now;
         if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP) {
             videoListModel.pageType = VideoListModel.TYPE_SERIES;
             videoListModel.setTitle(videoList.get(position).title);
@@ -234,6 +229,10 @@ public class VideoListFragment extends Fragment {
         AsyncBackendCall call = new AsyncBackendCall(getActivity(),
                 taskRunner -> {
             long [] bookmark = (long[])taskRunner.response;
+            if (bookmark[0] == -1 && bookmark[1] == -1) {
+                Toast.makeText(getContext(), R.string.error_cannot_play,Toast.LENGTH_LONG).show();
+                return;
+            }
             XmlNode streamInfo = taskRunner.getXmlResult();
             double frameRate = 0.0;
             double avgFrameRate = 0.0;
@@ -303,13 +302,11 @@ public class VideoListFragment extends Fragment {
                     if (oldItem.id == -1 && newItem.id == -1)
                         return oldItem.title.equals(newItem.title);
                     return oldItem.id == newItem.id;
-//                    return true;
                 }
                 @Override
                 public boolean areContentsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
                     return getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem))
                             && Objects.equals(oldItem.cardImageUrl, newItem.cardImageUrl);
-//                    return true;
                 }
             });
             this.fragment = fragment;
@@ -328,27 +325,6 @@ public class VideoListFragment extends Fragment {
             if (video.type == Video.TYPE_SERIES)
                 holder.textView.setText(video.title);
             else if (video.type == Video.TYPE_EPISODE) {
-//                StringBuilder subtitle = new StringBuilder();
-////                if (video.isDamaged())
-////                    subtitle.append("\uD83D\uDCA5");
-//                if (video.isWatched())
-//                    subtitle.append("\uD83D\uDC41");
-//                // symbols for deleted - "🗑" "🗶" "␡"
-//                if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
-//                        && "Deleted".equals(video.recGroup))
-//                    subtitle.append("\uD83D\uDDD1");
-//                if (video.season != null && video.season.compareTo("0") > 0) {
-//                    subtitle.append('S').append(video.season).append('E').append(video.episode)
-//                            .append(' ');
-//                }
-//                else if (video.airdate!= null) {
-//                    subtitle.append(video.airdate).append(" ");
-//                }
-//                if (video.subtitle == null || video.subtitle.trim().length() == 0)
-//                    subtitle.append(video.title);
-//                else
-//                    subtitle.append(video.subtitle);
-
                 holder.textView.setText(getEpisodeSubtitle(video));
             }
             else if (video.type == Video.TYPE_VIDEO) {
@@ -365,17 +341,22 @@ public class VideoListFragment extends Fragment {
             }
             else {
 
-                String url = video.cardImageUrl;
-                if (url == null) {
+                String imageUrl = video.cardImageUrl;
+                if (imageUrl == null) {
                     holder.imageView.setImageResource(R.drawable.ic_movie_24px);
                 }
                 else {
                     RequestOptions options = new RequestOptions()
                             .error(R.drawable.ic_movie_24px);
 
-                    Glide.with(fragment)
+                    String auth =  BackendCache.getInstance().authorization;
+                    LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
+                    if (auth != null && auth.length() > 0)
+                        lzhb.addHeader("Authorization", auth);
+                    GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
+
+                    Glide.with(fragment.getContext())
                             .load(url)
-                            .timeout(10000)
                             .apply(options)
                             .into(holder.imageView);
                 }
