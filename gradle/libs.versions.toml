@@ -18,6 +18,7 @@ exifinterface = "1.4.1"
 swiperefreshlayout = "1.2.0-alpha01"
 media3Common = "1.8.0"
 lifecycleProcess = "2.9.2"
+firebaseCrashlyticsBuildtools = "3.0.5"
 
 [libraries]
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
@@ -40,6 +41,7 @@ exifinterface = { group = "androidx.exifinterface", name = "exifinterface", vers
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
 lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

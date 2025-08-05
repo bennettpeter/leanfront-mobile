@@ -52,12 +52,19 @@
     <PreferenceCategory
         android:title="@string/pref_title_playback">
 
-    <DropDownPreference
+        <DropDownPreference
             android:key="pref_audio"
             android:title="@string/pref_ff_title"
-            android:entries="@array/audio_pref_entries"
+            android:entries="@array/decode_pref_entries"
             app:useSimpleSummaryProvider="true"
-            android:entryValues="@array/audio_values"/>
+            android:entryValues="@array/decode_values"/>
+
+        <DropDownPreference
+            android:key="pref_video"
+            android:title="@string/pref_ff_video_title"
+            android:entries="@array/decode_pref_entries"
+            app:useSimpleSummaryProvider="true"
+            android:entryValues="@array/decode_values"/>
 
         <EditTextPreference
             android:key="pref_skip_fwd"

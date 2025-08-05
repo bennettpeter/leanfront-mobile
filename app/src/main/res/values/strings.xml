@@ -56,14 +56,15 @@
 
     <string name="pref_title_playback">Playback</string>
     <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
-    <string name="pref_ff_title">Audio/Video Decode</string>
-    <string name="pref_audio_auto">Auto select</string>
-    <string name="pref_audio_auto_desc">Use Mediacodec where possible, otherwise use FFmpeg.</string>
-    <string name="pref_audio_mediacodec">Mediacodec</string>
-    <string name="pref_audio_mediacodec_desc">Many types of audio, plays surround sound if set up in
-        Android settings.</string>
-    <string name="pref_audio_ffmpeg">FFmpeg</string>
-    <string name="pref_audio_ffmpeg_desc">Most types of audio, surround sound plays as stereo.</string>
+    <string name="pref_ff_title">Audio Decode</string>
+    <string name="pref_ff_video_title">Video Decode</string>
+    <string name="pref_decode_auto">Auto select</string>
+<!--    <string name="pref_audio_auto_desc">Use Mediacodec where possible, otherwise use FFmpeg.</string>-->
+    <string name="pref_decode_mediacodec">Mediacodec</string>
+<!--    <string name="pref_audio_mediacodec_desc">Many types of audio, plays surround sound if set up in-->
+<!--        Android settings.</string>-->
+    <string name="pref_decode_ffmpeg">FFmpeg</string>
+<!--    <string name="pref_audio_ffmpeg_desc">Most types of audio, surround sound plays as stereo.</string>-->
     <string name="pref_title_skip_fwd">Skip Forward Seconds</string>
     <string name="pref_title_skip_back">Skip Back Seconds</string>
     <string name="pref_poss_empty">Ignore Extra Track</string>
@@ -72,6 +73,7 @@
     <string name="sdef_http_port" translatable="false">6544</string>
     <string name="sdef_video_parental" translatable="false">4</string>
     <string name="sdef_audio" translatable="false">auto</string>
+    <string name="sdef_video" translatable="false">auto</string>
     <string name="sdef_skip_fwd" translatable="false">60</string>
     <string name="sdef_skip_back" translatable="false">10</string>
     <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>

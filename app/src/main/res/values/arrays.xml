@@ -8,13 +8,13 @@
         <item>@string/sort_exclude_3</item>
     </string-array>
 
-    <string-array name="audio_pref_entries">
-        <item>@string/pref_audio_auto</item>
-        <item>@string/pref_audio_mediacodec</item>
-        <item>@string/pref_audio_ffmpeg</item>
+    <string-array name="decode_pref_entries">
+        <item>@string/pref_decode_auto</item>
+        <item>@string/pref_decode_mediacodec</item>
+        <item>@string/pref_decode_ffmpeg</item>
     </string-array>
 
-    <string-array name="audio_values">
+    <string-array name="decode_values">
         <item>auto</item>
         <item>mediacodec</item>
         <item>ffmpeg</item>
