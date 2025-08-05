@@ -33,7 +33,7 @@ public class VideoListModel extends ViewModel {
     String title;
     private final ArrayList <Video> videoList = new ArrayList<>();
     ArrayList <String> recGroups = new ArrayList<>();
-    public static VideoListModel instance;
+    private static VideoListModel instance;
     String allTitle = "";
     String videosTitle = "";
     // videoPath must not have any leading or trailing slash
@@ -54,6 +54,11 @@ public class VideoListModel extends ViewModel {
         refresh();
         startFetch();
     }
+
+    public static VideoListModel getInstance() {
+        return instance;
+    }
+
     /**
      * Fetch video list
      *

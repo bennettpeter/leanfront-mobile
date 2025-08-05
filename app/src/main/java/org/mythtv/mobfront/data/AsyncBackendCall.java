@@ -2,10 +2,13 @@ package org.mythtv.mobfront.data;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import org.mythtv.mobfront.MyApplication;
+import org.mythtv.mobfront.ui.videolist.VideoListModel;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
@@ -98,7 +101,7 @@ public class AsyncBackendCall implements Runnable {
     private void runTasks() {
        tasks = new int[inTasks.length];
 //        BackendCache bCache = BackendCache.getInstance();
-//        Context context = MyApplication.getAppContext();
+        Context context = MyApplication.getAppContext();
 //        HttpURLConnection urlConnection = null;
         int videoIndex = 0;
         int taskIndex = -1;
@@ -166,6 +169,40 @@ public class AsyncBackendCall implements Runnable {
                         e.printStackTrace();
                     }
                     break;
+                case Action.SET_WATCHED:
+                    // This handles both set watched and set unwatched, depending on your setting for
+                    // watched. Defaults to true
+                    // Params: Boolean watched
+                    try {
+                        boolean watched;
+                        if (params instanceof Boolean)
+                            watched = (Boolean)((Boolean) params).booleanValue();
+                        else
+                            watched = true;
+                        int type;
+                        String urlString;
+                        if (isRecording) {
+                            // set recording watched
+                            urlString = XmlNode.mythApiUrl(video.hostname,
+                                    "/Dvr/UpdateRecordedWatchedStatus?RecordedId="
+                                            + video.recordedid + "&Watched=" + watched);
+                            type = VideoContract.VideoEntry.RECTYPE_RECORDING;
+                        }
+                        else {
+                            // set video watched
+                            urlString = XmlNode.mythApiUrl(video.hostname,
+                                    "/Video/UpdateVideoWatchedStatus?Id="
+                                            + video.recordedid + "&Watched=" + watched);
+                            type = VideoContract.VideoEntry.RECTYPE_VIDEO;
+                        }
+                        xmlResult = XmlNode.fetch(urlString, "POST");
+                        if (context != null)
+                            VideoListModel.getInstance().startFetch(type, video.recordedid, null);
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
             }
             xmlResults.add(xmlResult);
         }

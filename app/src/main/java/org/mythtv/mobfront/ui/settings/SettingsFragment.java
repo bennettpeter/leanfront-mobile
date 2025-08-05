@@ -98,8 +98,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public void onPause() {
-        if (reloadDB && VideoListModel.instance != null)
-            VideoListModel.instance.startFetch();
+        if (reloadDB && VideoListModel.getInstance() != null)
+            VideoListModel.getInstance().startFetch();
         reloadDB = false;
         isActive = false;
         super.onPause();
