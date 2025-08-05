@@ -1,8 +1,11 @@
 package org.mythtv.mobfront.ui.playback;
 
 import androidx.annotation.OptIn;
+import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -19,7 +22,9 @@ import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.datasource.HttpDataSource;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
+import androidx.media3.exoplayer.ExoPlaybackException;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 
@@ -36,6 +41,9 @@ import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.databinding.FragmentPlaybackBinding;
 import org.mythtv.mobfront.player.MyExtractorsFactory;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class PlaybackFragment extends Fragment {
@@ -58,6 +66,7 @@ public class PlaybackFragment extends Fragment {
         viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
         viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0l);
         viewModel.frameRate = intent.getDoubleExtra(PlaybackActivity.FRAMERATE, 30l);
+        setPlaySettings();
     }
 
     @Nullable
@@ -146,11 +155,22 @@ public class PlaybackFragment extends Fragment {
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (dsFactory, extFactory);
         ProgressiveMediaSource mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
+        mediaSource.setPossibleEmptyTrack(viewModel.possibleEmptyTrack);
         viewModel.player.setMediaSource(mediaSource, viewModel.bookmark);
         viewModel.player.prepare();
 //        if (viewModel.bookmark > 0)
 //            viewModel.player.seekTo(viewModel.bookmark);
         viewModel.player.play();
+        if (viewModel.executor != null)
+            viewModel.executor.shutdown();
+        viewModel.executor = Executors.newScheduledThreadPool(1);
+        viewModel.executor.scheduleWithFixedDelay(() -> {
+            if (viewModel.player.isPlaying()) {
+                viewModel.savedDuration = viewModel.player.getDuration();
+                viewModel.savedCurrentPosition = viewModel.player.getCurrentPosition();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+
 
 //        mSubtitles = getActivity().findViewById(R.id.leanback_subtitles);
 //        if (mSubtitles != null) {
@@ -229,13 +249,176 @@ public class PlaybackFragment extends Fragment {
         call.execute(Action.SET_BOOKMARK);
     }
 
+    public void markWatched(boolean watched) {
+//        mWatched = watched;
+//        AsyncBackendCall call = new AsyncBackendCall(getActivity(), this);
+//        call.setVideo(mVideo);
+//        call.setWatched(mWatched);
+//        call.execute(Video.ACTION_SET_WATCHED);
+    }
+
+    private void setPlaySettings() {
+//        viewModel.possibleEmptyTrack = "true".equals(Settings.getString("pref_poss_empty"));
+    }
+
     class PlayerEventListener implements Player.Listener {
+        private int mDialogStatus = 0;
+        private static final int DIALOG_NONE   = 0;
+        private static final int DIALOG_ACTIVE = 1;
+        private static final int DIALOG_EXIT   = 2;
+        private static final int DIALOG_RETRY  = 3;
+        private long mTimeLastError = 0;
 
         @Override
-        public void onPlayerError(@NonNull PlaybackException ex)
-        {
-            Log.e(TAG, CLASS + " Player Error ", ex);
-            Toast.makeText(getContext(), R.string.pberror_unexpected, Toast.LENGTH_LONG).show();
+        public void onPlayerError(@NonNull PlaybackException ex) {
+            handlePlayerError(ex, -1);
+        }
+
+        @OptIn(markerClass = UnstableApi.class)
+        private void handlePlayerError(Exception ex, int msgNum) {
+            Throwable cause = null;
+            if (ex != null)
+                Log.e(TAG, CLASS + " Player Error " + viewModel.video.title + " " + viewModel.video.videoUrl, ex);
+            long now = System.currentTimeMillis();
+            int recommendation = 0;
+            boolean setPossibleEmptyTrack = false;
+            if (ex != null && ex instanceof ExoPlaybackException) {
+                ExoPlaybackException error = (ExoPlaybackException)ex;
+                switch (error.type) {
+                    case ExoPlaybackException.TYPE_REMOTE:
+                        msgNum = R.string.pberror_remote;
+                        cause = null;
+                        break;
+                    case ExoPlaybackException.TYPE_RENDERER:
+                        msgNum = R.string.pberror_renderer;
+                        cause = error.getRendererException();
+                        // handle error caused by selecting an unsupported audio track
+                        if (cause instanceof MediaCodecRenderer.DecoderInitializationException) {
+                            String mimeType = ((MediaCodecRenderer.DecoderInitializationException) cause).mimeType;
+                            if (mimeType != null && mimeType.startsWith("audio")) {
+                                recommendation = R.string.pberror_recommend_audio;
+                            }
+                        }
+                        break;
+                    case ExoPlaybackException.TYPE_SOURCE:
+                        msgNum = R.string.pberror_source;
+                        cause = error.getSourceException();
+                        if (cause != null && cause.getMessage().startsWith("Unexpected ArrayIndexOutOfBoundsException")) {
+                            msgNum = R.string.pberror_extractor_array;
+                            break;
+                        }
+                        else
+                            setPossibleEmptyTrack = true;
+                        break;
+                    case ExoPlaybackException.TYPE_UNEXPECTED:
+                        msgNum = R.string.pberror_unexpected;
+                        cause = error.getUnexpectedException();
+//                        if (mPlayerGlue.getSavedCurrentPosition() < 200
+                        if (viewModel.savedCurrentPosition < 200
+                                && "Playback stuck buffering and not loading".equals(cause.getMessage()))
+                            setPossibleEmptyTrack = true;
+                        // this error comes from fire stick 4k when selecting an mpeg level l2 audio track
+                        if ("Multiple renderer media clocks enabled.".equals(cause.getMessage()))
+                            recommendation = R.string.pberror_recommend_ffmpeg;
+                        break;
+                    default:
+                        msgNum = R.string.pberror_default;
+                        cause = null;
+                        break;
+                }
+            }
+
+            Context context = getContext();
+            if (context != null) {
+                StringBuilder msg = new StringBuilder();
+                if (msgNum > -1)
+                    msg.append(context.getString(msgNum));
+                if (ex != null)
+                    msg.append("\n").append(ex.getMessage());
+                String alertMsg = msg.toString();
+                if (cause != null)
+                    msg.append("\n").append(cause.getMessage());
+                Log.e(TAG, CLASS + " Player Error " + msg);
+                // if we are near the start or end
+                long currPos = viewModel.savedCurrentPosition;
+                long duration = viewModel.savedDuration;
+                boolean failAtStart = duration <= 0 || currPos <= 0;
+                boolean failAtEnd = !failAtStart && Math.abs(duration - currPos) < 10000;
+                if (mDialogStatus == DIALOG_NONE) {
+                    // If there has been over 30 seconds since last error report
+                    // try to recover from error by playing on.
+                    if (failAtEnd
+                            || mTimeLastError < now - 30000 ) {
+                        if ("true".equals(Settings.getString("pref_error_toast"))) {
+                            Toast.makeText(getActivity(),
+                                    getActivity().getString(msgNum),
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                        // if we are at the end - just end playback
+                        if (failAtEnd)
+                            markWatched(true);
+                        else {
+                            // Try to continue playback
+                            if (currPos > 0)
+                                viewModel.bookmark = currPos;
+                            if (setPossibleEmptyTrack && !viewModel.possibleEmptyTrack) {
+                                viewModel.possibleEmptyTrack = true;
+//                                Toast.makeText(getActivity(),
+//                                        getActivity().getString(R.string.pberror_recommend_ignoreextra),
+//                                        Toast.LENGTH_LONG)
+//                                        .show();
+                                viewModel.player.stop();
+                                initializePlayer(true);
+                            }
+                            else
+                                initializePlayer(true);
+                        }
+                        mTimeLastError = now;
+                    }
+                    else {
+                        // More than 1 error per 30 seconds.
+                        // Alert message for user to decide on continuing.
+                        AlertDialogListener listener = new AlertDialogListener();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//                                R.style.Theme_AppCompat_Dialog_Alert);
+                        builder.setTitle(R.string.pberror_title);
+                        if (recommendation > 0)
+                            builder.setMessage(recommendation);
+                        else
+                            builder.setMessage(alertMsg);
+                        // add a button
+                        builder.setPositiveButton(R.string.pberror_button_continue, listener);
+                        builder.setNegativeButton(R.string.pberror_button_exit, listener);
+                        builder.setOnDismissListener(
+                                dialog -> {
+                                    if (mDialogStatus != DIALOG_RETRY)
+                                        getActivity().finish();
+                                    mDialogStatus = DIALOG_NONE;
+                                });
+                        builder.show();
+                        mDialogStatus = DIALOG_ACTIVE;
+                        mTimeLastError = 0;
+                    }
+                }
+            }
+
+        }
+
+        class AlertDialogListener implements DialogInterface.OnClickListener {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        mDialogStatus = DIALOG_RETRY;
+                        viewModel.bookmark = viewModel.savedCurrentPosition;
+                        initializePlayer(true);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        mDialogStatus = DIALOG_EXIT;
+                        break;
+                }
+            }
         }
 
     }

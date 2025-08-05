@@ -22,7 +22,21 @@
     <string name="msg_no_delayshutdown">Warning: Unable to prevent backend idle shutdown.</string>
     <string name="msg_backend_login_req">Error: Backend Requires Valid User Name and Password.</string>
     <string name="msg_wake_backend">No backend connection, sent wake-up message.</string>
+    <string name="pberror_title">Playback Failed.</string>
+    <string name="pberror_remote">Error occurred in a remote component.</string>
+    <string name="pberror_renderer">Error occurred in a Renderer.</string>
+    <string name="pberror_source">Error loading data from the MediaSource.</string>
     <string name="pberror_unexpected">Unexpected Runtime Exception</string>
+    <string name="pberror_default">Unknown error.</string>
+    <string name="pberror_file_length_fail">Unable to obtain file length.</string>
+    <string name="pberror_recommend_ffmpeg">To play this track: In leanfront Settings -&gt; Audio
+        Decode, select FFmpeg.</string>
+    <string name="pberror_recommend_audio">Unsupported Audio: In leanfront Settings -&gt; Audio Decode,
+        select Auto or FFmpeg or else change your Android audio settings.</string>
+    <string name="pberror_recommend_ignoreextra">Malformed file: In leanfront Settings -&gt; Playback Group -> set Ignore Extra Track.</string>
+    <string name="pberror_extractor_array">Error: OutOfBoundsException in BundledExtractorsAdapter.</string>
+    <string name="pberror_button_continue">Continue</string>
+    <string name="pberror_button_exit">Exit</string>
 
 
     <!-- Words to exclude from the start titles when sorting.
@@ -52,6 +66,7 @@
     <string name="pref_audio_ffmpeg_desc">Most types of audio, surround sound plays as stereo.</string>
     <string name="pref_title_skip_fwd">Skip Forward Seconds</string>
     <string name="pref_title_skip_back">Skip Back Seconds</string>
+    <string name="pref_poss_empty">Ignore Extra Track</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
@@ -60,6 +75,7 @@
     <string name="sdef_skip_fwd" translatable="false">60</string>
     <string name="sdef_skip_back" translatable="false">10</string>
     <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>
+    <string name="sdef_poss_empty" translatable="false">false</string>
 
 
 </resources>
