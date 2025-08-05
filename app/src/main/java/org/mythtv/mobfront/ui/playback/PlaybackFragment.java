@@ -88,12 +88,14 @@ public class PlaybackFragment extends Fragment {
         super.onStart();
         if (Build.VERSION.SDK_INT > 23) {
             initializePlayer(true);
+            viewModel.maybePlaying = true;
         }
     }
     public void onResume() {
         super.onResume();
         if ((Build.VERSION.SDK_INT <= 23 || viewModel.player == null)) {
             initializePlayer(true);
+            viewModel.maybePlaying = true;
         }
         hideNavigation();
     }
@@ -104,6 +106,7 @@ public class PlaybackFragment extends Fragment {
         if (Build.VERSION.SDK_INT <= 23) {
             if (binding.playerView != null) {
                 binding.playerView.onPause();
+                viewModel.maybePlaying = false;
             }
             setBookmark();
             releasePlayer();
@@ -116,6 +119,7 @@ public class PlaybackFragment extends Fragment {
         if (Build.VERSION.SDK_INT > 23) {
             if (binding.playerView != null) {
                 binding.playerView.onPause();
+                viewModel.maybePlaying = false;
             }
             setBookmark();
             releasePlayer();
@@ -177,7 +181,7 @@ public class PlaybackFragment extends Fragment {
         @Override
         public void run() {
             try {
-                if (viewModel.player.isPlaying()) {
+                if (viewModel.maybePlaying && viewModel.player != null) {
                     viewModel.savedDuration = viewModel.player.getDuration();
                     viewModel.savedCurrentPosition = viewModel.player.getCurrentPosition();
                     handler.postDelayed(this,1000);

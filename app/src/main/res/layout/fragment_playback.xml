@@ -5,6 +5,7 @@
     android:id="@+id/playback"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".ui.playback.PlaybackFragment">
 
     <androidx.media3.ui.PlayerView

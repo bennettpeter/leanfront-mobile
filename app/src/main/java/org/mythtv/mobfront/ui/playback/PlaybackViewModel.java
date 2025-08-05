@@ -16,5 +16,6 @@ public class PlaybackViewModel extends ViewModel {
     long savedCurrentPosition;
     long savedDuration;
     boolean possibleEmptyTrack;
+    boolean maybePlaying;
 
 }
