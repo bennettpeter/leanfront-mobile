@@ -2,6 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+task gitinfo {
+    ext.describe = 'git describe --dirty'.execute().text.trim()
+    def split = ext.describe.split("-")
+    ext.version = Integer.parseInt(split[0].substring(1)) * 1000 + Integer.parseInt(split[1])
+    ext.versionName = ext.describe
+    println "Version Name: " + ext.versionName + ", Version Code: " + ext.version
+}
+
 android {
     namespace 'org.mythtv.mobfront'
     compileSdk 35
@@ -10,8 +18,8 @@ android {
         applicationId "org.mythtv.mobfront"
         minSdk 21
         targetSdk 35
-        versionCode 1
-        versionName "1.0"
+        versionCode gitinfo.ext.version
+        versionName gitinfo.ext.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -20,6 +28,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            debuggable false
+            ndk {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
+        }
+        debug {
+            minifyEnabled false
+            ndk {
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
         }
     }
     compileOptions {
