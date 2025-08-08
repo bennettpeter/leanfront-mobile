@@ -13,6 +13,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@tools:sample/avatars" />
+
+    <ImageView
+        android:id="@+id/play_icon"
+        android:layout_width="@dimen/item_transform_image_length"
+        android:layout_height="@dimen/item_transform_image_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/play_arrow" />
+
     <!--    android:layout_margin="8dp"-->
 
     <!--    android:layout_width="@dimen/item_transform_image_length"-->

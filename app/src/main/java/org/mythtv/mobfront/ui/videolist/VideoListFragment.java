@@ -390,32 +390,43 @@ public class VideoListFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull VideoListViewHolder holder, int position) {
             Video video = getItem(position);
-            if (video.type == Video.TYPE_SERIES)
+            if (video.type == Video.TYPE_SERIES) {
                 holder.textView.setText(video.title);
+                holder.playIconView.setVisibility(View.INVISIBLE);
+            }
             else if (video.type == Video.TYPE_EPISODE) {
                 holder.textView.setText(getEpisodeSubtitle(video));
+                holder.playIconView.setVisibility(View.VISIBLE);
             }
             else if (video.type == Video.TYPE_VIDEO) {
                 holder.textView.setText(getEpisodeSubtitle(video));
+                holder.playIconView.setVisibility(View.VISIBLE);
             }
             else if (video.type == Video.TYPE_VIDEODIR) {
                 holder.textView.setText(video.title);
+                holder.playIconView.setVisibility(View.INVISIBLE);
             }
-            else
+            else {
                 holder.textView.setText(String.valueOf(video.type));
+                holder.playIconView.setVisibility(View.INVISIBLE);
+            }
 
             if (video.type == Video.TYPE_VIDEODIR) {
                 holder.imageView.setImageResource(R.drawable.ic_folder_24px);
             }
             else {
-
                 String imageUrl = video.cardImageUrl;
                 if (imageUrl == null) {
-                    holder.imageView.setImageResource(R.drawable.ic_movie_24px);
+                    if (video.type == Video.TYPE_SERIES)
+                        holder.imageView.setImageResource(R.drawable.ic_movie_24px);
+                    else
+                        holder.imageView.setImageDrawable(null);
+
                 }
                 else {
-                    RequestOptions options = new RequestOptions()
-                            .error(R.drawable.ic_movie_24px);
+                    RequestOptions options = new RequestOptions();
+                    if (video.type == Video.TYPE_SERIES)
+                        options.error(R.drawable.ic_movie_24px);
 
                     String auth =  BackendCache.getInstance().authorization;
                     LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
@@ -443,12 +454,14 @@ public class VideoListFragment extends Fragment {
         private final ImageView imageView;
         private final TextView textView;
         private final TextView optionsView;
+        private final ImageView playIconView;
 
         public VideoListViewHolder(ItemVideolistBinding binding, VideoListFragment fragment) {
             super(binding.getRoot());
             imageView = binding.imageViewItemVideolist;
             textView = binding.textViewItemVideolist;
             optionsView = binding.itemOptions;
+            playIconView = binding.playIcon;
 //            binding.getRoot().setOnClickListener( (view) ->  {
             imageView.setOnClickListener((View v) -> {
                 // If this does not work try getAbsoluteAdapterPosition

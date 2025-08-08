@@ -15,6 +15,17 @@
         tools:src="@tools:sample/avatars" />
     <!--    android:layout_margin="8dp"-->
 
+
+    <ImageView
+        android:id="@+id/play_icon"
+        android:layout_width="@dimen/item_transform_image_length"
+        android:layout_height="@dimen/item_transform_image_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/play_arrow" />
+
+
     <TextView
         android:id="@+id/text_view_item_videolist"
         android:layout_width="284dp"
