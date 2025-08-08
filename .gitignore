@@ -1,15 +1,58 @@
+
+# Android generated
+bin
+gen
+libs
+obj
+lint.xml
+.kotlin
+
+# IntelliJ IDEA
+.idea
 *.iml
+*.ipr
+*.iws
+classes
+gen-external-apklibs
+
+# Eclipse
+.project
+.classpath
+.settings
+.checkstyle
+.cproject
+
+# Gradle
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+build
+buildout
+out
+
+# Maven
+target
+release.properties
+pom.xml.*
+
+# Ant
+ant.properties
+local.properties
+proguard.cfg
+proguard-project.txt
+
+# Bazel
+bazel-bin
+bazel-genfiles
+bazel-out
+bazel-testlogs
+
+# Other
 .DS_Store
-/build
-/captures
+cmake-build-debug
+dist
+jacoco.exec
+tmp
+
+# External native builds
 .externalNativeBuild
 .cxx
-local.properties
+
