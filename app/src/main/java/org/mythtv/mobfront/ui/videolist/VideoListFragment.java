@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,12 +58,12 @@ import java.util.Objects;
  */
 public class VideoListFragment extends Fragment {
     private static final String TAG = "mfe";
-    private static final String CLASS = "FetchVideos";
-
+    private static final String CLASS = "VideoListFragment";
     private FragmentVideolistBinding binding;
     private VideoListModel videoListModel;
     private MenuProvider menuProvider;
     private ArrayList <Video> videoList = new ArrayList<>();
+    private int orientation;
 
 
     @Override
@@ -91,6 +93,8 @@ public class VideoListFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        orientation = requireActivity().getResources().getConfiguration().orientation;
 
         videoListModel =
                 new ViewModelProvider(this).get(VideoListModel.class);
@@ -140,7 +144,6 @@ public class VideoListFragment extends Fragment {
                     refresh();
                     return true;
                 } else if (id == android.R.id.home) {
-                    int orientation = requireActivity().getResources().getConfiguration().orientation;
                     if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                         requireActivity().getOnBackPressedDispatcher().onBackPressed();
                         return true;
@@ -160,7 +163,6 @@ public class VideoListFragment extends Fragment {
     void refresh() {
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         bar.setSubtitle(videoListModel.title);
-        int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             if ((videoListModel.pageType == VideoListModel.TYPE_SERIES
             || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
@@ -211,7 +213,7 @@ public class VideoListFragment extends Fragment {
             refresh();
         }
         else if (videoListModel.pageType == VideoListModel.TYPE_SERIES) {
-            play(videoList.get(position));
+            play(videoList.get(position), true);
         }
         else if (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR) {
             if (videoList.get(position).type == Video.TYPE_VIDEODIR) {
@@ -219,13 +221,73 @@ public class VideoListFragment extends Fragment {
                 refresh();
             }
             else if (videoList.get(position).type == Video.TYPE_VIDEO) {
-                play(videoList.get(position));
+                play(videoList.get(position), true);
             }
         }
     }
 
+    private void onItemMore(View v, int position) {
+        Video video = videoList.get(position);
+        int progflags = Integer.parseInt(video.progflags);
+        boolean watched = ((progflags & Video.FL_WATCHED) != 0);
+        AsyncBackendCall call = new AsyncBackendCall(getActivity(),
+            taskRunner -> {
+                long [] bookmark = (long[])taskRunner.response;
+                if (bookmark[0] == -1 && bookmark[1] == -1) {
+                    Toast.makeText(getContext(), R.string.msg_no_connection,Toast.LENGTH_LONG).show();
+                    return;
+                }
+                PopupMenu popup = new PopupMenu(getContext(), v);
+                Menu menu = popup.getMenu();
+                int ix = 0;
+                if (bookmark[0] > 0 || bookmark[1] > 0) {
+                    menu.add(Menu.NONE, Action.PLAY_FROM_LASTPOS, ix++, R.string.resume_last);
+                    menu.add(Menu.NONE, Action.REMOVE_LASTPLAYPOS, ix++, R.string.menu_remove_lastplaypos);
+                }
+                menu.add(Menu.NONE, Action.PLAY, ix++, R.string.play);
+                if (watched)
+                    menu.add(Menu.NONE, Action.SET_UNWATCHED, ix++, R.string.menu_mark_unwatched);
+                else
+                    menu.add(Menu.NONE, Action.SET_WATCHED, ix++, R.string.menu_mark_watched);
+                if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING) {
+                    if ("Deleted".equals(video.recGroup))
+                        menu.add(Menu.NONE, Action.UNDELETE, ix++, R.string.menu_undelete);
+                    else {
+                        menu.add(Menu.NONE, Action.DELETE_AND_RERECORD, ix++, R.string.menu_delete_rerecord);
+                        menu.add(Menu.NONE, Action.ALLOW_RERECORD, ix++, R.string.menu_rerecord);
+                    }
+                }
+                popup.setOnMenuItemClickListener( (MenuItem item) -> {
+                    switch (item.getItemId()) {
+                        case Action.PLAY_FROM_LASTPOS:
+                            play((video),true);
+                            return true;
+                        case Action.PLAY:
+                            play((video),false);
+                            return true;
+                        case Action.REMOVE_LASTPLAYPOS:
+                        case Action.SET_UNWATCHED:
+                        case Action.SET_WATCHED:
+                        case Action.UNDELETE:
+                        case Action.DELETE:
+                        case Action.DELETE_AND_RERECORD:
+                        case Action.ALLOW_RERECORD:
+                            AsyncBackendCall call2 = new AsyncBackendCall(getActivity(),null);
+                            call2.videos.add(video);
+                            call2.execute(item.getItemId());
+                            return true;
+                    }
+                    return false;
+                });
+                popup.show();
+            });
+        call.videos.add(video);
+        call.execute(Action.GET_BOOKMARK);
+
+    }
+
 //    static final String [] XMLTAGS_VIDEO_INFO = {"VideoStreamInfos","VideoStreamInfo"};
-    private void play(Video video) {
+    private void play(Video video, boolean fromBookmark) {
         AsyncBackendCall call = new AsyncBackendCall(getActivity(),
                 taskRunner -> {
             long [] bookmark = (long[])taskRunner.response;
@@ -237,12 +299,16 @@ public class VideoListFragment extends Fragment {
             double frameRate = 0.0;
             double avgFrameRate = 0.0;
             if (streamInfo != null) {
-                XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
-                vsi = vsi.getNode("VideoStreamInfo");
-                while (vsi != null && !"V".equals(vsi.getString("CodecType")))
-                    vsi = vsi.getNextSibling();
-                frameRate = Double.valueOf(vsi.getString("FrameRate"));
-                avgFrameRate = Double.valueOf(vsi.getString("AvgFrameRate"));
+                try {
+                    XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
+                    vsi = vsi.getNode("VideoStreamInfo");
+                    while (vsi != null && !"V".equals(vsi.getString("CodecType")))
+                        vsi = vsi.getNextSibling();
+                    frameRate = Double.valueOf(vsi.getString("FrameRate"));
+                    avgFrameRate = Double.valueOf(vsi.getString("AvgFrameRate"));
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
             }
             if (frameRate == 0.0)
                 frameRate = avgFrameRate;
@@ -252,6 +318,8 @@ public class VideoListFragment extends Fragment {
                 // Need to convert pos bookmark
                 bookmark[0] = bookmark[1] * 100000 / (long) (frameRate * 100.0f);
             }
+            if (!fromBookmark)
+                bookmark[0] = 0;
             Activity activity = getActivity();
             Intent intent = new Intent(activity, PlaybackActivity.class);
             intent.putExtra(PlaybackActivity.VIDEO, video);
@@ -361,6 +429,12 @@ public class VideoListFragment extends Fragment {
                             .into(holder.imageView);
                 }
             }
+            if (video.type == Video.TYPE_VIDEO
+                || video.type == Video.TYPE_EPISODE)
+                holder.optionsView.setVisibility(View.VISIBLE);
+            else
+                holder.optionsView.setVisibility(View.INVISIBLE);
+
         }
     }
 
@@ -368,14 +442,26 @@ public class VideoListFragment extends Fragment {
 
         private final ImageView imageView;
         private final TextView textView;
+        private final TextView optionsView;
 
         public VideoListViewHolder(ItemVideolistBinding binding, VideoListFragment fragment) {
             super(binding.getRoot());
             imageView = binding.imageViewItemVideolist;
             textView = binding.textViewItemVideolist;
-            binding.getRoot().setOnClickListener( (view) ->  {
+            optionsView = binding.itemOptions;
+//            binding.getRoot().setOnClickListener( (view) ->  {
+            imageView.setOnClickListener((View v) -> {
                 // If this does not work try getAbsoluteAdapterPosition
-                fragment.onItemClick( getBindingAdapterPosition() );
+                fragment.onItemClick(getBindingAdapterPosition());
+            });
+            optionsView.setOnClickListener((View v) -> {
+                fragment.onItemMore(v, getBindingAdapterPosition());
+            });
+            textView.setOnClickListener((View v) -> {
+                if (fragment.orientation == Configuration.ORIENTATION_PORTRAIT)
+                    imageView.performClick();
+                else
+                    optionsView.performClick();
             });
         }
     }

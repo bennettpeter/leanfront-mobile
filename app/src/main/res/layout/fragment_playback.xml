@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
+    android:background="@color/black"
     tools:context=".ui.playback.PlaybackFragment">
 
     <androidx.media3.ui.PlayerView
@@ -14,6 +15,7 @@
         android:layout_height="wrap_content"
         app:show_buffering="always"
         app:show_subtitle_button="true"
+        android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

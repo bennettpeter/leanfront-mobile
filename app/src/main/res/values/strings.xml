@@ -79,5 +79,15 @@
     <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>
     <string name="sdef_poss_empty" translatable="false">false</string>
 
+    <string name="resume_last">Play from last play position</string>
+    <string name="play">Play from start</string>
+    <string name="menu_mark_unwatched">Mark as Unwatched</string>
+    <string name="menu_mark_watched">Mark as Watched</string>
+    <string name="menu_undelete">Undelete</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_remove_lastplaypos">Remove Last Play Position</string>
+    <string name="menu_delete_rerecord">Delete and Allow Rerecord</string>
+    <string name="menu_rerecord">Allow Rerecord</string>
+
 
 </resources>

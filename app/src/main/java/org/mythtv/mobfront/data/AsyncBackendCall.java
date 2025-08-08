@@ -109,6 +109,7 @@ public class AsyncBackendCall implements Runnable {
 
         for (; ; ) {
             boolean doGetOnly = false;
+            boolean allowRerecord = false;
             // If there is a rowAdapter, take each video in the adapter and run
             // all tasks on it.
             taskIndex++;
@@ -136,6 +137,7 @@ public class AsyncBackendCall implements Runnable {
             int task = inTasks[taskIndex];
             tasks[taskIndex] = task;
             XmlNode xmlResult = null;
+            boolean watched = false;
             switch (task) {
                 case Action.GET_BOOKMARK:
                     //Response is long[2], bookmark and posbookmark
@@ -147,8 +149,10 @@ public class AsyncBackendCall implements Runnable {
                     }
                     break;
                 case Action.REMOVE_BOOKMARK:
+                case Action.REMOVE_LASTPLAYPOS:
                     params = new long[] {0,0};
                 case Action.SET_BOOKMARK:
+                case Action.SET_LASTPLAYPOS:
                     //Params are is long[2], bookmark and posbookmark
                     //Result in xmlResult
                     try {
@@ -170,15 +174,10 @@ public class AsyncBackendCall implements Runnable {
                     }
                     break;
                 case Action.SET_WATCHED:
-                    // This handles both set watched and set unwatched, depending on your setting for
-                    // watched. Defaults to true
-                    // Params: Boolean watched
+                    watched = true;
+                case Action.SET_UNWATCHED:
+                    // This handles both set watched and set unwatched,
                     try {
-                        boolean watched;
-                        if (params instanceof Boolean)
-                            watched = (Boolean)((Boolean) params).booleanValue();
-                        else
-                            watched = true;
                         int type;
                         String urlString;
                         if (isRecording) {
@@ -198,6 +197,54 @@ public class AsyncBackendCall implements Runnable {
                         xmlResult = XmlNode.fetch(urlString, "POST");
                         if (context != null)
                             VideoListModel.getInstance().startFetch(type, video.recordedid, null);
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case Action.DELETE_AND_RERECORD:
+                    allowRerecord = true;
+                case Action.DELETE:
+                    // Delete recording
+                    // If already deleted do not delete again.
+                    if (!isRecording || "Deleted".equals(video.recGroup))
+                        break;
+                    try {
+                        String urlString = XmlNode.mythApiUrl(video.hostname,
+                                "/Dvr/DeleteRecording?RecordedId="
+                                        + video.recordedid
+                                        + "&AllowRerecord=" + allowRerecord);
+                        xmlResult = XmlNode.fetch(urlString, "POST");
+                        if (context != null)
+                            VideoListModel.getInstance().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
+                                    video.recordedid, null);
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case Action.UNDELETE:
+                    // UnDelete recording
+                    if (!isRecording)
+                        break;
+                    try {
+                        String urlString = XmlNode.mythApiUrl(video.hostname,
+                                "/Dvr/UnDeleteRecording?RecordedId="
+                                        + video.recordedid);
+                        xmlResult = XmlNode.fetch(urlString, "POST");
+                        if (context != null)
+                            VideoListModel.getInstance().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
+                                    video.recordedid, null);
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case Action.ALLOW_RERECORD:
+                    if (!isRecording)
+                        break;
+                    try {
+                        String urlString = XmlNode.mythApiUrl(video.hostname,
+                                "/Dvr/AllowReRecord?RecordedId="
+                                        + video.recordedid);
+                        xmlResult = XmlNode.fetch(urlString, "POST");
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }

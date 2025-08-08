@@ -37,7 +37,7 @@
             android:key="pref_backend_mac"
             android:title="@string/pref_title_backend_mac"
             app:useSimpleSummaryProvider="true"
-            android:dialogTitle="@string/pref_title_backend_userid"
+            android:dialogTitle="@string/pref_title_backend_mac"
             android:defaultValue=""/>
 
         <EditTextPreference

@@ -15,15 +15,31 @@
         tools:src="@tools:sample/avatars" />
     <!--    android:layout_margin="8dp"-->
 
+    <!--    android:layout_width="@dimen/item_transform_image_length"-->
+
     <TextView
         android:id="@+id/text_view_item_videolist"
-        android:layout_width="@dimen/item_transform_image_length"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_width="124dp"
         android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@id/image_view_item_videolist"
+        app:layout_constraintEnd_toStartOf="@id/item_options"
         app:layout_constraintStart_toStartOf="@id/image_view_item_videolist"
         app:layout_constraintTop_toBottomOf="@id/image_view_item_videolist"
         tools:text="This is item # xx" />
+
+    <TextView
+        android:id="@+id/item_options"
+        android:layout_width="16dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_view_item_videolist"
+        app:layout_constraintStart_toEndOf="@id/text_view_item_videolist"
+        app:layout_constraintEnd_toEndOf="@id/image_view_item_videolist"
+        android:gravity="center"
+        android:text="&#8942;"
+        android:textAppearance="?android:textAppearanceLarge" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
