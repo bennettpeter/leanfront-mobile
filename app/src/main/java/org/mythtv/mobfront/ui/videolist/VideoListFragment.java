@@ -228,6 +228,11 @@ public class VideoListFragment extends Fragment {
 
     private void onItemMore(View v, int position) {
         Video video = videoList.get(position);
+        if (video.rectype != VideoContract.VideoEntry.RECTYPE_RECORDING
+            && video.rectype != VideoContract.VideoEntry.RECTYPE_VIDEO) {
+            onItemClick(position);
+            return;
+        }
         int progflags = Integer.parseInt(video.progflags);
         boolean watched = ((progflags & Video.FL_WATCHED) != 0);
         AsyncBackendCall call = new AsyncBackendCall(getActivity(),
@@ -296,16 +301,16 @@ public class VideoListFragment extends Fragment {
                 return;
             }
             XmlNode streamInfo = taskRunner.getXmlResult();
-            double frameRate = 0.0;
-            double avgFrameRate = 0.0;
+            float frameRate = 0.0f;
+            float avgFrameRate = 0.0f;
             if (streamInfo != null) {
                 try {
                     XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
                     vsi = vsi.getNode("VideoStreamInfo");
                     while (vsi != null && !"V".equals(vsi.getString("CodecType")))
                         vsi = vsi.getNextSibling();
-                    frameRate = Double.valueOf(vsi.getString("FrameRate"));
-                    avgFrameRate = Double.valueOf(vsi.getString("AvgFrameRate"));
+                    frameRate = Float.parseFloat(vsi.getString("FrameRate"));
+                    avgFrameRate = Float.parseFloat(vsi.getString("AvgFrameRate"));
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
@@ -313,20 +318,20 @@ public class VideoListFragment extends Fragment {
             if (frameRate == 0.0)
                 frameRate = avgFrameRate;
             if (frameRate == 0.0)
-                frameRate = 30.0;
+                frameRate = 30.0f;
             if (bookmark[0] <= 0 && bookmark[1] > 0) {
                 // Need to convert pos bookmark
                 bookmark[0] = bookmark[1] * 100000 / (long) (frameRate * 100.0f);
             }
             if (!fromBookmark)
                 bookmark[0] = 0;
+            if (bookmark[0] < 100)
+                bookmark[0] = 100;
             Activity activity = getActivity();
             Intent intent = new Intent(activity, PlaybackActivity.class);
             intent.putExtra(PlaybackActivity.VIDEO, video);
-//            intent.putExtra(PlaybackActivity.VIDEO, taskRunner.getVideo());
             intent.putExtra(PlaybackActivity.BOOKMARK, bookmark[0]);
             intent.putExtra(PlaybackActivity.FRAMERATE, frameRate);
-//                intent.putExtra(PlaybackActivity.POSBOOKMARK, bookmark[1]);
             activity.startActivity(intent);
 
         });

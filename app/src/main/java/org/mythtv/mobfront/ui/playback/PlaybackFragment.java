@@ -70,7 +70,7 @@ public class PlaybackFragment extends Fragment {
         Intent intent =  getActivity().getIntent();
         viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
         viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0l);
-        viewModel.frameRate = intent.getDoubleExtra(PlaybackActivity.FRAMERATE, 30l);
+        viewModel.frameRate = intent.getFloatExtra(PlaybackActivity.FRAMERATE, 30f);
         setPlaySettings();
     }
 
@@ -153,6 +153,7 @@ public class PlaybackFragment extends Fragment {
         builder.setSeekForwardIncrementMs(seekFwd);
         viewModel.player = builder.build();
         binding.playerView.setPlayer(viewModel.player);
+        binding.playerView.setSizeGetter(viewModel);
         PlayerEventListener playerEventListener = new PlayerEventListener();
         viewModel.player.addListener(playerEventListener);
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
@@ -419,7 +420,6 @@ public class PlaybackFragment extends Fragment {
                     }
                 }
             }
-
         }
 
         class AlertDialogListener implements DialogInterface.OnClickListener {
