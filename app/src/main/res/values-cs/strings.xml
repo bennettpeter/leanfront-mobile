@@ -33,6 +33,9 @@
   <string name="title_comm_playing">Komerční nebo řezané hraní</string>
   <string name="menu_comm_skip">Přeskočit</string>
   <string name="menu_comm_notskip">Nevynechávejte</string>
+  <string name="sort_exclude_1">THE</string>
+  <string name="sort_exclude_2">A</string>
+  <string name="sort_exclude_3">AN</string>
   <string name="title_commskip">Komerční nebo řezané přeskočení</string>
   <string name="menu_commskip_off">Vypnuto</string>
   <string name="menu_commskip_notify">Oznámit</string>

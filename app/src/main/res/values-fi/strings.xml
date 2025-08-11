@@ -33,6 +33,9 @@
   <string name="title_comm_playing">Kaupallinen tai leikattu pelaaminen</string>
   <string name="menu_comm_skip">Hypätä</string>
   <string name="menu_comm_notskip">Älä ohita</string>
+  <string name="sort_exclude_1">SE</string>
+  <string name="sort_exclude_2">ERÄS</string>
+  <string name="sort_exclude_3">YKSI</string>
   <string name="title_commskip">Kaupallinen tai leikkaus</string>
   <string name="menu_commskip_off">Pois</string>
   <string name="menu_commskip_notify">Ilmoittaa</string>

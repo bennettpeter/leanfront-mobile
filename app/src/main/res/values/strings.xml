@@ -40,9 +40,9 @@
 
     <!-- Words to exclude from the start titles when sorting.
     Must be in UPPER CASE-->
-<!--    <string name="sort_exclude_1">THE</string>-->
-<!--    <string name="sort_exclude_2">A</string>-->
-<!--    <string name="sort_exclude_3">AN</string>-->
+    <string name="sort_exclude_1">THE</string>
+    <string name="sort_exclude_2">A</string>
+    <string name="sort_exclude_3">AN</string>
     <!--    Settings-->
 
     <string name="title_commskip">Commercial or Cut Skip</string>
