@@ -80,6 +80,27 @@
             android:dialogTitle="@string/pref_title_skip_back"
             android:defaultValue="10"/>
 
+        <DropDownPreference
+            android:key="pref_commskip"
+            android:title="@string/title_commskip"
+            android:entries="@array/commskip_pref_entries"
+            app:useSimpleSummaryProvider="true"
+            android:entryValues="@array/commskip_values"/>
+
+        <EditTextPreference
+            android:key="pref_commskip_start"
+            android:title="@string/pref_commskip_start"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_commskip_start"
+            android:defaultValue="0"/>
+
+        <EditTextPreference
+            android:key="pref_commskip_end"
+            android:title="@string/pref_commskip_end"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_commskip_end"
+            android:defaultValue="0"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

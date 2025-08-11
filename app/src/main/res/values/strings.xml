@@ -38,6 +38,10 @@
     <string name="pberror_button_continue">Continue</string>
     <string name="pberror_button_exit">Exit</string>
 
+    <string name="title_comm_playing">Commercial or Cut Playing</string>
+    <string name="menu_comm_skip">Skip</string>
+    <string name="menu_comm_notskip">Do not Skip</string>
+
 
     <!-- Words to exclude from the start titles when sorting.
     Must be in UPPER CASE-->
@@ -45,6 +49,15 @@
     <string name="sort_exclude_2">A</string>
     <string name="sort_exclude_3">AN</string>
     <!--    Settings-->
+
+    <string name="title_commskip">Commercial or Cut Skip</string>
+    <string name="menu_commskip_off">Off</string>
+    <string name="menu_commskip_notify">Notify</string>
+    <string name="menu_commskip_skip">Automatically Skip</string>
+    <string name="pref_commskip_start">Start Position Adjustment (seconds)</string>
+    <string name="pref_commskip_end">End Position Adjustment (seconds)</string>
+
+    <string name="msg_commskip_skipped">Commercial Break Skipped.</string>
 
     <string name="pref_title_backend_ip">IP Address or DNS name</string>
     <string name="pref_title_backend">MythTV Backend</string>
@@ -78,6 +91,11 @@
     <string name="sdef_skip_back" translatable="false">10</string>
     <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>
     <string name="sdef_poss_empty" translatable="false">false</string>
+    <!-- 0=off, 1=notify, 2=skip   -->
+    <string name="sdef_commskip" translatable="false">0</string>
+    <!--  Number of seconds to add to start or end times  -->
+    <string name="sdef_commskip_start" translatable="false">0</string>
+    <string name="sdef_commskip_end" translatable="false">0</string>
 
     <string name="resume_last">Play from last play position</string>
     <string name="play">Play from start</string>

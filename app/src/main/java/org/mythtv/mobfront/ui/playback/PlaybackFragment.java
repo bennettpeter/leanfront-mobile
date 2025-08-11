@@ -4,10 +4,14 @@ import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -28,12 +32,13 @@ import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.mythtv.mobfront.R;
@@ -50,13 +55,15 @@ public class PlaybackFragment extends Fragment {
 
     private PlaybackViewModel viewModel;
     private FragmentPlaybackBinding binding;
-    private String prefAudio = Settings.getString("pref_audio");
-    private String prefVideo = Settings.getString("pref_video");
+    private final String prefAudio = Settings.getString("pref_audio");
+    private final String prefVideo = Settings.getString("pref_video");
+
     static final String TAG = "mfe";
     static final String CLASS = "PlaybackFragment";
-    Handler handler = new Handler(Looper.getMainLooper());
-    Updater updater = new Updater();
     private long mTimeLastError = 0;
+    AlertDialog dialog;
+    private DialogDismiss dialogDismiss = new DialogDismiss();
+
 
 
     public static PlaybackFragment newInstance() {
@@ -80,8 +87,90 @@ public class PlaybackFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentPlaybackBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        viewModel.commSkipToast.observe(getViewLifecycleOwner(), (Integer mark) -> {
+            commskipToast(mark);
+        });
+        viewModel.commBreakDlg.observe(getViewLifecycleOwner(), (Long newPosition) -> {
+            commBreakDlg(newPosition);
+        });
         return root;
     }
+
+    private void commskipToast(int mark) {
+        int msgnum;
+        switch (mark) {
+//            case CommBreakTable.MARK_CUT_START: msgnum = R.string.msg_commskip_start; break;
+//            case CommBreakTable.MARK_CUT_END:   msgnum = R.string.msg_commskip_end; break;
+//            case -1:                            msgnum = R.string.msg_commskip_last; break;
+            case -2:                            msgnum = R.string.msg_commskip_skipped; break;
+            default: return;
+        }
+        Toast.makeText(getContext(),
+                getContext().getString(msgnum),
+                Toast.LENGTH_LONG)
+                .show();
+    }
+
+    // pass in 0 to dismiss dialog
+    private void commBreakDlg(long newPosition) {
+        dismissDialog();
+        if (newPosition == 0)
+            return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.title_comm_playing)
+                .setItems(R.array.menu_commplaying,
+                        (dialog, which) -> {
+                            // The 'which' argument contains the index position
+                            // of the selected item
+                            switch (which) {
+                                // 0 = skip commercial
+                                case 0:
+                                    if (viewModel.player.getCurrentPosition()
+                                            < newPosition) {
+                                        viewModel.player.seekTo(newPosition);
+                                    }
+                                    break;
+                                // 1 = do not skip commercial. Defaults to doing nothing
+                            }
+                        })
+                .setOnDismissListener(dialogDismiss)
+                .setOnKeyListener(
+                        (DialogInterface dialog, int keyCode, KeyEvent event) -> {
+                            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                                switch (keyCode) {
+                                    case KeyEvent.KEYCODE_BUTTON_R2:
+                                    case KeyEvent.KEYCODE_BUTTON_L2:
+                                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                                    case KeyEvent.KEYCODE_MEDIA_REWIND:
+                                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                                        dialog.dismiss();
+                                        break;
+                                }
+                            }
+                            return false;
+                        }
+                );
+        dialog = builder.create();
+        dialog.show();
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+        lp.x=0;
+        lp.y=0;
+        lp.width= Resources.getSystem().getDisplayMetrics().widthPixels / 4;
+        lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
+        dialog.getWindow().setAttributes(lp);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(192,192,192,192)));
+
+    }
+
+    public void dismissDialog() {
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+        dialog = null;
+    }
+
 
     @Override
     public void onStart() {
@@ -128,9 +217,6 @@ public class PlaybackFragment extends Fragment {
 
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer(boolean enableControls) {
-//        Log.i(TAG, CLASS + " Initializing Player for " + mVideo.title + " " + mVideo.videoUrl);
-//        mTrackSelector = new DefaultTrackSelector(getContext());
-//        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(),rFactory);
         MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
         int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
         if ("mediacodec".equals(prefAudio))
@@ -146,7 +232,6 @@ public class PlaybackFragment extends Fragment {
         rFactory.setVideoExtensionRendererMode(extMode);
         rFactory.setEnableDecoderFallback(true);
         ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(), rFactory);
-//        builder.setTrackSelector(mTrackSelector);
         int seekBack = Settings.getInt("pref_skip_back") * 1000;
         builder.setSeekBackIncrementMs(seekBack);
         int seekFwd = Settings.getInt("pref_skip_fwd") * 1000;
@@ -159,6 +244,7 @@ public class PlaybackFragment extends Fragment {
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
         String auth = BackendCache.getInstance().authorization;
+        viewModel.fillTables(getActivity());
         DataSource.Factory dsFactory =
             () -> {
                 HttpDataSource.Factory factory = new DefaultHttpDataSource.Factory();
@@ -175,67 +261,15 @@ public class PlaybackFragment extends Fragment {
         viewModel.player.setMediaSource(mediaSource, viewModel.bookmark);
         viewModel.player.prepare();
         viewModel.player.play();
-        handler.postDelayed(updater, 2000);
+        viewModel.startPlayback();
     }
 
-    class Updater implements Runnable {
-        @Override
-        public void run() {
-            try {
-                if (viewModel.maybePlaying && viewModel.player != null) {
-                    viewModel.savedDuration = viewModel.player.getDuration();
-                    viewModel.savedCurrentPosition = viewModel.player.getCurrentPosition();
-                    handler.postDelayed(this,1000);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-//        mSubtitles = getActivity().findViewById(R.id.leanback_subtitles);
-//        if (mSubtitles != null) {
-//            mSubtitles.setFractionalTextSize
-//                    (SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * mSubtitleSize / 100.0f);
-//        }
-//
-//        mPlayerEventListener = new PlayerEventListener();
-//        mPlayer.addListener(mPlayerEventListener);
-//
-//        mPlayerAdapter = new LeanbackPlayerAdapter(getActivity(), mPlayer, UPDATE_DELAY);
-//        if (mPlaybackActionListener == null) {
-//            mPlaybackActionListener = new PlaybackActionListener(this, mPlaylist);
-//            int sampleOffsetUs = 1000 * Settings.getInt("pref_audio_sync", mVideo.playGroup);
-//            mPlaybackActionListener.sampleOffsetUs = sampleOffsetUs;
-//            if (sampleOffsetUs != 0)
-//                mAudioPause = true;
-//        }
-//        VideoPlayerGlue oldGlue = mPlayerGlue;
-//        mPlayerGlue = new VideoPlayerGlue(getActivity(), mPlayerAdapter,
-//                mPlaybackActionListener, mRecordid > 0);
-//        mPlayerGlue.setEnableControls(enableControls);
-//        if (oldGlue == null)
-//            mPlayerGlue.setAutoPlay("true".equals(Settings.getString("pref_autoplay",mVideo.playGroup)));
-//        else
-//            mPlayerGlue.setAutoPlay(oldGlue.getAutoPlay());
-//        mPlayerGlue.setHost(new VideoSupportFragmentGlueHost(this));
-//        hideControlsOverlay(false);
-//        play(mVideo);
-//        ArrayObjectAdapter mRowsAdapter = initializeRelatedVideosRow();
-//        setAdapter(mRowsAdapter);
-//        mPlayerGlue.setupSelectedListener();
-//    }
 
         protected void releasePlayer() {
         if (viewModel.player != null) {
-//            updateTrackSelectorParameters();
-//            updateStartPosition();
-//            releaseServerSideAdsLoader();
-//            debugViewHelper.stop();
-//            debugViewHelper = null;
             viewModel.player.release();
             viewModel.player = null;
             binding.playerView.setPlayer(/* player= */ null);
-//            mediaItems = Collections.emptyList();
         }
     }
     public void hideNavigation () {
@@ -382,10 +416,6 @@ public class PlaybackFragment extends Fragment {
                                 viewModel.bookmark = currPos;
                             if (setPossibleEmptyTrack && !viewModel.possibleEmptyTrack) {
                                 viewModel.possibleEmptyTrack = true;
-//                                Toast.makeText(getActivity(),
-//                                        getActivity().getString(R.string.pberror_recommend_ignoreextra),
-//                                        Toast.LENGTH_LONG)
-//                                        .show();
                                 viewModel.player.stop();
                                 initializePlayer(true);
                             }
@@ -399,7 +429,6 @@ public class PlaybackFragment extends Fragment {
                         // Alert message for user to decide on continuing.
                         AlertDialogListener listener = new AlertDialogListener();
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//                                R.style.Theme_AppCompat_Dialog_Alert);
                         builder.setTitle(R.string.pberror_title);
                         if (recommendation > 0)
                             builder.setMessage(recommendation);
@@ -439,7 +468,12 @@ public class PlaybackFragment extends Fragment {
         }
 
     }
-
-
+    class DialogDismiss implements DialogInterface.OnDismissListener {
+        @Override
+        public void onDismiss(DialogInterface dialogInterface) {
+            if (dialog == dialogInterface)
+                dialog = null;
+        }
+    }
 
 }

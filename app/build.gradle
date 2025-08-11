@@ -13,6 +13,9 @@ task gitinfo {
 android {
     namespace 'org.mythtv.mobfront'
     compileSdk 35
+    lintOptions{
+        disable 'MissingTranslation'
+    }
 
     defaultConfig {
         applicationId "org.mythtv.mobfront"
