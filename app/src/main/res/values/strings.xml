@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MythTV-mobile</string>
+    <string name="app_name">MythTV Lean Frontend</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="menu_videolist">Video List</string>
