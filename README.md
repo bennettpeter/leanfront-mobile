@@ -1,4 +1,4 @@
-# MythTV Leanback Frontend (leanfront) mobile version: Android frontend for MythTV
+# MythTV Lean Frontend (leanfront) mobile version: Android frontend for MythTV
 
 Leanfront, mobile version, is a frontend for MythTV that runs on Android phones and tablets. It is a version of [leanfront](https://github.com/bennettpeter/leanfront) for mobile devices. Many features of the Android TV version are not provided in the mobile version.
 Leanfront, mobile version, supports playback of recordings and videos from MythTV.
@@ -59,8 +59,7 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 - Tapping the &#8942; icon on an episode gets a menu of actions to immediately take on an episode.
 
 ## Videos Screen
-![](ScreenShots/Videos1.png)
-![](ScreenShots/Videos2.png)
+![](ScreenShots/Videos1.png) ![](ScreenShots/Videos2.png)
 ![](ScreenShots/Videos1_horz.png)
 ![](ScreenShots/Videos2_horz.png)
 
@@ -84,7 +83,7 @@ Videos from the Videos part of MythTV are shown here, organized by directory. Yo
 
 ### MythTV Backend
 
-If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanback needs these to communicate with the backend. These do not show if you do not have a user authentication requirement, so most people will never see these prompts.
+If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanfront needs these to communicate with the backend. These do not show if you do not have a user authentication requirement, so most people will never see these prompts.
 
 - **Maximum Recordings/Videos to load.** Leanfront can handle an unlimited number of recordings and videos. However loading huge numbers of recordings and videos results in excessively long times to load the listing. WIth 60,000 recordings it takes about 3 minutes to load he list from the backend and another 3 to 4 minutes to format the display. To avoid this, the system defaults to loading the only the most recent 10,000. If you are happy with waiting minutes for the screen to refresh, you can increase the value. If you want a quicker refresh you can reduce the value.
 </details>
@@ -190,7 +189,7 @@ This is a temporary change, in V34 the port changes back to 6544, with the new f
 
 ### Authentication
 
-In MythTV V35, and authentication option has been added to MythTV services. See https://www.mythtv.org/wiki/Web_Application#API_and_Web_App_Authentication . If you setup Authentication Required, you will have to supply a user id and password to leranfront. Leanfront will automatically add User Name and Password to the Settings list and prompt you to enter them if you have enabled it on the backend. If you have not enabled it, those prompts will not be visible.
+In MythTV V35, and authentication option has been added to MythTV services. See https://www.mythtv.org/wiki/Web_Application#API_and_Web_App_Authentication . If you setup Authentication Required, you will have to supply a user id and password to leanfront. Leanfront will automatically add User Name and Password to the Settings list and prompt you to enter them if you have enabled it on the backend. If you have not enabled it, those prompts will not be visible.
 
 If you expose port 6544 to the internet, you can run leanfront remotely. In this case it is recommended to set a user id and password as described in the wiki article.
 
