@@ -101,6 +101,13 @@
             android:dialogTitle="@string/pref_commskip_end"
             android:defaultValue="0"/>
 
+        <EditTextPreference
+            android:key="pref_num_cc_chans"
+            android:title="@string/pref_num_cc_chans"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_num_cc_chans"
+            android:defaultValue="2"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

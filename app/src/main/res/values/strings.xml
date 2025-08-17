@@ -76,6 +76,7 @@
     <string name="pref_title_skip_fwd">Skip Forward Seconds</string>
     <string name="pref_title_skip_back">Skip Back Seconds</string>
     <string name="pref_poss_empty">Ignore Extra Track</string>
+    <string name="pref_num_cc_chans">Number of CEA closed caption tracks</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
@@ -91,6 +92,7 @@
     <!--  Number of seconds to add to start or end times  -->
     <string name="sdef_commskip_start" translatable="false">0</string>
     <string name="sdef_commskip_end" translatable="false">0</string>
+    <string name="sdef_num_cc_chans" translatable="false">2</string>
 
     <string name="resume_last">Play from last play position</string>
     <string name="play">Play from start</string>
