@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Sauter les secondes vers l\'avant</string>
   <string name="pref_title_skip_back">Sauter les secondes</string>
   <string name="pref_poss_empty">Ignorez la piste supplémentaire</string>
+  <string name="pref_num_cc_chans">Nombre de traces de légendes fermées CEA</string>
   <string name="resume_last">Jouer de la dernière position de jeu</string>
   <string name="play">Jouer depuis le début</string>
   <string name="menu_mark_unwatched">Marquez comme non fixé</string>

@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Przejdź do przodu sekund</string>
   <string name="pref_title_skip_back">Odrzuć sekundy</string>
   <string name="pref_poss_empty">Zignoruj dodatkowy utwór</string>
+  <string name="pref_num_cc_chans">Liczba śladów CEA Zamknięte podpisy</string>
   <string name="resume_last">Graj z ostatniej pozycji gry</string>
   <string name="play">Grać od początku</string>
   <string name="menu_mark_unwatched">Znak jako nieuczciony</string>

@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Hopp over sekunder</string>
   <string name="pref_title_skip_back">Hopp over sekunder</string>
   <string name="pref_poss_empty">Ignorer ekstra spor</string>
+  <string name="pref_num_cc_chans">Antall CEA -lukkede billedtekstspor</string>
   <string name="resume_last">Spill fra siste lekestilling</string>
   <string name="play">Spill fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>

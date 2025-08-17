@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Přeskočit vpřed sekundy</string>
   <string name="pref_title_skip_back">Přeskočit zpět sekundy</string>
   <string name="pref_poss_empty">Ignorujte další skladbu</string>
+  <string name="pref_num_cc_chans">Počet uzavřených titulků CEA</string>
   <string name="resume_last">Hrajte z poslední hry</string>
   <string name="play">Hrajte od začátku</string>
   <string name="menu_mark_unwatched">Mark As Unhethed</string>

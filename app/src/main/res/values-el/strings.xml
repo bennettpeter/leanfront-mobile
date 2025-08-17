@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Παραλείψτε τα δευτερόλεπτα</string>
   <string name="pref_title_skip_back">Παράλειψη δευτερολέπτων</string>
   <string name="pref_poss_empty">Αγνοήστε επιπλέον κομμάτι</string>
+  <string name="pref_num_cc_chans">Αριθμός κομματιών κλειστών λεζάνων CEA</string>
   <string name="resume_last">Παίξτε από την τελευταία θέση παιχνιδιού</string>
   <string name="play">Παίξτε από την αρχή</string>
   <string name="menu_mark_unwatched">Σηματοδοτείται ως ακατέργαστο</string>

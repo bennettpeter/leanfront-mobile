@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Hoppa framåt sekunder</string>
   <string name="pref_title_skip_back">Hoppa tillbaka sekunder</string>
   <string name="pref_poss_empty">Ignorera extra spår</string>
+  <string name="pref_num_cc_chans">Antal CEA -stängda bildtexter</string>
   <string name="resume_last">Spela från sista spelpositionen</string>
   <string name="play">Spela från Start</string>
   <string name="menu_mark_unwatched">Markera som oönskat</string>

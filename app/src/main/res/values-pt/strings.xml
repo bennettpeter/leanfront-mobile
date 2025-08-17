@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Pule os segundos para a frente</string>
   <string name="pref_title_skip_back">Pule os segundos</string>
   <string name="pref_poss_empty">Ignore faixa extra</string>
+  <string name="pref_num_cc_chans">Número de faixas de legenda fechada CEA</string>
   <string name="resume_last">Jogue da última posição de jogo</string>
   <string name="play">Jogue desde o início</string>
   <string name="menu_mark_unwatched">Marque como não acumulado</string>

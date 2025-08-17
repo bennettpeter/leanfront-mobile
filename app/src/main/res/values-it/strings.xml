@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Salta i secondi in avanti</string>
   <string name="pref_title_skip_back">Salta indietro secondi</string>
   <string name="pref_poss_empty">Ignora traccia extra</string>
+  <string name="pref_num_cc_chans">Numero di tracce di didascalia chiusa CEA</string>
   <string name="resume_last">Gioca dall\'ultima posizione di gioco</string>
   <string name="play">Gioca dall\'inizio</string>
   <string name="menu_mark_unwatched">Segna come nonostante</string>

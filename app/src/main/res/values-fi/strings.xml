@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Hyppää eteenpäin sekuntia</string>
   <string name="pref_title_skip_back">Hyppää takaisin sekuntia</string>
   <string name="pref_poss_empty">Ohita ylimääräinen kappale</string>
+  <string name="pref_num_cc_chans">CEA: n suljettujen kuvatekstien lukumäärä</string>
   <string name="resume_last">Pelata viimeisimmästä pelialueesta</string>
   <string name="play">Pelaaminen alusta alkaen</string>
   <string name="menu_mark_unwatched">Merkitä</string>

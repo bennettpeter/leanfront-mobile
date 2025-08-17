@@ -60,6 +60,7 @@
   <string name="pref_title_skip_fwd">Sekunden vorwärts überspringen</string>
   <string name="pref_title_skip_back">Überspringen Sie Sekunden zurück</string>
   <string name="pref_poss_empty">Ignorieren Sie zusätzliche Strecke</string>
+  <string name="pref_num_cc_chans">Anzahl der CEA -Untertitel -Spuren</string>
   <string name="resume_last">Spielen Sie von der letzten Spielposition ab</string>
   <string name="play">Von Anfang an spielen</string>
   <string name="menu_mark_unwatched">Markieren Sie als ungefolgt</string>
