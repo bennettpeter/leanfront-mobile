@@ -233,7 +233,7 @@ public class VideoListModel extends ViewModel {
         String sql = "SELECT * FROM videoview "
                 + "WHERE rectype = 2 "
                 + "AND  filename like ? "
-                + "ORDER BY filename ";
+                + "ORDER BY titlematch, filename ";
         String [] parms;
         if (videoPath.length() > 0)
             parms = new String[]{videoPath + "/%"};
