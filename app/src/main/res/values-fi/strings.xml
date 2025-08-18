@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">Myyttv-mobile</string>
+  <string name="app_name">Mythtv Lean Frontend</string>
   <string name="nav_header_desc">Navigointioppi</string>
   <string name="menu_videolist">Videoluettelo</string>
   <string name="menu_refresh">Virkistää</string>

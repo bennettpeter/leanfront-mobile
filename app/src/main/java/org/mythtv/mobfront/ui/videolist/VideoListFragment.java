@@ -259,8 +259,9 @@ public class VideoListFragment extends Fragment {
                         menu.add(Menu.NONE, Action.UNDELETE, ix++, R.string.menu_undelete);
                     else {
                         menu.add(Menu.NONE, Action.DELETE_AND_RERECORD, ix++, R.string.menu_delete_rerecord);
-                        menu.add(Menu.NONE, Action.ALLOW_RERECORD, ix++, R.string.menu_rerecord);
+                        menu.add(Menu.NONE, Action.DELETE, ix++, R.string.menu_delete);
                     }
+                    menu.add(Menu.NONE, Action.ALLOW_RERECORD, ix++, R.string.menu_rerecord);
                 }
                 popup.setOnMenuItemClickListener( (MenuItem item) -> {
                     switch (item.getItemId()) {

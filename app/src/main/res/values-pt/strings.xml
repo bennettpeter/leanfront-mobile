@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">Mythtv-mobile</string>
+  <string name="app_name">Frontend magro mythtv</string>
   <string name="nav_header_desc">Cabeçalho de navegação</string>
   <string name="menu_videolist">Lista de vídeos</string>
   <string name="menu_refresh">Atualizar</string>

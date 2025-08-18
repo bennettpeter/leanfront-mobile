@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">MYTHTV-MOBILE</string>
+  <string name="app_name">MYTHTV LEAN frontend</string>
   <string name="nav_header_desc">Navigační záhlaví</string>
   <string name="menu_videolist">Seznam videí</string>
   <string name="menu_refresh">Obnovit</string>

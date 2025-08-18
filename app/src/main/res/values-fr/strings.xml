@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">Mythtv-mobile</string>
+  <string name="app_name">Frontend Lean MythTV</string>
   <string name="nav_header_desc">En-tête de navigation</string>
   <string name="menu_videolist">Liste de vidéos</string>
   <string name="menu_refresh">Rafraîchir</string>

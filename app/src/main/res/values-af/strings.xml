@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">Mythtv-Mobile</string>
+  <string name="app_name">Mythtv Lean Frontend</string>
   <string name="nav_header_desc">Navigasiekop</string>
   <string name="menu_videolist">Videolys</string>
   <string name="menu_refresh">Vervris</string>

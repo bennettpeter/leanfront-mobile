@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-  <string name="app_name">MythTV-Mobile</string>
+  <string name="app_name">Mythtv mager frontend</string>
   <string name="nav_header_desc">Navigasjonsoverskrift</string>
   <string name="menu_videolist">Videoliste</string>
   <string name="menu_refresh">Forfriske</string>
