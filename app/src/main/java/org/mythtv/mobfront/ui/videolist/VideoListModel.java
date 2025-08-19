@@ -218,7 +218,13 @@ public class VideoListModel extends ViewModel {
                 videoPath = dir;
         }
         Context context = MyApplication.getAppContext();
-        this.title = context.getString(R.string.group_videos) + " " + videoPath;
+        String colon;
+        if (videoPath.length() > 0)
+            colon = " : ";
+        else
+            colon = "";
+
+        this.title = context.getString(R.string.group_videos) + colon + videoPath;
     }
 
 

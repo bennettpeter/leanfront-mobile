@@ -1,9 +1,11 @@
 package org.mythtv.mobfront.ui.playback;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.lifecycle.MutableLiveData;
@@ -34,13 +36,20 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     long priorCommBreak = -1;
     long nextCommBreakMs = Long.MAX_VALUE;
     long endCommBreakMs = Long.MAX_VALUE;
+    private long lastSeekFrom;
+    private boolean lastSeekIsFwd;
+    private long lastSeekTime;
+
     private final int commBreakOption =  Settings.getInt("pref_commskip");
+    // Note this will be cleared if it was set as skipcom and there is no commercial data
+    String prevnextOption =  Settings.getString("pref_prevnext");
+    final int jump =  Settings.getInt("pref_jump");
     public static final int COMMBREAK_OFF = 0;
     public static final int COMMBREAK_NOTIFY = 1;
     public static final int COMMBREAK_SKIP = 2;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Updater updater = new Updater();
-    final MutableLiveData<Integer> commSkipToast = new MutableLiveData<>();
+    final MutableLiveData<long[]> commSkipToast = new MutableLiveData<>();
     final MutableLiveData<Long> commBreakDlg = new MutableLiveData<>();
     final String TAG = "mfe";
     final String CLASS = "PlaybackViewModel";
@@ -156,7 +165,8 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             switch (commBreakOption) {
                 case COMMBREAK_SKIP:
                     player.seekTo(newPosition);
-                    commSkipToast.postValue(-2);
+                    commSkipToast.postValue(new long[]
+                            {-2, newPosition - player.getCurrentPosition()});
                     break;
                 case COMMBREAK_NOTIFY:
                     commBreakDlg.postValue(newPosition);
@@ -166,12 +176,99 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         }
         setNextCommBreak(-1);
     }
+    private boolean commSkipCheck() {
+        if (commBreakTable == null || commBreakTable.entries.length == 0) {
+            commSkipToast.postValue(new long[] {-5, 0});
+            return false;
+        }
+        return true;
+    }
 
+    long skipComBack() {
+        if (!commSkipCheck())
+            return 0;
+        long position = player.getCurrentPosition();
+        if (lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
+            player.seekTo(lastSeekFrom);
+            commSkipToast.postValue(new long[] {-3,lastSeekFrom - position});
+            lastSeekTime = 0;
+            return lastSeekFrom;
+        }
+        long newPosition = 0;
+        int mark = 0;
+        synchronized (commBreakTable) {
+            // Get the last entry that satisfies offset < position
+            for (CommBreakTable.Entry entry : commBreakTable.entries) {
+                long offsetMs = commBreakTable.getOffsetMs(entry);
+                if (offsetMs < position - 20000) {
+                    newPosition = offsetMs;
+                    mark = entry.mark;
+                } else
+                    break;
+            }
+        }
+        if (newPosition == 0) {
+            newPosition = 100;
+            mark = -4;
+        }
+        setNextCommBreak(Long.MAX_VALUE);
+        // If this is a start point, prevent it from immediately skipping
+        if (mark == CommBreakTable.MARK_CUT_START)
+            priorCommBreak = newPosition
+                    + (long)Settings.getInt("pref_commskip_start") * 1000;
+        player.seekTo(newPosition);
+        commSkipToast.postValue(new long[] {mark, newPosition - position});
+        lastSeekFrom = position;
+        lastSeekIsFwd = false;
+        lastSeekTime = System.currentTimeMillis();
+        return newPosition;
+    }
+
+    long skipComForward() {
+        if (!commSkipCheck())
+            return 0;
+        long position = player.getCurrentPosition();
+        if (! lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
+            player.seekTo(lastSeekFrom);
+            commSkipToast.postValue(new long[] {-3, lastSeekFrom - position});
+            lastSeekTime = 0;
+            return lastSeekFrom;
+        }
+        long newPosition = 0;
+        int mark = 0;
+        synchronized (commBreakTable) {
+            // Get the first entry that satisfies offset > position
+            for (CommBreakTable.Entry entry : commBreakTable.entries) {
+                long offsetMs = commBreakTable.getOffsetMs(entry);
+                if (offsetMs > position + 5000) {
+                    newPosition = offsetMs;
+                    mark = entry.mark;
+                    break;
+                }
+            }
+        }
+        if (newPosition > 0) {
+            setNextCommBreak(Long.MAX_VALUE);
+            // If this is a start point, prevent it from immediately skipping
+            if (mark == CommBreakTable.MARK_CUT_START)
+                priorCommBreak = newPosition
+                        + (long)Settings.getInt("pref_commskip_start") * 1000;
+            player.seekTo(newPosition);
+            commSkipToast.postValue(new long[] {mark, newPosition - position});
+            lastSeekFrom = position;
+            lastSeekIsFwd = true;
+            lastSeekTime = System.currentTimeMillis();
+        } else
+            commSkipToast.postValue(new long[] {-1, 0});
+        return newPosition;
+    }
 
     public void onEndCommBreak() {
         // This will dismiss the dialog
         commBreakDlg.postValue(0L);
     }
+
+
     class Updater implements Runnable {
     @Override
         public void run() {

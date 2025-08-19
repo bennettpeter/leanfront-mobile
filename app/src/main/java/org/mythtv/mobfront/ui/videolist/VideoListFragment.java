@@ -162,7 +162,10 @@ public class VideoListFragment extends Fragment {
 
     void refresh() {
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        bar.setSubtitle(videoListModel.title);
+        if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
+            bar.setSubtitle(videoListModel.recGroup + " : " + videoListModel.title);
+        else
+            bar.setSubtitle(videoListModel.title);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             if ((videoListModel.pageType == VideoListModel.TYPE_SERIES
             || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR

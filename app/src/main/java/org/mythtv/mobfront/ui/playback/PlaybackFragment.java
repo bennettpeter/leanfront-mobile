@@ -1,9 +1,12 @@
 package org.mythtv.mobfront.ui.playback;
 
+import static androidx.media3.common.util.Util.getDrawable;
+
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,6 +48,7 @@ import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.Action;
 import org.mythtv.mobfront.data.AsyncBackendCall;
 import org.mythtv.mobfront.data.BackendCache;
+import org.mythtv.mobfront.data.CommBreakTable;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.databinding.FragmentPlaybackBinding;
 import org.mythtv.mobfront.player.MyExtractorsFactory;
@@ -87,8 +91,8 @@ public class PlaybackFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentPlaybackBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        viewModel.commSkipToast.observe(getViewLifecycleOwner(), (Integer mark) -> {
-            commskipToast(mark);
+        viewModel.commSkipToast.observe(getViewLifecycleOwner(), (long[] markrange) -> {
+            commskipToast(markrange);
         });
         viewModel.commBreakDlg.observe(getViewLifecycleOwner(), (Long newPosition) -> {
             commBreakDlg(newPosition);
@@ -96,19 +100,30 @@ public class PlaybackFragment extends Fragment {
         return root;
     }
 
-    private void commskipToast(int mark) {
+    @SuppressLint("StringFormatInvalid")
+    private void commskipToast(long[] markrange) {
+        int mark = (int) markrange[0];
+        long range = markrange[1];
         int msgnum;
         switch (mark) {
-//            case CommBreakTable.MARK_CUT_START: msgnum = R.string.msg_commskip_start; break;
-//            case CommBreakTable.MARK_CUT_END:   msgnum = R.string.msg_commskip_end; break;
-//            case -1:                            msgnum = R.string.msg_commskip_last; break;
+            case CommBreakTable.MARK_CUT_START: msgnum = R.string.msg_commskip_start; break;
+            case CommBreakTable.MARK_CUT_END:   msgnum = R.string.msg_commskip_end; break;
+            case -1:                            msgnum = R.string.msg_commskip_last; break;
             case -2:                            msgnum = R.string.msg_commskip_skipped; break;
+            case -3:                            msgnum = R.string.msg_commskip_back; break;
+            case -4:                            msgnum = R.string.msg_commskip_start_show; break;
+            case -5:                            msgnum = R.string.msg_commskip_none; break;
             default: return;
         }
-        Toast.makeText(getContext(),
-                getContext().getString(msgnum),
-                Toast.LENGTH_LONG)
-                .show();
+        range = range / 1000l;
+        long mins = range/60l;
+        long secs = Math.abs(range%60l);
+
+        Context ctx = getContext();
+        Toast.makeText(ctx, ctx.getString(msgnum,mins,secs), Toast.LENGTH_LONG)
+            .show();
+
+
     }
 
     // pass in 0 to dismiss dialog
@@ -262,6 +277,41 @@ public class PlaybackFragment extends Fragment {
         viewModel.player.prepare();
         viewModel.player.play();
         viewModel.startPlayback();
+        View previousButton = getView().findViewById(R.id.my_exo_prev);
+        if (previousButton != null) {
+            previousButton.setOnClickListener((View v) -> {
+                Log.i(TAG, " Previous clicked");
+                long ret = 0;
+                if ("skipcom".equals(viewModel.prevnextOption)){
+                    ret = viewModel.skipComBack();
+                }
+                if (ret == 0) {
+                    viewModel.prevnextOption = null;
+                    long pos = viewModel.player.getCurrentPosition() - viewModel.jump * 60000;
+                    if (pos < 0l)
+                        pos = 100l;
+                    viewModel.player.seekTo(pos);
+                }
+            });
+        }
+        View nextButton = getView().findViewById(R.id.my_exo_next);
+        if (nextButton != null) {
+            nextButton.setEnabled(true);
+            nextButton.setAlpha(1.0f);
+            nextButton.setOnClickListener((View v) -> {
+                Log.i(TAG, " Next clicked");
+                long ret = 0;
+                if ("skipcom".equals(viewModel.prevnextOption)){
+                    viewModel.skipComForward();
+                }
+                if (ret == 0) {
+                    viewModel.prevnextOption = null;
+                    long pos = viewModel.player.getCurrentPosition() + viewModel.jump * 60000;
+                    viewModel.player.seekTo(pos);
+                }
+            });
+        }
+
     }
 
 
@@ -310,6 +360,7 @@ public class PlaybackFragment extends Fragment {
 
     private void setPlaySettings() {
 //        viewModel.possibleEmptyTrack = "true".equals(Settings.getString("pref_poss_empty"));
+
     }
 
     class PlayerEventListener implements Player.Listener {

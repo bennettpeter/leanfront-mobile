@@ -80,6 +80,20 @@
             android:dialogTitle="@string/pref_title_skip_back"
             android:defaultValue="10"/>
 
+        <EditTextPreference
+            android:key="pref_jump"
+            android:title="@string/pref_title_jump"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_title_jump"
+            android:defaultValue="5"/>
+
+        <DropDownPreference
+            android:key="pref_prevnext"
+            android:title="@string/pref_title_prevnext"
+            android:entries="@array/prevnext_entries"
+            app:useSimpleSummaryProvider="true"
+            android:entryValues="@array/prevnext_values"/>
+
         <DropDownPreference
             android:key="pref_commskip"
             android:title="@string/title_commskip"

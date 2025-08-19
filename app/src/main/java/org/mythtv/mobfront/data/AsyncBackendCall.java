@@ -97,7 +97,7 @@ public class AsyncBackendCall implements Runnable {
     private void runTasks() {
        tasks = new int[inTasks.length];
 //        BackendCache bCache = BackendCache.getInstance();
-        Context context = MyApplication.getAppContext();
+//        Context context = MyApplication.getAppContext();
         int videoIndex = 0;
         int taskIndex = -1;
         Video video = null;
@@ -184,8 +184,7 @@ public class AsyncBackendCall implements Runnable {
                             type = VideoContract.VideoEntry.RECTYPE_VIDEO;
                         }
                         xmlResult = XmlNode.fetch(urlString, "POST");
-                        if (context != null)
-                            VideoListModel.getInstance().startFetch(type, video.recordedid, null);
+                        VideoListModel.getInstance().startFetch(type, video.recordedid, null);
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }
@@ -198,14 +197,24 @@ public class AsyncBackendCall implements Runnable {
                     if (!isRecording || "Deleted".equals(video.recGroup))
                         break;
                     try {
-                        String urlString = XmlNode.mythApiUrl(video.hostname,
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Dvr/GetRecorded?RecordedId="
+                                        + video.recordedid);
+                        xmlResult = XmlNode.fetch(urlString, null);
+                        String recGroup = xmlResult.getString(new String[] {"Recording","RecGroup"});
+                        if (recGroup == null || "Deleted".equals(recGroup))
+                            break;
+                        urlString = XmlNode.mythApiUrl(video.hostname,
                                 "/Dvr/DeleteRecording?RecordedId="
                                         + video.recordedid
                                         + "&AllowRerecord=" + allowRerecord);
                         xmlResult = XmlNode.fetch(urlString, "POST");
-                        if (context != null)
-                            VideoListModel.getInstance().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
-                                    video.recordedid, null);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        VideoListModel.getInstance().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
+                                video.recordedid, null);
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }
@@ -219,9 +228,12 @@ public class AsyncBackendCall implements Runnable {
                                 "/Dvr/UnDeleteRecording?RecordedId="
                                         + video.recordedid);
                         xmlResult = XmlNode.fetch(urlString, "POST");
-                        if (context != null)
-                            VideoListModel.getInstance().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
-                                    video.recordedid, null);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        VideoListModel.getInstance().startFetch(VideoContract.VideoEntry.RECTYPE_RECORDING,
+                                video.recordedid, null);
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }

@@ -93,6 +93,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     return false;
                 });
 
+        findPreference("pref_jump")
+                .setOnPreferenceChangeListener((pref,action) -> {
+                    ((EditTextPreference)pref).setText(validateNumber(action, -1, 60, 5));
+                    return false;
+                });
+
         if (!BackendCache.getInstance().loginNeeded) {
             findPreference("pref_backend_userid").setVisible(false);
             findPreference("pref_backend_passwd").setVisible(false);

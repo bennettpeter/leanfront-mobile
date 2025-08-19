@@ -2,7 +2,7 @@
     <string name="app_name">MythTV Lean Frontend</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <string name="menu_videolist">Video List</string>
+    <string name="menu_videolist">Recordings &amp; Videos</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_settings">Settings</string>
@@ -52,7 +52,13 @@
     <string name="pref_commskip_start">Start Position Adjustment (seconds)</string>
     <string name="pref_commskip_end">End Position Adjustment (seconds)</string>
 
-    <string name="msg_commskip_skipped">Commercial Break Skipped.</string>
+    <string name="msg_commskip_none">There is no Commercial Break or Cut List Data for this Recording.</string>
+    <string name="msg_commskip_start">Skipped %1$ 02d:%2$02d. Start of Commercial Break.</string>
+    <string name="msg_commskip_end">Skipped %1$ 02d:%2$02d. End of Commercial Break.</string>
+    <string name="msg_commskip_last">No More Commercial Breaks.</string>
+    <string name="msg_commskip_skipped">Skipped %1$ 02d:%2$02d. Commercial Break Skipped.</string>
+    <string name="msg_commskip_back">Skipped %1$ 02d:%2$02d. Back to where you were.</string>
+    <string name="msg_commskip_start_show">Skipped %1$ 02d:%2$02d. Start of Show.</string>
 
     <string name="pref_title_backend_ip">IP Address or DNS name</string>
     <string name="pref_title_backend">MythTV Backend</string>
@@ -77,6 +83,13 @@
     <string name="pref_title_skip_back">Skip Back Seconds</string>
     <string name="pref_poss_empty">Ignore Extra Track</string>
     <string name="pref_num_cc_chans">Number of CEA closed caption tracks</string>
+    <string name="pref_title_jump">Jump Back/Forward Minutes</string>
+    <string name="pref_title_prevnext">Use for &#9198; and &#9197; icons.</string>
+    <string name="pref_entry_prevnext_jump">Jump</string>
+    <string name="pref_entry_prevnext_comskip">Skip Commercial</string>
+    <string name="pref_value_prevnext_jump">jump</string>
+    <string name="pref_value_prevnext_comskip">skipcom</string>
+
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
@@ -93,6 +106,9 @@
     <string name="sdef_commskip_start" translatable="false">0</string>
     <string name="sdef_commskip_end" translatable="false">0</string>
     <string name="sdef_num_cc_chans" translatable="false">2</string>
+    <string name="sdef_jump" translatable="false">5</string>
+    <!-- values jump or skipcom  -->
+    <string name="sdef_prevnext" translatable="false">jump</string>
 
     <string name="resume_last">Play from last play position</string>
     <string name="play">Play from start</string>

@@ -38,4 +38,14 @@
         <item>@string/menu_comm_notskip</item>
     </string-array>
 
+    <string-array name="prevnext_entries">
+        <item>@string/pref_entry_prevnext_jump</item>
+        <item>@string/pref_entry_prevnext_comskip</item>
+    </string-array>
+
+    <string-array name="prevnext_values">
+        <item>@string/pref_value_prevnext_jump</item>
+        <item>@string/pref_value_prevnext_comskip</item>
+    </string-array>
+
 </resources>
