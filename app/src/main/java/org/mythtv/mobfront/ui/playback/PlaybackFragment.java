@@ -1,13 +1,10 @@
 package org.mythtv.mobfront.ui.playback;
 
-import static androidx.media3.common.util.Util.getDrawable;
-
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,14 +31,15 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.ui.AspectRatioFrameLayout;
 
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.mythtv.mobfront.R;
@@ -55,6 +53,7 @@ import org.mythtv.mobfront.player.MyExtractorsFactory;
 import org.mythtv.mobfront.player.MyRenderersFactory;
 
 
+@UnstableApi
 public class PlaybackFragment extends Fragment {
 
     private PlaybackViewModel viewModel;
@@ -67,8 +66,7 @@ public class PlaybackFragment extends Fragment {
     private long mTimeLastError = 0;
     AlertDialog dialog;
     private DialogDismiss dialogDismiss = new DialogDismiss();
-
-
+    private AspectRatioFrameLayout contentFrame;
 
     public static PlaybackFragment newInstance() {
         return new PlaybackFragment();
@@ -148,24 +146,7 @@ public class PlaybackFragment extends Fragment {
                                 // 1 = do not skip commercial. Defaults to doing nothing
                             }
                         })
-                .setOnDismissListener(dialogDismiss)
-                .setOnKeyListener(
-                        (DialogInterface dialog, int keyCode, KeyEvent event) -> {
-                            if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                                switch (keyCode) {
-                                    case KeyEvent.KEYCODE_BUTTON_R2:
-                                    case KeyEvent.KEYCODE_BUTTON_L2:
-                                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                                    case KeyEvent.KEYCODE_MEDIA_REWIND:
-                                    case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                    case KeyEvent.KEYCODE_DPAD_LEFT:
-                                        dialog.dismiss();
-                                        break;
-                                }
-                            }
-                            return false;
-                        }
-                );
+                .setOnDismissListener(dialogDismiss);
         dialog = builder.create();
         dialog.show();
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
@@ -280,7 +261,6 @@ public class PlaybackFragment extends Fragment {
         View previousButton = getView().findViewById(R.id.my_exo_prev);
         if (previousButton != null) {
             previousButton.setOnClickListener((View v) -> {
-                Log.i(TAG, " Previous clicked");
                 long ret = 0;
                 if ("skipcom".equals(viewModel.prevnextOption)){
                     ret = viewModel.skipComBack();
@@ -292,30 +272,57 @@ public class PlaybackFragment extends Fragment {
                         pos = 100l;
                     viewModel.player.seekTo(pos);
                 }
+                binding.playerView.showController();
             });
         }
         View nextButton = getView().findViewById(R.id.my_exo_next);
         if (nextButton != null) {
-            nextButton.setEnabled(true);
-            nextButton.setAlpha(1.0f);
             nextButton.setOnClickListener((View v) -> {
-                Log.i(TAG, " Next clicked");
                 long ret = 0;
                 if ("skipcom".equals(viewModel.prevnextOption)){
-                    viewModel.skipComForward();
+                    ret = viewModel.skipComForward();
                 }
                 if (ret == 0) {
                     viewModel.prevnextOption = null;
-                    long pos = viewModel.player.getCurrentPosition() + viewModel.jump * 60000;
+                    long pos = viewModel.player.getCurrentPosition() + viewModel.jump * 60000l;
                     viewModel.player.seekTo(pos);
                 }
+                binding.playerView.showController();
+            });
+        }
+        ImageView aspectButton = getView().findViewById(R.id.my_aspect);
+        if (aspectButton != null) {
+            aspectButton.setOnClickListener((View v) -> {
+                viewModel.currentAspectIx++;
+                if (viewModel.currentAspectIx >= viewModel.ASPECT_VALUES.length)
+                    viewModel.currentAspectIx = 0;
+                viewModel.currentAspect = viewModel.ASPECT_VALUES [viewModel.currentAspectIx];
+                if (contentFrame == null)
+                    contentFrame = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+                contentFrame.setAspectRatio(viewModel.currentAspect);
+                aspectButton.setImageResource(viewModel.ASPECT_DRAWABLES[viewModel.currentAspectIx]);
+                binding.playerView.showController();
+           });
+        }
+        ImageView zoomButton = getView().findViewById(R.id.my_zoom);
+        if (zoomButton != null) {
+            zoomButton.setOnClickListener((View v) -> {
+                viewModel.currentResizeIx++;
+                if (viewModel.currentResizeIx >= viewModel.RESIZE_MODES.length)
+                    viewModel.currentResizeIx = 0;
+                viewModel.currentResizeMode = viewModel.RESIZE_MODES[viewModel.currentResizeIx];
+                if (contentFrame == null)
+                    contentFrame = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+                contentFrame.setResizeMode(viewModel.currentResizeMode);
+                zoomButton.setImageResource(viewModel.RESIZE_DRAWABLES[viewModel.currentResizeIx]);
+                binding.playerView.showController();
             });
         }
 
     }
 
 
-        protected void releasePlayer() {
+    protected void releasePlayer() {
         if (viewModel.player != null) {
             viewModel.player.release();
             viewModel.player = null;

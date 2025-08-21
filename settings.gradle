@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MythTV-mobile"
+rootProject.name = "leanfront-mobile"
 include ':app'
 
 gradle.ext.androidxMediaModulePrefix = 'media-'

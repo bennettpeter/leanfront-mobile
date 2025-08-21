@@ -1,11 +1,9 @@
 package org.mythtv.mobfront.ui.playback;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.lifecycle.MutableLiveData;
@@ -15,14 +13,17 @@ import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.Renderer;
+import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
+import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.Action;
 import org.mythtv.mobfront.data.AsyncBackendCall;
 import org.mythtv.mobfront.data.CommBreakTable;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.data.Video;
 
+@UnstableApi
 public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGetter {
     Video video;
     ExoPlayer player;
@@ -53,7 +54,18 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     final MutableLiveData<Long> commBreakDlg = new MutableLiveData<>();
     final String TAG = "mfe";
     final String CLASS = "PlaybackViewModel";
-
+    static final float[] ASPECT_VALUES = {1.333333f, 1.7777777f, 0.5625f};
+    static final int [] ASPECT_DRAWABLES = {R.drawable.ic_aspect_4x3,
+            R.drawable.ic_aspect_16x9, R.drawable.ic_aspect_9x16};
+    int currentAspectIx = -1;
+    float currentAspect = 0.0f;
+    static final int [] RESIZE_MODES = {
+        AspectRatioFrameLayout.RESIZE_MODE_FIT,
+        AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+    };
+    static final int [] RESIZE_DRAWABLES = {R.drawable.ic_zoom_small,R.drawable.ic_zoom_large};
+    int currentResizeIx = 0;
+    int currentResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
 
     @OptIn(markerClass = UnstableApi.class)
     @Override
@@ -66,11 +78,16 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
                 if ("ExperimentalFfmpegVideoRenderer".equals(renderer.getName())) {
                     Format format = player.getVideoFormat();
                     if (vs.width == format.width && vs.height == format.height
-                            && vs.pixelWidthHeightRatio != format.pixelWidthHeightRatio)
-                        return new VideoSize(vs.width, vs.height, format.pixelWidthHeightRatio);
+                            && vs.pixelWidthHeightRatio != format.pixelWidthHeightRatio) {
+                        vs = new VideoSize(vs.width, vs.height, format.pixelWidthHeightRatio);
+                        break;
+                    }
                 }
             }
         }
+        if (currentAspectIx != -1)
+            vs = new VideoSize(vs.width, vs.height,
+                    currentAspect * (float) vs.height / (float) vs.width);
         return vs;
     }
 

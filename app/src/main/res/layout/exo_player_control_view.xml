@@ -63,11 +63,13 @@
       <ImageButton android:id="@id/exo_vr"
           style="@style/ExoStyledControls.Button.Bottom.VR"/>
 
-      <ImageButton android:id="@id/exo_shuffle"
-          style="@style/ExoStyledControls.Button.Bottom.Shuffle"/>
+      <ImageButton android:id="@+id/my_zoom"
+          android:src="@drawable/ic_zoom_button"
+          style="@style/ExoStyledControls.Button.Bottom.CC"/>
 
-      <ImageButton android:id="@id/exo_repeat_toggle"
-          style="@style/ExoStyledControls.Button.Bottom.RepeatToggle"/>
+      <ImageButton android:id="@+id/my_aspect"
+          android:src="@drawable/ic_aspect_button"
+          style="@style/ExoStyledControls.Button.Bottom.CC"/>
 
       <ImageButton android:id="@id/exo_subtitle"
           style="@style/ExoStyledControls.Button.Bottom.CC"/>

@@ -16,6 +16,7 @@
         app:show_buffering="always"
         app:show_subtitle_button="true"
         app:show_next_button="true"
+        app:show_timeout="10000"
         android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
