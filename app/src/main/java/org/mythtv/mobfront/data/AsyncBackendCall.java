@@ -2,12 +2,10 @@ package org.mythtv.mobfront.data;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import org.mythtv.mobfront.MyApplication;
 import org.mythtv.mobfront.ui.videolist.VideoListModel;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -96,8 +94,6 @@ public class AsyncBackendCall implements Runnable {
     @SuppressLint("SimpleDateFormat")
     private void runTasks() {
        tasks = new int[inTasks.length];
-//        BackendCache bCache = BackendCache.getInstance();
-//        Context context = MyApplication.getAppContext();
         int videoIndex = 0;
         int taskIndex = -1;
         Video video = null;

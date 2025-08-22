@@ -134,24 +134,28 @@ public class VideoListModel extends ViewModel {
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
             return;
-        StringBuilder sql = new StringBuilder("SELECT title, MIN(card_image) FROM video "
+        StringBuilder sql = new StringBuilder("SELECT title, MIN(bg_image_url), MIN(card_image) FROM video "
             + "WHERE rectype = 1 ");
         String [] parms;
-        if (!allTitle.equals(recGroup)) {
+        if (allTitle.equals(recGroup)) {
+            sql.append("AND recgroup != 'Deleted' ");
+            parms = new String[0];
+        } else {
             sql.append("AND recgroup = ? ");
             parms = new String[]{recGroup};
         }
-        else
-            parms = new String[0];
         sql.append("GROUP BY title ORDER BY titlematch");
         Cursor csr = db.rawQuery(sql.toString(), parms);
         if (csr.moveToFirst()) {
             while (!csr.isAfterLast()) {
+                String imageUrl = csr.getString(1);
+                if (imageUrl == null)
+                    imageUrl = csr.getString(2);
                 String title = csr.getString(0);
                 Video video = new Video.VideoBuilder()
                         .id(-1).title(title)
                         .subtitle("")
-                        .cardImageUrl(csr.getString(1))
+                        .cardImageUrl(imageUrl)
                         .progflags("0")
                         .build();
                 video.type = Video.TYPE_SERIES;
@@ -170,7 +174,6 @@ public class VideoListModel extends ViewModel {
 
     private void loadTitle() {
         videoList.clear();
-        // Load only a list of unique titles
         Context context = MyApplication.getAppContext();
         VideoDbHelper dbh = VideoDbHelper.getInstance(context);
         SQLiteDatabase db = dbh.getReadableDatabase();
@@ -179,12 +182,13 @@ public class VideoListModel extends ViewModel {
         StringBuilder sql = new StringBuilder("SELECT * FROM video "
                 + "WHERE rectype = 1 ");
         String [] parms;
-        if (!allTitle.equals(recGroup)) {
+        if (allTitle.equals(recGroup)) {
+            sql.append("AND recgroup != 'Deleted' ");
+            parms = new String[]{title};
+        } else{
             sql.append("AND recgroup = ? ");
             parms = new String[]{recGroup, title};
         }
-        else
-            parms = new String[]{title};
         sql.append("AND title = ? ORDER BY airdate, starttime");
         Cursor csr = db.rawQuery(sql.toString(), parms);
         VideoCursorMapper mapper = new VideoCursorMapper();

@@ -4,9 +4,11 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.mythtv.mobfront.MainActivityModel;
 import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.ui.videolist.VideoListModel;
@@ -127,6 +129,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
         reloadDB = false;
         isActive = false;
         super.onPause();
+        MainActivityModel viewModel = new ViewModelProvider(getActivity()).get(MainActivityModel.class);
+        if (BackendCache.getInstance().authorization == null)
+            viewModel.restartMythTask();
     }
 
     private static String validateNumber(Object action, int min, int max, int defValue) {
