@@ -54,16 +54,17 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     final MutableLiveData<Long> commBreakDlg = new MutableLiveData<>();
     final String TAG = "mfe";
     final String CLASS = "PlaybackViewModel";
-    static final float[] ASPECT_VALUES = {1.333333f, 1.7777777f, 0.5625f};
-    static final int [] ASPECT_DRAWABLES = {R.drawable.ic_aspect_4x3,
-            R.drawable.ic_aspect_16x9, R.drawable.ic_aspect_9x16};
-    int currentAspectIx = -1;
+    // aspectValues[0] will change from 0f to the default value of the video
+    float[] aspectValues = {0f, 1.333333f, 1.7777777f, 0.5625f};
+    static final int [] ASPECT_DRAWABLES = {R.drawable.ic_aspect_button,
+            R.drawable.ic_aspect_4x3, R.drawable.ic_aspect_16x9, R.drawable.ic_aspect_9x16};
+    int currentAspectIx = 0;
     float currentAspect = 0.0f;
     static final int [] RESIZE_MODES = {
         AspectRatioFrameLayout.RESIZE_MODE_FIT,
         AspectRatioFrameLayout.RESIZE_MODE_ZOOM
     };
-    static final int [] RESIZE_DRAWABLES = {R.drawable.ic_zoom_small,R.drawable.ic_zoom_large};
+    static final int [] RESIZE_DRAWABLES = {R.drawable.ic_zoom_button,R.drawable.ic_zoom_large};
     int currentResizeIx = 0;
     int currentResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
 
@@ -85,7 +86,8 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
                 }
             }
         }
-        if (currentAspectIx != -1)
+        aspectValues[0] =  (float)vs.width / (float)vs.height * vs.pixelWidthHeightRatio;
+        if (currentAspectIx != 0)
             vs = new VideoSize(vs.width, vs.height,
                     currentAspect * (float) vs.height / (float) vs.width);
         return vs;
@@ -181,9 +183,9 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             priorCommBreak = nextCommBreakMs;
             switch (commBreakOption) {
                 case COMMBREAK_SKIP:
-                    player.seekTo(newPosition);
                     commSkipToast.postValue(new long[]
                             {-2, newPosition - player.getCurrentPosition()});
+                    player.seekTo(newPosition);
                     break;
                 case COMMBREAK_NOTIFY:
                     commBreakDlg.postValue(newPosition);

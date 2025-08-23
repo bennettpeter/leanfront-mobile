@@ -294,9 +294,9 @@ public class PlaybackFragment extends Fragment {
         if (aspectButton != null) {
             aspectButton.setOnClickListener((View v) -> {
                 viewModel.currentAspectIx++;
-                if (viewModel.currentAspectIx >= viewModel.ASPECT_VALUES.length)
+                if (viewModel.currentAspectIx >= viewModel.aspectValues.length)
                     viewModel.currentAspectIx = 0;
-                viewModel.currentAspect = viewModel.ASPECT_VALUES [viewModel.currentAspectIx];
+                viewModel.currentAspect = viewModel.aspectValues[viewModel.currentAspectIx];
                 if (contentFrame == null)
                     contentFrame = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
                 contentFrame.setAspectRatio(viewModel.currentAspect);

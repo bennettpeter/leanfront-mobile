@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModel;
 import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.data.XmlNode;
-import org.mythtv.mobfront.ui.playback.PlaybackViewModel;
 import org.mythtv.mobfront.ui.settings.SettingsFragment;
 import org.xmlpull.v1.XmlPullParserException;
 

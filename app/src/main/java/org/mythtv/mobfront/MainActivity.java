@@ -62,12 +62,18 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(bottomNavigationView, navController);
         }
         viewModel.toast.observe(this, (Integer msg) -> {
+            if (msg == 0)
+                return;
             Toast.makeText(this,
                 msg, Toast.LENGTH_LONG)
                 .show();
+            viewModel.toast.setValue(0);
         });
         viewModel.navigate.observe(this, (Integer dest) -> {
+            if (dest == 0)
+                return;
             navController.navigate(dest.intValue());
+            viewModel.navigate.setValue(0);
         });
 
     }
