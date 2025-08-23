@@ -72,12 +72,12 @@ public class MainActivityModel extends ViewModel {
                 boolean loginTried = false;
                 boolean loginNeededNow = false;
                 boolean connection = false;
-                boolean connectionfail = false;
                 String backendIP = Settings.getString("pref_backend");
                 backendIP = XmlNode.fixIpAddress(backendIP);
                 if (backendIP.length() == 0)
                     return;
                 while (!connection) {
+                    boolean connectionfail = false;
                     if (SettingsFragment.isActive) {
                         try {
                             Thread.sleep(2000);
@@ -148,14 +148,13 @@ public class MainActivityModel extends ViewModel {
                                     || loginTried) {
                                 BackendCache.getInstance().loginNeeded = true;
                                 toastMsg = R.string.msg_backend_login_req;
-//                                MainActivity.this.runOnUiThread(() -> {
-//                                    navController.navigate(R.id.nav_settings);
-//                                });
                                 navigate.postValue(R.id.nav_settings);
                             } else
                                 loginNeededNow = true;
-                        } else
+                        } else {
+                            e.printStackTrace();
                             toastMsg = R.string.msg_no_connection;
+                        }
                         connectionfail = true;
                     }
                     if (connectionfail)
@@ -163,12 +162,6 @@ public class MainActivityModel extends ViewModel {
                             toastMsg = R.string.msg_wake_backend;
 
                     if (toastMsg != 0) {
-//                        final int msg = toastMsg;
-//                        MainActivity.this.runOnUiThread(() -> {
-//                            Toast.makeText(MainActivity.this,
-//                                            msg, Toast.LENGTH_LONG)
-//                                    .show();
-//                        });
                         toast.postValue(toastMsg);
                         try {
                             Thread.sleep(5000);
