@@ -28,7 +28,9 @@
 
     <TextView
         android:id="@+id/text_view_item_videolist"
-        android:layout_width="284dp"
+        android:paddingLeft="@dimen/item_transform_image_length"
+        android:paddingRight="32dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
@@ -37,6 +39,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/image_view_item_videolist"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
@@ -45,7 +48,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        app:layout_constraintStart_toEndOf="@+id/text_view_item_videolist"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

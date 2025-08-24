@@ -11,7 +11,7 @@
         android:id="@+id/recyclerview_videolist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="LinearLayoutManager"
+        app:layoutManager="GridLayoutManager"
         tools:context=".ui.videolist.VideoListFragment" />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
