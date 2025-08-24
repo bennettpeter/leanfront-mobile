@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +35,7 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
 
+import org.mythtv.mobfront.MyApplication;
 import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.Action;
 import org.mythtv.mobfront.data.AsyncBackendCall;
@@ -46,7 +47,11 @@ import org.mythtv.mobfront.databinding.FragmentVideolistBinding;
 import org.mythtv.mobfront.databinding.ItemVideolistBinding;
 import org.mythtv.mobfront.ui.playback.PlaybackActivity;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -114,6 +119,9 @@ public class VideoListFragment extends Fragment {
         binding.swiperefresh.setOnRefreshListener(() -> {
             videoListModel.startFetch();
         });
+        DividerItemDecoration dec = new DividerItemDecoration(recyclerView.getContext(),
+               DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dec);
         return root;
     }
 
@@ -358,13 +366,29 @@ public class VideoListFragment extends Fragment {
             subtitle.append('S').append(video.season).append('E').append(video.episode)
                     .append(' ');
         }
-        else if (video.airdate!= null) {
-            subtitle.append(video.airdate).append(" ");
-        }
+//        String recDate = null;
+//        if (video.starttime!= null) {
+//            try {
+//            SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
+//            DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
+//                    (MyApplication.getAppContext());
+//            if (video.starttime != null) {
+//                Date date = dbFormat.parse(video.starttime + "+0000");
+//                recDate = outFormat.format(date);
+//            }
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
         if (video.subtitle == null || video.subtitle.trim().length() == 0
-                || video.type == Video.TYPE_VIDEO)
-            subtitle.append(video.title).append(": ");
+                || video.type == Video.TYPE_VIDEO) {
+            subtitle.append(video.title);
+            if (video.subtitle != null && video.subtitle.trim().length() > 0)
+                subtitle.append(": ");
+        }
         subtitle.append(video.subtitle);
+//        if (recDate != null)
+//            subtitle.append(" (").append(recDate).append(")");
         return subtitle.toString();
     }
 
@@ -399,37 +423,82 @@ public class VideoListFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull VideoListViewHolder holder, int position) {
             Video video = getItem(position);
+            holder.itemDateView.setText(null);
+            holder.itemDescView.setText(null);
+            String airdate = null;
+            if (video.airdate != null) {
+                try {
+                    SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
+                            (MyApplication.getAppContext());
+                    if ("01-01".equals(video.airdate.substring(5)))
+                        airdate = video.airdate.substring(0, 4);
+                    else {
+                        Date date = dbFormat.parse(video.airdate);
+//                        String origDate = outFormat.format(date);
+//                    if (!Objects.equals(origDate,recDate))
+                        airdate = outFormat.format(date);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            String recDate = null;
+            if (video.starttime!= null) {
+                try {
+                    SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
+                    DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
+                            (MyApplication.getAppContext());
+                    if (video.starttime != null) {
+                        Date date = dbFormat.parse(video.starttime + "+0000");
+                        recDate = outFormat.format(date);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (airdate == null)
+                airdate = recDate;
+
+            else if (recDate != null && !recDate.equals(airdate))
+                airdate += " (" + recDate + ")";
+
             if (video.type == Video.TYPE_SERIES) {
-                holder.textView.setText(video.title);
+                holder.itemTitleView.setText(video.title);
                 holder.playIconView.setVisibility(View.INVISIBLE);
             }
             else if (video.type == Video.TYPE_EPISODE) {
-                holder.textView.setText(getEpisodeSubtitle(video));
+                holder.itemTitleView.setText(getEpisodeSubtitle(video));
                 holder.playIconView.setVisibility(View.VISIBLE);
+                holder.itemDateView.setText(airdate);
+                holder.itemDescView.setText(video.description);
             }
             else if (video.type == Video.TYPE_VIDEO) {
-                holder.textView.setText(getEpisodeSubtitle(video));
+                holder.itemTitleView.setText(getEpisodeSubtitle(video));
                 holder.playIconView.setVisibility(View.VISIBLE);
+                holder.itemDateView.setText(airdate);
+                holder.itemDescView.setText(video.description);
             }
             else if (video.type == Video.TYPE_VIDEODIR) {
-                holder.textView.setText(video.title);
+                holder.itemTitleView.setText(video.title);
                 holder.playIconView.setVisibility(View.INVISIBLE);
             }
             else {
-                holder.textView.setText(String.valueOf(video.type));
+                holder.itemTitleView.setText(String.valueOf(video.type));
                 holder.playIconView.setVisibility(View.INVISIBLE);
             }
 
             if (video.type == Video.TYPE_VIDEODIR) {
-                holder.imageView.setImageResource(R.drawable.ic_folder_24px);
+                holder.itemImageView.setImageResource(R.drawable.ic_folder_24px);
             }
             else {
                 String imageUrl = video.cardImageUrl;
                 if (imageUrl == null) {
                     if (video.type == Video.TYPE_SERIES)
-                        holder.imageView.setImageResource(R.drawable.ic_movie_24px);
+                        holder.itemImageView.setImageResource(R.drawable.ic_movie_24px);
                     else
-                        holder.imageView.setImageDrawable(null);
+                        holder.itemImageView.setImageDrawable(null);
 
                 }
                 else {
@@ -446,45 +515,48 @@ public class VideoListFragment extends Fragment {
                     Glide.with(fragment.getContext())
                             .load(url)
                             .apply(options)
-                            .into(holder.imageView);
+                            .into(holder.itemImageView);
                 }
             }
-            if (video.type == Video.TYPE_VIDEO
-                || video.type == Video.TYPE_EPISODE)
-                holder.optionsView.setVisibility(View.VISIBLE);
-            else
-                holder.optionsView.setVisibility(View.INVISIBLE);
+//            if (video.type == Video.TYPE_VIDEO
+//                || video.type == Video.TYPE_EPISODE)
+//                holder.optionsView.setVisibility(View.VISIBLE);
+//            else
+//                holder.optionsView.setVisibility(View.INVISIBLE);
 
         }
     }
 
     private static class VideoListViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView imageView;
-        private final TextView textView;
-        private final TextView optionsView;
+        private final ImageView itemImageView;
+        private final TextView itemTitleView;
+        private final TextView itemDateView;
+        private final TextView itemDescView;
+//        private final TextView optionsView;
         private final ImageView playIconView;
 
         public VideoListViewHolder(ItemVideolistBinding binding, VideoListFragment fragment) {
             super(binding.getRoot());
-            imageView = binding.imageViewItemVideolist;
-            textView = binding.textViewItemVideolist;
-            optionsView = binding.itemOptions;
+            itemImageView = binding.itemImage;
+            itemTitleView = binding.itemTitle;
+            itemDateView = binding.itemDate;
+            itemDescView = binding.itemDesc;
+//            optionsView = binding.itemOptions;
             playIconView = binding.playIcon;
 //            binding.getRoot().setOnClickListener( (view) ->  {
-            imageView.setOnClickListener((View v) -> {
-                // If this does not work try getAbsoluteAdapterPosition
+            itemImageView.setOnClickListener((View v) -> {
                 fragment.onItemClick(getBindingAdapterPosition());
             });
-            optionsView.setOnClickListener((View v) -> {
+            binding.getRoot().setOnClickListener((View v) -> {
                 fragment.onItemMore(v, getBindingAdapterPosition());
             });
-            textView.setOnClickListener((View v) -> {
-                if (fragment.orientation == Configuration.ORIENTATION_PORTRAIT)
-                    imageView.performClick();
-                else
-                    optionsView.performClick();
-            });
+//            textView.setOnClickListener((View v) -> {
+//                if (fragment.orientation == Configuration.ORIENTATION_PORTRAIT)
+//                    imageView.performClick();
+//                else
+//                    optionsView.performClick();
+//            });
         }
     }
 }

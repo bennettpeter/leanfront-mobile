@@ -416,7 +416,7 @@ public class PlaybackFragment extends Fragment {
                             break;
                         }
                         else {
-//                            setPossibleEmptyTrack = true;
+                            setPossibleEmptyTrack = true;
                             msgNum = R.string.pberror_source;
                         }
                         break;

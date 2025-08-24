@@ -1,57 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/image_view_item_videolist"
-        android:layout_width="@dimen/item_transform_image_length"
-        android:layout_height="@dimen/item_transform_image_height"
+        android:id="@+id/item_image"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:maxWidth="120dp"
+        android:maxHeight="160dp"
+        android:scaleType="centerCrop"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
-    <!--    android:layout_margin="8dp"-->
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
     <ImageView
         android:id="@+id/play_icon"
-        android:layout_width="@dimen/item_transform_image_length"
-        android:layout_height="@dimen/item_transform_image_height"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:padding="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/play_arrow" />
 
-
     <TextView
-        android:id="@+id/text_view_item_videolist"
-        android:paddingLeft="@dimen/item_transform_image_length"
-        android:paddingRight="32dp"
-        android:layout_width="match_parent"
+        android:id="@+id/item_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="120dp"
+        android:paddingRight="16dp"
         android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_view_item_videolist"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/item_options"
-        android:layout_width="32dp"
+        android:id="@+id/item_date"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="&#8942;"
-        android:gravity="center"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="120dp"
+        android:paddingRight="16dp"
+        android:textColor="@color/black"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_title"/>
+
+    <TextView
+        android:id="@+id/item_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="120dp"
+        android:paddingRight="16dp"
+        android:textColor="@color/black"
+        android:textStyle="normal"
+        android:gravity="top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_date" />
 </androidx.constraintlayout.widget.ConstraintLayout>

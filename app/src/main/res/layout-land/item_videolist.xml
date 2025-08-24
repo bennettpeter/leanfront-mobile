@@ -1,55 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/image_view_item_videolist"
-        android:layout_width="@dimen/item_transform_image_length"
-        android:layout_height="@dimen/item_transform_image_height"
+        android:id="@+id/item_image"
+        android:layout_width="284dp"
+        android:layout_height="160dp"
+        android:maxWidth="284dp"
+        android:maxHeight="160dp"
+        android:scaleType="fitCenter"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <ImageView
         android:id="@+id/play_icon"
-        android:layout_width="@dimen/item_transform_image_length"
-        android:layout_height="@dimen/item_transform_image_height"
+        android:layout_width="284dp"
+        android:layout_height="160dp"
+        android:padding="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/play_arrow" />
 
-    <!--    android:layout_margin="8dp"-->
-
-    <!--    android:layout_width="@dimen/item_transform_image_length"-->
-
     <TextView
-        android:id="@+id/text_view_item_videolist"
+        android:id="@+id/item_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="124dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="284dp"
+        android:paddingRight="16dp"
         android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/item_options"
-        app:layout_constraintStart_toStartOf="@id/image_view_item_videolist"
-        app:layout_constraintTop_toBottomOf="@id/image_view_item_videolist"
-        tools:text="This is item # xx" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/item_options"
-        android:layout_width="16dp"
+        android:id="@+id/item_date"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_view_item_videolist"
-        app:layout_constraintStart_toEndOf="@id/text_view_item_videolist"
-        app:layout_constraintEnd_toEndOf="@id/image_view_item_videolist"
-        android:gravity="center"
-        android:text="&#8942;"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="284dp"
+        android:paddingRight="16dp"
+        android:textColor="@color/black"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_title"/>
 
+    <TextView
+        android:id="@+id/item_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="284dp"
+        android:paddingRight="16dp"
+        android:textColor="@color/black"
+        android:textStyle="normal"
+        android:gravity="top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_date" />
 </androidx.constraintlayout.widget.ConstraintLayout>
