@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv Lean Frontend</string>
   <string name="nav_header_desc">Nagłówek nawigacyjny</string>
-  <string name="menu_videolist">Lista wideo</string>
+  <string name="menu_videolist">Głoska bezdźwięczna</string>
   <string name="menu_refresh">Odświeżać</string>
   <string name="menu_slideshow">Slajd</string>
   <string name="menu_settings">Ustawienia</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Automatycznie pomiń</string>
   <string name="pref_commskip_start">Regulacja pozycji początkowej (sekundy)</string>
   <string name="pref_commskip_end">Regulacja pozycji końcowej (sekundy)</string>
+  <string name="msg_commskip_none">Dla tego nagrywania nie ma danych dotyczących przełomowych ani cięć komercyjnych.</string>
+  <string name="msg_commskip_start">Pomijam %1 02d: %2 02d $. Początek przerwy komercyjnej.</string>
+  <string name="msg_commskip_end">Pomijam %1 02d: %2 02d $. Koniec przerwy komercyjnej.</string>
+  <string name="msg_commskip_last">Nigdy więcej przerw handlowych.</string>
   <string name="msg_commskip_skipped">Przerwa komercyjna pominęła.</string>
+  <string name="msg_commskip_back">Pomijam %1 02d: %2 02d $. Wracając do miejsca, w którym byłeś.</string>
+  <string name="msg_commskip_start_show">Pomijam %1 02d: %2 02d $. Początek show.</string>
   <string name="pref_title_backend_ip">Adres IP lub nazwa DNS</string>
   <string name="pref_title_backend">Backend mithtv</string>
   <string name="pref_title_myth_port">Port Backend Mythtv</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Hasło</string>
   <string name="pref_title_backend_mac">Wakeup MAC Adres</string>
   <string name="pref_title_playback">Odtwarzanie nagranego dźwięku</string>
-  <string name="pref_max_vids">Maksymalne nagrania/filmy do załadowania</string>
+  <string name="pref_max_vids">Maksymalne nagrania i filmy do załadowania</string>
   <string name="pref_ff_title">Dekodowanie audio</string>
   <string name="pref_ff_video_title">Dekodowanie wideo</string>
   <string name="pref_decode_auto">Auto Select</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Odrzuć sekundy</string>
   <string name="pref_poss_empty">Zignoruj dodatkowy utwór</string>
   <string name="pref_num_cc_chans">Liczba śladów CEA Zamknięte podpisy</string>
+  <string name="pref_title_jump">Przeskocz minuty do przodu</string>
+  <string name="pref_title_prevnext">Użyj ikon ⏮ i ⏭.</string>
+  <string name="pref_entry_prevnext_jump">Skok</string>
+  <string name="pref_entry_prevnext_comskip">Pomiń reklamę</string>
+  <string name="pref_value_prevnext_jump">skok</string>
+  <string name="pref_value_prevnext_comskip">Skipcom</string>
   <string name="resume_last">Graj z ostatniej pozycji gry</string>
   <string name="play">Grać od początku</string>
   <string name="menu_mark_unwatched">Znak jako nieuczciony</string>

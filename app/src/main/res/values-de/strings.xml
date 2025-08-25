@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv schlanker Frontend</string>
   <string name="nav_header_desc">Navigation header</string>
-  <string name="menu_videolist">Videoliste</string>
+  <string name="menu_videolist">Medien</string>
   <string name="menu_refresh">Aktualisieren</string>
   <string name="menu_slideshow">Diashow</string>
   <string name="menu_settings">Einstellungen</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Automatisch überspringen</string>
   <string name="pref_commskip_start">Startpositionseinstellung (Sekunden)</string>
   <string name="pref_commskip_end">Endpositionseinstellung (Sekunden)</string>
+  <string name="msg_commskip_none">Für diese Aufzeichnung gibt es keine kommerziellen Pause- oder Schnittlistendaten.</string>
+  <string name="msg_commskip_start">Übersprungen %1 $ 02d: %2 $ 02d. Beginn der kommerziellen Pause.</string>
+  <string name="msg_commskip_end">Übersprungen %1 $ 02d: %2 $ 02d. Ende der kommerziellen Pause.</string>
+  <string name="msg_commskip_last">Keine kommerziellen Pausen mehr.</string>
   <string name="msg_commskip_skipped">Kommerzielle Pause übersprungen.</string>
+  <string name="msg_commskip_back">Übersprungen %1 $ 02d: %2 $ 02d. Zurück dorthin, wo du warst.</string>
+  <string name="msg_commskip_start_show">Übersprungen %1 $ 02d: %2 $ 02d. Beginn der Show.</string>
   <string name="pref_title_backend_ip">IP -Adresse oder DNS -Name</string>
   <string name="pref_title_backend">Mythtv Backend</string>
   <string name="pref_title_myth_port">Mythtv Backend Port</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Passwort</string>
   <string name="pref_title_backend_mac">Weck -MAC -Adresse</string>
   <string name="pref_title_playback">Wiedergabe</string>
-  <string name="pref_max_vids">Maximale Aufnahmen/Videos zum Laden</string>
+  <string name="pref_max_vids">Maximale Aufnahmen und Videos zum Laden</string>
   <string name="pref_ff_title">Audio -Dekodie</string>
   <string name="pref_ff_video_title">Video Decode</string>
   <string name="pref_decode_auto">Automatische Auswahl</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Überspringen Sie Sekunden zurück</string>
   <string name="pref_poss_empty">Ignorieren Sie zusätzliche Strecke</string>
   <string name="pref_num_cc_chans">Anzahl der CEA -Untertitel -Spuren</string>
+  <string name="pref_title_jump">Rückspringen/Vorwärts Minuten</string>
+  <string name="pref_title_prevnext">Verwenden Sie für ⏮- und ⏭ -Icons.</string>
+  <string name="pref_entry_prevnext_jump">Springen</string>
+  <string name="pref_entry_prevnext_comskip">Werbung überspringen</string>
+  <string name="pref_value_prevnext_jump">springen</string>
+  <string name="pref_value_prevnext_comskip">Skipcom</string>
   <string name="resume_last">Spielen Sie von der letzten Spielposition ab</string>
   <string name="play">Von Anfang an spielen</string>
   <string name="menu_mark_unwatched">Markieren Sie als ungefolgt</string>

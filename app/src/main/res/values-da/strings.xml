@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv Lean Frontend</string>
   <string name="nav_header_desc">Navigationshoved</string>
-  <string name="menu_videolist">Video -liste</string>
+  <string name="menu_videolist">Medier</string>
   <string name="menu_refresh">Opfriske</string>
   <string name="menu_slideshow">Slideshow</string>
   <string name="menu_settings">Indstillinger</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Spring automatisk over</string>
   <string name="pref_commskip_start">Startpositionjustering (sekunder)</string>
   <string name="pref_commskip_end">Justering af slutposition (sekunder)</string>
+  <string name="msg_commskip_none">Der er ingen kommerciel pause eller nedskærede listedata til denne optagelse.</string>
+  <string name="msg_commskip_start">Springet %1 $ 02d: %2 $ 02d. Start af kommerciel pause.</string>
+  <string name="msg_commskip_end">Springet %1 $ 02d: %2 $ 02d. Slutningen af ​​kommerciel pause.</string>
+  <string name="msg_commskip_last">Ikke flere kommercielle pauser.</string>
   <string name="msg_commskip_skipped">Kommerciel pause sprang over.</string>
+  <string name="msg_commskip_back">Springet %1 $ 02d: %2 $ 02d. Tilbage til hvor du var.</string>
+  <string name="msg_commskip_start_show">Springet %1 $ 02d: %2 $ 02d. Start af showet.</string>
   <string name="pref_title_backend_ip">IP -adresse eller DNS -navn</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">Mythtv backend -port</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Adgangskode</string>
   <string name="pref_title_backend_mac">Vågn op MAC -adresse</string>
   <string name="pref_title_playback">Afspilning</string>
-  <string name="pref_max_vids">Maksimale optagelser/videoer, der skal indlæses</string>
+  <string name="pref_max_vids">Maksimale optagelser og videoer, der skal indlæses</string>
   <string name="pref_ff_title">Lydafkodning</string>
   <string name="pref_ff_video_title">Video afkode</string>
   <string name="pref_decode_auto">Auto Select</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Spring tilbage sekunder</string>
   <string name="pref_poss_empty">Ignorer ekstra spor</string>
   <string name="pref_num_cc_chans">Antal CEA lukkede billedtekstspor</string>
+  <string name="pref_title_jump">Spring tilbage/fremad minutter</string>
+  <string name="pref_title_prevnext">Brug til ⏮ og ⏭ ikoner.</string>
+  <string name="pref_entry_prevnext_jump">Springe</string>
+  <string name="pref_entry_prevnext_comskip">Spring over kommerciel</string>
+  <string name="pref_value_prevnext_jump">springe</string>
+  <string name="pref_value_prevnext_comskip">Skipcom</string>
   <string name="resume_last">Spil fra sidste legeposition</string>
   <string name="play">Spil fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>

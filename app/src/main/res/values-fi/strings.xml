@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv Lean Frontend</string>
   <string name="nav_header_desc">Navigointioppi</string>
-  <string name="menu_videolist">Videoluettelo</string>
+  <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Virkistää</string>
   <string name="menu_slideshow">Diaesitys</string>
   <string name="menu_settings">Asetukset</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Ohittaa automaattisesti</string>
   <string name="pref_commskip_start">Käynnistä asennon säätö (sekunnit)</string>
   <string name="pref_commskip_end">Loppuasennon säätö (sekunnit)</string>
+  <string name="msg_commskip_none">Tätä nauhoitusta varten ei ole kaupallista taukoa tai leikkaustietoa.</string>
+  <string name="msg_commskip_start">Ohitettu %1 $ 02d: %2 $ 02d. Kaupallisen tauon aloitus.</string>
+  <string name="msg_commskip_end">Ohitettu %1 $ 02d: %2 $ 02d. Kaupallisen tauon loppu.</string>
+  <string name="msg_commskip_last">Ei enää kaupallisia taukoja.</string>
   <string name="msg_commskip_skipped">Kaupallinen tauko ohitettiin.</string>
+  <string name="msg_commskip_back">Ohitettu %1 $ 02d: %2 $ 02d. Takaisin sinne, missä olit.</string>
+  <string name="msg_commskip_start_show">Ohitettu %1 $ 02d: %2 $ 02d. Näyttelyn aloitus.</string>
   <string name="pref_title_backend_ip">IP -osoite tai DNS -nimi</string>
   <string name="pref_title_backend">Mythtv tausta</string>
   <string name="pref_title_myth_port">MythTV -taustaportti</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Salasana</string>
   <string name="pref_title_backend_mac">Wakeup Mac -osoite</string>
   <string name="pref_title_playback">Toisto</string>
-  <string name="pref_max_vids">Latattavana olevat enimmäisrekisterit/videot</string>
+  <string name="pref_max_vids">Enimmäisrekisterit ja videot ladattavaksi</string>
   <string name="pref_ff_title">Äänen dekoodaus</string>
   <string name="pref_ff_video_title">Videoiden purku</string>
   <string name="pref_decode_auto">Auto Select</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Hyppää takaisin sekuntia</string>
   <string name="pref_poss_empty">Ohita ylimääräinen kappale</string>
   <string name="pref_num_cc_chans">CEA: n suljettujen kuvatekstien lukumäärä</string>
+  <string name="pref_title_jump">Hyppää takaisin/eteenpäin minuutteja</string>
+  <string name="pref_title_prevnext">Käytä ⏮- ja ⏭ -kuvakkeita.</string>
+  <string name="pref_entry_prevnext_jump">Hypätä</string>
+  <string name="pref_entry_prevnext_comskip">Ohittaa kaupallinen</string>
+  <string name="pref_value_prevnext_jump">hypätä</string>
+  <string name="pref_value_prevnext_comskip">Skipcom</string>
   <string name="resume_last">Pelata viimeisimmästä pelialueesta</string>
   <string name="play">Pelaaminen alusta alkaen</string>
   <string name="menu_mark_unwatched">Merkitä</string>

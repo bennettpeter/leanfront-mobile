@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv lean frontend</string>
   <string name="nav_header_desc">Encabezado de navegación</string>
-  <string name="menu_videolist">Lista de videos</string>
+  <string name="menu_videolist">Medios de comunicación</string>
   <string name="menu_refresh">Refrescar</string>
   <string name="menu_slideshow">Presentación de diapositivas</string>
   <string name="menu_settings">Ajustes</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Omitir automáticamente</string>
   <string name="pref_commskip_start">Ajuste de posición de inicio (segundos)</string>
   <string name="pref_commskip_end">Ajuste de la posición final (segundos)</string>
+  <string name="msg_commskip_none">No hay datos de lista de descanso comercial o de corte para esta grabación.</string>
+  <string name="msg_commskip_start">Omitió %1 $ 02D: %2 $ 02D. Comienzo de las salidas comerciales.</string>
+  <string name="msg_commskip_end">Omitió %1 $ 02D: %2 $ 02D. Fin de la ruptura comercial.</string>
+  <string name="msg_commskip_last">No más descansos comerciales.</string>
   <string name="msg_commskip_skipped">Break Commercial Skoned.</string>
+  <string name="msg_commskip_back">Omitió %1 $ 02D: %2 $ 02D. De vuelta a donde estabas.</string>
+  <string name="msg_commskip_start_show">Omitió %1 $ 02D: %2 $ 02D. Comienzo del espectáculo.</string>
   <string name="pref_title_backend_ip">Dirección IP o nombre de DNS</string>
   <string name="pref_title_backend">Backend mythtv</string>
   <string name="pref_title_myth_port">Puerto de backend mythtv</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Contraseña</string>
   <string name="pref_title_backend_mac">Dirección MAC de activación</string>
   <string name="pref_title_playback">Reproducción</string>
-  <string name="pref_max_vids">Grabaciones/videos máximos para cargar</string>
+  <string name="pref_max_vids">Grabaciones y videos máximos para cargar</string>
   <string name="pref_ff_title">Decodificación de audio</string>
   <string name="pref_ff_video_title">Video decodificador</string>
   <string name="pref_decode_auto">Auto Seleccionar</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Saltar segundos</string>
   <string name="pref_poss_empty">Ignorar Track Extra</string>
   <string name="pref_num_cc_chans">Número de pistas de subtítulos de CEA</string>
+  <string name="pref_title_jump">Saltar hacia atrás/Adelante minutos</string>
+  <string name="pref_title_prevnext">Use para iconos ⏮ y ⏭.</string>
+  <string name="pref_entry_prevnext_jump">Saltar</string>
+  <string name="pref_entry_prevnext_comskip">Omitir comercial</string>
+  <string name="pref_value_prevnext_jump">saltar</string>
+  <string name="pref_value_prevnext_comskip">skipcom</string>
   <string name="resume_last">Jugar desde la última posición de juego</string>
   <string name="play">Jugar desde el inicio</string>
   <string name="menu_mark_unwatched">Mark como no</string>

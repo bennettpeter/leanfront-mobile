@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv Lean Frontend</string>
   <string name="nav_header_desc">Navigationshuvud</string>
-  <string name="menu_videolist">Videolista</string>
+  <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Uppdatera</string>
   <string name="menu_slideshow">Bildspel</string>
   <string name="menu_settings">Inställningar</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Hoppa automatiskt</string>
   <string name="pref_commskip_start">Startpositionjustering (sekunder)</string>
   <string name="pref_commskip_end">Justering av slutposition (sekunder)</string>
+  <string name="msg_commskip_none">Det finns ingen kommersiell avbrott eller skärning av listan för denna inspelning.</string>
+  <string name="msg_commskip_start">Hoppade över %1 $ 02d: %2 $ 02d. Början av kommersiell paus.</string>
+  <string name="msg_commskip_end">Hoppade över %1 $ 02d: %2 $ 02d. Slutet på kommersiell paus.</string>
+  <string name="msg_commskip_last">Inga fler kommersiella pauser.</string>
   <string name="msg_commskip_skipped">Kommersiell paus hoppade över.</string>
+  <string name="msg_commskip_back">Hoppade över %1 $ 02d: %2 $ 02d. Tillbaka till där du var.</string>
+  <string name="msg_commskip_start_show">Hoppade över %1 $ 02d: %2 $ 02d. Start av showen.</string>
   <string name="pref_title_backend_ip">IP -adress eller DNS -namn</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">Mythtv backend -port</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Lösenord</string>
   <string name="pref_title_backend_mac">Wakeup Mac -adress</string>
   <string name="pref_title_playback">Uppspelning</string>
-  <string name="pref_max_vids">Maximala inspelningar/videor att ladda</string>
+  <string name="pref_max_vids">Maximala inspelningar och videor att ladda</string>
   <string name="pref_ff_title">Ljudavkodning</string>
   <string name="pref_ff_video_title">Videokodning</string>
   <string name="pref_decode_auto">Auto Select</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Hoppa tillbaka sekunder</string>
   <string name="pref_poss_empty">Ignorera extra spår</string>
   <string name="pref_num_cc_chans">Antal CEA -stängda bildtexter</string>
+  <string name="pref_title_jump">Hoppa tillbaka/framåt minuter</string>
+  <string name="pref_title_prevnext">Användning för ⏮ och ⏭ -ikoner.</string>
+  <string name="pref_entry_prevnext_jump">Hoppa</string>
+  <string name="pref_entry_prevnext_comskip">Hoppa över reklam</string>
+  <string name="pref_value_prevnext_jump">hoppa</string>
+  <string name="pref_value_prevnext_comskip">skipcom</string>
   <string name="resume_last">Spela från sista spelpositionen</string>
   <string name="play">Spela från Start</string>
   <string name="menu_mark_unwatched">Markera som oönskat</string>

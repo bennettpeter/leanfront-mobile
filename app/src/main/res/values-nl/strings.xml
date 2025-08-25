@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv lean frontend</string>
   <string name="nav_header_desc">Navigatiekop</string>
-  <string name="menu_videolist">Videolijst</string>
+  <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Opfrissen</string>
   <string name="menu_slideshow">Diavoorstelling</string>
   <string name="menu_settings">Instellingen</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Automatisch overslaan</string>
   <string name="pref_commskip_start">Startpositieaanpassing (seconden)</string>
   <string name="pref_commskip_end">Eindpositie -aanpassing (seconden)</string>
+  <string name="msg_commskip_none">Er zijn geen commerciële break- of snitlijstgegevens voor deze opname.</string>
+  <string name="msg_commskip_start">SKIPT %1 $ 02D: %2 $ 02D. Start van commerciële pauze.</string>
+  <string name="msg_commskip_end">SKIPT %1 $ 02D: %2 $ 02D. Einde van de commerciële pauze.</string>
+  <string name="msg_commskip_last">Geen commerciële pauzes meer.</string>
   <string name="msg_commskip_skipped">Commerciële pauze overgeslagen.</string>
+  <string name="msg_commskip_back">SKIPT %1 $ 02D: %2 $ 02D. Terug naar waar je was.</string>
+  <string name="msg_commskip_start_show">SKIPT %1 $ 02D: %2 $ 02D. START VAN SHOW.</string>
   <string name="pref_title_backend_ip">IP -adres of DNS -naam</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">Mythtv backend -poort</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Wachtwoord</string>
   <string name="pref_title_backend_mac">Wake -up mac -adres</string>
   <string name="pref_title_playback">Afspelen</string>
-  <string name="pref_max_vids">Maximale opnames/video\'s om te laden</string>
+  <string name="pref_max_vids">Maximale opnames en video\'s om te laden</string>
   <string name="pref_ff_title">Audiocode</string>
   <string name="pref_ff_video_title">Video -decodeer</string>
   <string name="pref_decode_auto">Auto selecteren</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Seconds overslaan</string>
   <string name="pref_poss_empty">Negeer extra nummer</string>
   <string name="pref_num_cc_chans">Aantal CEA gesloten bijschriftsporen</string>
+  <string name="pref_title_jump">Spring terug/voorwaartse minuten</string>
+  <string name="pref_title_prevnext">Gebruik voor ⏮ en ⏭ iconen.</string>
+  <string name="pref_entry_prevnext_jump">Springen</string>
+  <string name="pref_entry_prevnext_comskip">Sla de commerciële over</string>
+  <string name="pref_value_prevnext_jump">springen</string>
+  <string name="pref_value_prevnext_comskip">Skipcom</string>
   <string name="resume_last">Speel vanuit de laatste speelpositie</string>
   <string name="play">Speel vanaf het begin</string>
   <string name="menu_mark_unwatched">Markeer als niet -uitgesproken</string>

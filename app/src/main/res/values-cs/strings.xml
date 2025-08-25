@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">MYTHTV LEAN frontend</string>
   <string name="nav_header_desc">Navigační záhlaví</string>
-  <string name="menu_videolist">Seznam videí</string>
+  <string name="menu_videolist">Média</string>
   <string name="menu_refresh">Obnovit</string>
   <string name="menu_slideshow">Prezentace</string>
   <string name="menu_settings">Nastavení</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Automaticky přeskočit</string>
   <string name="pref_commskip_start">Startovací úprava pozice (sekundy)</string>
   <string name="pref_commskip_end">Nastavení koncové pozice (sekundy)</string>
+  <string name="msg_commskip_none">Pro tento záznam neexistují žádné komerční údaje o přestávce ani seznamu.</string>
+  <string name="msg_commskip_start">Přeskočené %1 $ 02d: %2 $ 02d. Začátek komerční přestávky.</string>
+  <string name="msg_commskip_end">Přeskočené %1 $ 02d: %2 $ 02d. Konec komerční přestávky.</string>
+  <string name="msg_commskip_last">Žádné další komerční přestávky.</string>
   <string name="msg_commskip_skipped">Komerční přestávka přeskočila.</string>
+  <string name="msg_commskip_back">Přeskočené %1 $ 02d: %2 $ 02d. Zpět tam, kde jsi byl.</string>
+  <string name="msg_commskip_start_show">Přeskočené %1 $ 02d: %2 $ 02d. Začátek show.</string>
   <string name="pref_title_backend_ip">IP adresa nebo název DNS</string>
   <string name="pref_title_backend">MYTHTV backend</string>
   <string name="pref_title_myth_port">Mythtv backend port</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Heslo</string>
   <string name="pref_title_backend_mac">Adresa MAC probuzení</string>
   <string name="pref_title_playback">Přehrávání</string>
-  <string name="pref_max_vids">Maximální nahrávky/videa k načtení</string>
+  <string name="pref_max_vids">Maximální nahrávky a videa k načtení</string>
   <string name="pref_ff_title">Audio dekódování</string>
   <string name="pref_ff_video_title">Video dekódování</string>
   <string name="pref_decode_auto">Automatické vybrat</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Přeskočit zpět sekundy</string>
   <string name="pref_poss_empty">Ignorujte další skladbu</string>
   <string name="pref_num_cc_chans">Počet uzavřených titulků CEA</string>
+  <string name="pref_title_jump">Skočte zpět/vpřed minuty</string>
+  <string name="pref_title_prevnext">Použití pro ikony ⏮ a ⏭.</string>
+  <string name="pref_entry_prevnext_jump">Skok</string>
+  <string name="pref_entry_prevnext_comskip">Přeskočit komerční</string>
+  <string name="pref_value_prevnext_jump">skok</string>
+  <string name="pref_value_prevnext_comskip">Skipcom</string>
   <string name="resume_last">Hrajte z poslední hry</string>
   <string name="play">Hrajte od začátku</string>
   <string name="menu_mark_unwatched">Mark As Unhethed</string>

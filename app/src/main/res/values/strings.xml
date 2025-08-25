@@ -2,7 +2,7 @@
     <string name="app_name">MythTV Lean Frontend</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <string name="menu_videolist">Recordings &amp; Videos</string>
+    <string name="menu_videolist">Media</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_settings">Settings</string>
@@ -69,7 +69,7 @@
     <string name="pref_title_backend_mac">Wakeup MAC Address</string>
 
     <string name="pref_title_playback">Playback</string>
-    <string name="pref_max_vids">Maximum Recordings/Videos to load</string>
+    <string name="pref_max_vids">Maximum Recordings &amp; Videos to load</string>
     <string name="pref_ff_title">Audio Decode</string>
     <string name="pref_ff_video_title">Video Decode</string>
     <string name="pref_decode_auto">Auto select</string>

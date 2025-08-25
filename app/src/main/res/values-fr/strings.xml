@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Frontend Lean MythTV</string>
   <string name="nav_header_desc">En-tête de navigation</string>
-  <string name="menu_videolist">Liste de vidéos</string>
+  <string name="menu_videolist">Médias</string>
   <string name="menu_refresh">Rafraîchir</string>
   <string name="menu_slideshow">Diaporama</string>
   <string name="menu_settings">Paramètres</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Sauter automatiquement</string>
   <string name="pref_commskip_start">Réglage de la position de démarrage (secondes)</string>
   <string name="pref_commskip_end">Réglage de la position finale (secondes)</string>
+  <string name="msg_commskip_none">Il n\'y a pas de données commerciales de pause ou de réduction pour cet enregistrement.</string>
+  <string name="msg_commskip_start">Sauté% 1 02d:% 2 02d $. Début de la pause commerciale.</string>
+  <string name="msg_commskip_end">Sauté% 1 02d:% 2 02d $. Fin de la pause commerciale.</string>
+  <string name="msg_commskip_last">Plus de pauses commerciales.</string>
   <string name="msg_commskip_skipped">Pause commerciale sautée.</string>
+  <string name="msg_commskip_back">Sauté% 1 02d:% 2 02d $. Retour à l\'endroit où vous étiez.</string>
+  <string name="msg_commskip_start_show">Sauté% 1 02d:% 2 02d $. Début du spectacle.</string>
   <string name="pref_title_backend_ip">Adresse IP ou nom DNS</string>
   <string name="pref_title_backend">MythTV Backend</string>
   <string name="pref_title_myth_port">Port backend mythtv</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Mot de passe</string>
   <string name="pref_title_backend_mac">Adresse MAC du réveil</string>
   <string name="pref_title_playback">Lecture</string>
-  <string name="pref_max_vids">Enregistrements / vidéos maximales à charger</string>
+  <string name="pref_max_vids">Enregistrements et vidéos maximales à charger</string>
   <string name="pref_ff_title">Decode audio</string>
   <string name="pref_ff_video_title">Décoder vidéo</string>
   <string name="pref_decode_auto">SELECT AUTO</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Sauter les secondes</string>
   <string name="pref_poss_empty">Ignorez la piste supplémentaire</string>
   <string name="pref_num_cc_chans">Nombre de traces de légendes fermées CEA</string>
+  <string name="pref_title_jump">Sauter en arrière / minutes en avant</string>
+  <string name="pref_title_prevnext">Utiliser pour les icônes ⏮ et ⏭.</string>
+  <string name="pref_entry_prevnext_jump">Saut</string>
+  <string name="pref_entry_prevnext_comskip">Sauter la publicité</string>
+  <string name="pref_value_prevnext_jump">saut</string>
+  <string name="pref_value_prevnext_comskip">skipcom</string>
   <string name="resume_last">Jouer de la dernière position de jeu</string>
   <string name="play">Jouer depuis le début</string>
   <string name="menu_mark_unwatched">Marquez comme non fixé</string>

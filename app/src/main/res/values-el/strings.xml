@@ -2,7 +2,7 @@
 <resources>
   <string name="app_name">Mythtv Lean Frontend</string>
   <string name="nav_header_desc">Κεφαλίδα πλοήγησης</string>
-  <string name="menu_videolist">Λίστα βίντεο</string>
+  <string name="menu_videolist">Μέσα ενημέρωσης</string>
   <string name="menu_refresh">Φρεσκάρω</string>
   <string name="menu_slideshow">Παρουσίαση</string>
   <string name="menu_settings">Ρυθμίσεις</string>
@@ -42,7 +42,13 @@
   <string name="menu_commskip_skip">Παραλείψτε αυτόματα</string>
   <string name="pref_commskip_start">Ρύθμιση θέσης έναρξης (δευτερόλεπτα)</string>
   <string name="pref_commskip_end">Ρύθμιση τερματισμού θέσης (δευτερόλεπτα)</string>
+  <string name="msg_commskip_none">Δεν υπάρχουν δεδομένα διαφημίσεων ή λίστας για αυτήν την εγγραφή.</string>
+  <string name="msg_commskip_start">Παραλείπονται %1 $ 02D: %2 $ 02D. Έναρξη εμπορικού διάλειμμα.</string>
+  <string name="msg_commskip_end">Παραλείπονται %1 $ 02D: %2 $ 02D. Τέλος εμπορικού διάλειμμα.</string>
+  <string name="msg_commskip_last">Δεν υπάρχουν άλλα διαφημιστικά διαλείμματα.</string>
   <string name="msg_commskip_skipped">Το διαφημιστικό διάλειμμα παραλείφθηκε.</string>
+  <string name="msg_commskip_back">Παραλείπονται %1 $ 02D: %2 $ 02D. Επιστροφή στο σημείο που ήσασταν.</string>
+  <string name="msg_commskip_start_show">Παραλείπονται %1 $ 02D: %2 $ 02D. Έναρξη της επίδειξης.</string>
   <string name="pref_title_backend_ip">Διεύθυνση IP ή όνομα DNS</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">Θύρα backend mythtv</string>
@@ -51,7 +57,7 @@
   <string name="pref_title_backend_passwd">Σύνθημα</string>
   <string name="pref_title_backend_mac">Διεύθυνση αφύπνισης MAC</string>
   <string name="pref_title_playback">Αναπαραγωγή</string>
-  <string name="pref_max_vids">Μέγιστες εγγραφές/βίντεο για φόρτωση</string>
+  <string name="pref_max_vids">Μέγιστες εγγραφές και βίντεο για φόρτωση</string>
   <string name="pref_ff_title">Αποκωδικοποίηση ήχου</string>
   <string name="pref_ff_video_title">Αποκωδικοποίηση βίντεο</string>
   <string name="pref_decode_auto">Αυτόματη επιλογή</string>
@@ -61,6 +67,12 @@
   <string name="pref_title_skip_back">Παράλειψη δευτερολέπτων</string>
   <string name="pref_poss_empty">Αγνοήστε επιπλέον κομμάτι</string>
   <string name="pref_num_cc_chans">Αριθμός κομματιών κλειστών λεζάνων CEA</string>
+  <string name="pref_title_jump">Πηδήξτε πίσω/προς τα εμπρός</string>
+  <string name="pref_title_prevnext">Χρησιμοποιήστε τα εικονίδια ⏮ και ⏭.</string>
+  <string name="pref_entry_prevnext_jump">Αλμα</string>
+  <string name="pref_entry_prevnext_comskip">Παραλείψτε το διαφημιστικό</string>
+  <string name="pref_value_prevnext_jump">άλμα</string>
+  <string name="pref_value_prevnext_comskip">σκακιές</string>
   <string name="resume_last">Παίξτε από την τελευταία θέση παιχνιδιού</string>
   <string name="play">Παίξτε από την αρχή</string>
   <string name="menu_mark_unwatched">Σηματοδοτείται ως ακατέργαστο</string>
