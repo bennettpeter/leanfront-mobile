@@ -19,13 +19,10 @@ import java.util.List;
 
 public class VideoListModel extends ViewModel {
 
-//    private final MutableLiveData<List<String>> mTexts;
     MutableLiveData<List<Video>> videos;
-//    ArrayList<Integer> typeList = new ArrayList();
     static final int TYPE_RECGROUP = 1;
     static final int TYPE_SERIES = 2;
     static final int TYPE_VIDEODIR = 3;
-//    ArrayDeque <Level> stack = new ArrayDeque();
     int pageType;
     // Rec group being shown
     String recGroup;

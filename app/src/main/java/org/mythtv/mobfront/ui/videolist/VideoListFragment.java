@@ -395,6 +395,8 @@ public class VideoListFragment extends Fragment {
     private static class VideoListAdapter extends ListAdapter<Video, VideoListViewHolder> {
 
         private VideoListFragment fragment;
+        private float defaultTextSize = 15.0f;
+        private float largeTextSize = 20.0f;
 
         protected VideoListAdapter(VideoListFragment fragment) {
             super(new DiffUtil.ItemCallback<Video>() {
@@ -425,6 +427,7 @@ public class VideoListFragment extends Fragment {
             Video video = getItem(position);
             holder.itemDateView.setText(null);
             holder.itemDescView.setText(null);
+            holder.itemDescView.setTextSize(defaultTextSize);
             String airdate = null;
             if (video.airdate != null) {
                 try {
@@ -465,7 +468,9 @@ public class VideoListFragment extends Fragment {
                 airdate += " (" + recDate + ")";
 
             if (video.type == Video.TYPE_SERIES) {
-                holder.itemTitleView.setText(video.title);
+                holder.itemTitleView.setText(null);
+                holder.itemDescView.setText(video.title);
+                holder.itemDescView.setTextSize(largeTextSize);
                 holder.playIconView.setVisibility(View.INVISIBLE);
             }
             else if (video.type == Video.TYPE_EPISODE) {
@@ -481,7 +486,9 @@ public class VideoListFragment extends Fragment {
                 holder.itemDescView.setText(video.description);
             }
             else if (video.type == Video.TYPE_VIDEODIR) {
-                holder.itemTitleView.setText(video.title);
+                holder.itemTitleView.setText(null);
+                holder.itemDescView.setText(video.title);
+                holder.itemDescView.setTextSize(largeTextSize);
                 holder.playIconView.setVisibility(View.INVISIBLE);
             }
             else {
