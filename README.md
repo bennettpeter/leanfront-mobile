@@ -41,10 +41,10 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 
 <details><summary>More details</summary>
 
-- The LiveTV group shows recordings already made from Live TV. This app does not supporte watching Live TV.
+- The LiveTV group shows recordings already made from Live TV. This app does not support watching Live TV.
 - If you have Videos in the Video storage group on the MythTV backend, select "Videos" from the menu of recording groups to see the [Videos Screen](#videos-screen)
-- At the bottom you can select the Settings page.
-- In horizontal mode, tap the menu icon at top left to get to the Settings page.
+- At the bottom you can select the Settings page or the Upcoming page.
+- In landscape mode, tap the menu icon at top left to get to the Settings or Upcoming page.
 - Indicators next to recordings show 🗑 for deleted, 👁 for Watched.
 
 </details>
@@ -56,24 +56,29 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 
 - This screen shows one entry for each episode.
 - Tapping an episode icon starts playback.
-- Tapping the &#8942; icon on an episode gets a menu of actions to immediately take on an episode.
+- Tapping the description of an episode gets a menu of actions to immediately take on the episode.
 
 ## Videos Screen
 ![](ScreenShots/Videos1.png) ![](ScreenShots/Videos2.png)
 ![](ScreenShots/Videos1_horz.png)
 ![](ScreenShots/Videos2_horz.png)
 
-Videos from the Videos part of MythTV are shown here, organized by directory. You can drill down to subdirectories or play videos from this screen.
+Videos from the Videos part of MythTV are shown here, organized by directory. You can drill down to sub-directories or play videos from this screen.
 
 - Tapping a video icon starts playback.
-- Tapping the &#8942; icon on a video gets a menu of actions to immediately take on the video.
+- Tapping the description of a video gets a menu of actions to immediately take on the video.
 
 ## Playback Screen
 ![](ScreenShots/Playback.png)
 
-- During playback tap the screen to see the playback controls.
-- Commercial skip is supported if the recording or video has been flagged in MythTV. Skipping with arrow keys and fast forward/rewind keys is not supported. Only the notify and auto modes are supported. These can be set in [settings](#settings).
+- During playback tap the screen to see the playback controls. Tap again to hide them.
+- Commercial skip is supported if the recording or video has been flagged in MythTV. Skipping with back and next keys is supported. Set the option to use those keys for commercial skip in [settings](#settings).
 - For more information see [Playback](#playback).
+
+## Upcoming screen
+![](ScreenShots/upcoming.png)
+
+This displays upcoming recordings on the MythTV backend. You can use the menu icon at the top right hand side to select "Show All" to show the full list including shows excluded and the reason for excluding them.
 
 ## Settings
 
@@ -91,12 +96,12 @@ If your backend has been set up to require user authentication for the service A
 ## Installing leanfront
 You need an Android phone or tablet. For TV devices see [leanfront](https://github.com/bennettpeter/leanfront).
 
-Leanfront is available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront). Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from google, you do not need to uninstall, the play store will upgrade it.
+Leanfront will be available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront). Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from google, you do not need to uninstall, the play store will upgrade it.
 
 ### Side Load
 Preferably use the play store or app store for installation.
 
-Packages are also available here, in case you cannot install from the play store: https://drive.google.com/drive/folders/1LMf7dTK_fD_e1S3S2HgB1NEPsWI0MdyB
+Packages are also available here, in case you cannot install from the play store: https://drive.google.com/drive/folders/1LMf7dTK_fD_e1S3S2HgB1NEPsWI0MdyB . Make sure to download the mobile version and not the TV version.
 
 To install a side load version you can download the apk file from the above link. Put it on your android device using direct download, a USB cable or another method. Open a file manager, select the apk file and tap on it to install. Alternatively you can use adb to install from a computer if you have developer mode enabled on the android device.
 
@@ -107,7 +112,7 @@ The first time you run the app it will prompt you for the MythTV Backend setting
 
 - The application uses exoplayer, which is the player code used by youtube, Amazon Prime and others.
 - It plays recordings, videos and Live TV from a MythTV backend.
-- This application uses the MythTV Service API to communicate with the backend. It needs no access to the database password, and will work on all versions of mythbackend from v29 onwards. It may work on older versions if the APIs are available on the MythTV backend.
+- This application uses the MythTV Service API to communicate with the backend. It needs no access to the database password, and will work on all versions of mythbackend from v29 onward. It may work on older versions if the APIs are available on the MythTV backend.
 - With backend on master or recent MythTV v30 or later this frontend will prevent idle shutdown on the backend. On older backends you need to take steps to ensure the backend does not shut down while playback is occurring.
 - Bookmarks are supported. Bookmarks are stored on MythTV. In order to store bookmarks for videos on MythTV you need backend version v32-Pre-658-g48557d32c2 or later or v31.0-73-g7bf1284867 or later. If you have an earlier version that does not support the Video/GetSavedBookmark and Video/SetSavedBookmark methods, the bookmarks for videos will not be set.
 - Last Play Position is supported on versions of MythTV that support it. The last play position is always stored on the backend.
@@ -119,28 +124,28 @@ The first time you run the app it will prompt you for the MythTV Backend setting
 - Video and Audio playback is supported using mediacodec (hardware) or ffmpeg (software). By default it will use mediacodec if it can, and will switch to ffmpeg if there is a media format not supported by mediacodec. There is a setting where you can change this default and force either mediacodec or ffmpeg.
 - Selection of alternate audio tracks during playback.
 - Playback from slave backends is supported.
-- Playing of Live TV is not supported.- The *Master Backend Override* MythTV setting is supported. Playback will be from the master backend even for recordings made on a slave. However the Preview image still uses the slave backend, so it will not show if the slave is down.
+- Playing of Live TV is not supported.
+- The *Master Backend Override* MythTV setting is supported. Playback will be from the master backend even for recordings made on a slave. However the Preview image still uses the slave backend, so it will not show if the slave is down.
 - Note that some phones do not support MPEG-2 playback. In this case MPEG-2 recordings are decoded via software.
 - Supports MythTV commercial breaks and cut list.
 
 ## Release Notes
 
-You can see a list of changes in each version by looking at the commit list in github. See https://github.com/bennettpeter/mobfront/commits/main .
+You can see a list of changes in each version by looking at the commit list in github. See https://github.com/bennettpeter/leanfront-mobile/commits/main .
 
 ## Playback
 
-- Pressing Enter or Down brings up the OSD playback controls. Note if you have enabled up/down jumping then Down will cause a jump instead.
-- Pressing Back dismisses the OSD controls. Pressing Up a couple of times will also dismiss them. This is better because you will not accidentally end playback if you press Up when they are already timing out.
-- Left and right arrow will skip back and forward. Holding down the arrow moves quickly through the video. The number of seconds for forward and back skip are customizable in Settings.
-- Up and down arrow can be used for bigger jumps by setting a jump interval in settings. I recommend against using this because it interferes with navigation in the OSD. You can move very quickly through playback by holding down left or right arrow, so jump is not really needed. Jumping can be disabled by setting blank or 0 in the jump interval in Settings. When jumping with up and down arrows, the arrow buttons are disabled for up/down use in the OSD, and this can cause confusion.
-- You can customize the up/down, left/right and ff/rew buttons to skip, jump or commercial skip.
-- If you are playing a recording that is in progress of being recorded or a LiveTV channel, the behavior will be as follows. When you start watching, the OSD will show the duration being as much as has been recorded at that time. This duration will remain at that figure as you continue watching. Once you get to that point in the recording, there is a slight pause, then playback continues, with duration shown as "---", which means unknown duration. While in this state, if you press forward or back skip, it will revert to showing the amount recorded to date, and perform the forward or back skip requested. When you eventually get to the end as it was when you did the skip operation, it will revert to duration showing as "---" while playback continues.
+- Tapping the screen brings up the OSD playback controls.
+- Tapping outside the controls dismisses the OSD controls.
+- You can customize the Next (⏭) and Previous (⏮) buttons to either jump or skip commercials.
+- You can customize the length of jumps and skips.
+- If you are playing a recording that is in progress of being recorded or a LiveTV channel, playback will stop when it has played as much as was available at the start. To continue you will have to stop and resume playback. Currently the mobile version of leanfront does not fully support playback of recordings in progress.
 
 ### Bookmarks and Last Play Position
 
 Bookmarks in a recording or video are stored in the MythTV backend. On versions of mythbackend before v32-Pre-658-g48557d32c2 or v31.0-73-g7bf1284867, video bookmarks are not supported.
 
-Last Play Position is always set upon stopping playback and the default on starting playback is to start at Last Play Position. It can be cleared from the Video deatils page menu.
+Last Play Position is always set upon stopping playback and the default on starting playback is to start at Last Play Position. It can be cleared from the episode or video menu..
 
 ### Commercial Break and Cut List
 
@@ -148,9 +153,9 @@ If you run mythcommflag or comskip to detect commercials in a recording, or you 
 
 There is a Setting on the Settings page, "Commercial or Cut Skip". You can select "Off", "Notify", or "Automatically Skip". These apply to both flagged commercials and cut lists. If a cut list exists the commercial breaks are ignored.
 
-If "Off" is selected, cut lists and commercial breaks flagged are ignored, and everything plays.
+If "Off" is selected, cut lists and commercial breaks flagged are ignored, and everything plays. You can manually skip commercials if you have set previous and next keys to commercial skip.
 
-If "Notify" is selected, when a Cut or Commercial Break is encountered, a menu is displayed at the bottom left of the screen, with options "Skip" or "Do Not Skip". If you select "Skip", playback immediately skips to the end of the cut or commercial. If you select "Do Not Skip" or leave the meunu without selecting anything, it will continue playing. At any stage of playing in the cut or commercial, you can select "Skip" to go to the end.
+If "Notify" is selected, when a Cut or Commercial Break is encountered, a menu is displayed at the bottom left of the screen, with options "Skip" or "Do Not Skip". If you select "Skip", playback immediately skips to the end of the cut or commercial. If you select "Do Not Skip" or leave the menu without selecting anything, it will continue playing. At any stage of playing in the cut or commercial, you can select "Skip" to go to the end.
 
 If "Automatically Skip" is selected, playback will automatically skip each cut or commercial flagged.
 
@@ -171,13 +176,17 @@ Live TV is not supported.
 
 The following controls are available when tapping during playback.
 
-In the middle of the screen ared icons to restart from the beginning, skip back, pause or play, skip forward. The number of seconds to skip can be selected in Settings.
+In the middle of the screen are icons previous, skip back, pause or play, skip forward, next. The number of seconds to skip can be selected in Settings. Previous and next can be set to jump back and forward or to skip commercials.
 
 The progress bar near the bottom can be dragged or tapped to navigate playback to a new position.
 
 The CC icon can be used to select a caption to display.
 
 The cogwheel presents a menu where you can change playback speed or audio track.
+
+To the left of the CC button is the aspect ratio button. This is for use if the picture is shown stretched due to the video having wrong aspect ratio information. It supports the resolution set by the video (default), 4x3, 16x9, and 9x16.
+
+To the left of the aspect ratio button is the zoom button. By default the picture is shrunk until it all fits in the screen. Tapping zoom changes it so that it expands until the entire screen is filled, keeping the aspect correct, and possibly cutting off parts of the picture along the edges.
 
 ## General Operation
 
