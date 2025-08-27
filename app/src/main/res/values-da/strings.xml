@@ -4,8 +4,9 @@
   <string name="nav_header_desc">Navigationshoved</string>
   <string name="menu_videolist">Medier</string>
   <string name="menu_refresh">Opfriske</string>
-  <string name="menu_slideshow">Slideshow</string>
+  <string name="menu_upcoming">Kommende</string>
   <string name="menu_settings">Indstillinger</string>
+  <string name="menu_show_all">Vis alle</string>
   <string name="row_header_channels">Kanaler</string>
   <string name="group_all">Alle</string>
   <string name="group_videos">Videoer</string>

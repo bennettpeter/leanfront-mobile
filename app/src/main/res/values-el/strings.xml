@@ -4,8 +4,9 @@
   <string name="nav_header_desc">Κεφαλίδα πλοήγησης</string>
   <string name="menu_videolist">Μέσα ενημέρωσης</string>
   <string name="menu_refresh">Φρεσκάρω</string>
-  <string name="menu_slideshow">Παρουσίαση</string>
+  <string name="menu_upcoming">Ανερχόμενος</string>
   <string name="menu_settings">Ρυθμίσεις</string>
+  <string name="menu_show_all">Δείχνουν όλα</string>
   <string name="row_header_channels">Κανάλια</string>
   <string name="group_all">Ολοι</string>
   <string name="group_videos">Βίντεο</string>

@@ -4,8 +4,9 @@
   <string name="nav_header_desc">Cabeçalho de navegação</string>
   <string name="menu_videolist">Mídia</string>
   <string name="menu_refresh">Atualizar</string>
-  <string name="menu_slideshow">Apresentação de slides</string>
+  <string name="menu_upcoming">Por vir</string>
   <string name="menu_settings">Configurações</string>
+  <string name="menu_show_all">Mostre tudo</string>
   <string name="row_header_channels">Canais</string>
   <string name="group_all">Todos</string>
   <string name="group_videos">Vídeos</string>

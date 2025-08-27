@@ -4,8 +4,9 @@
   <string name="nav_header_desc">Navigační záhlaví</string>
   <string name="menu_videolist">Média</string>
   <string name="menu_refresh">Obnovit</string>
-  <string name="menu_slideshow">Prezentace</string>
+  <string name="menu_upcoming">Nadcházející</string>
   <string name="menu_settings">Nastavení</string>
+  <string name="menu_show_all">Ukažte vše</string>
   <string name="row_header_channels">Kanály</string>
   <string name="group_all">Vše</string>
   <string name="group_videos">Videa</string>

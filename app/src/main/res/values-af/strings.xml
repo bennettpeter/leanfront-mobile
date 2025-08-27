@@ -4,8 +4,9 @@
   <string name="nav_header_desc">Navigasiekop</string>
   <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Vervris</string>
-  <string name="menu_slideshow">Skyfievertoning</string>
+  <string name="menu_upcoming">Komende</string>
   <string name="menu_settings">Instellings</string>
+  <string name="menu_show_all">Wys alles</string>
   <string name="row_header_channels">Kanale</string>
   <string name="group_all">Alle</string>
   <string name="group_videos">Video\'s</string>
