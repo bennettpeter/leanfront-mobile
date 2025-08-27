@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Startposisjonsjustering (sekunder)</string>
   <string name="pref_commskip_end">Sluttposisjonsjustering (sekunder)</string>
   <string name="msg_commskip_none">Det er ingen kommersielle brudd- eller kuttlistedata for denne innspillingen.</string>
-  <string name="msg_commskip_start">Hoppet over %1 $ 02d: %2 $ 02d. Start av kommersiell pause.</string>
-  <string name="msg_commskip_end">Hoppet over %1 $ 02d: %2 $ 02d. Slutten på kommersiell pause.</string>
+  <string name="msg_commskip_start">Start av kommersiell pause</string>
+  <string name="msg_commskip_end">Slutten på kommersiell pause</string>
   <string name="msg_commskip_last">Ingen flere kommersielle pauser.</string>
-  <string name="msg_commskip_skipped">Kommersiell pause hoppet over.</string>
-  <string name="msg_commskip_back">Hoppet over %1 $ 02d: %2 $ 02d. Tilbake dit du var.</string>
-  <string name="msg_commskip_start_show">Hoppet over %1 $ 02d: %2 $ 02d. Start av showet.</string>
+  <string name="msg_commskip_skipped">Kommersiell pause hoppet over</string>
+  <string name="msg_commskip_back">Tilbake til der du var</string>
+  <string name="msg_commskip_start_show">Start av showet</string>
   <string name="pref_title_backend_ip">IP -adresse eller DNS -navn</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">MythTV Backend Port</string>

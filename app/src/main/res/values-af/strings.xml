@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Beginposisieverstelling (sekondes)</string>
   <string name="pref_commskip_end">Eindposisieverstelling (sekondes)</string>
   <string name="msg_commskip_none">Daar is geen kommersiële breek- of snylysdata vir hierdie opname nie.</string>
-  <string name="msg_commskip_start">Oorgeslaan %1 $ 02d: %2 $ 02d. Begin van kommersiële onderbreking.</string>
-  <string name="msg_commskip_end">Oorgeslaan %1 $ 02d: %2 $ 02d. Einde van kommersiële onderbreking.</string>
+  <string name="msg_commskip_start">Begin van kommersiële onderbreking</string>
+  <string name="msg_commskip_end">Einde van kommersiële onderbreking</string>
   <string name="msg_commskip_last">Nie meer kommersiële pouses nie.</string>
-  <string name="msg_commskip_skipped">Kommersiële onderbreking het oorgeslaan.</string>
-  <string name="msg_commskip_back">Oorgeslaan %1 $ 02d: %2 $ 02d. Terug na waar jy was.</string>
-  <string name="msg_commskip_start_show">Oorgeslaan %1 $ 02d: %2 $ 02d. Begin van die vertoning.</string>
+  <string name="msg_commskip_skipped">Kommersiële onderbreking het oorgeslaan</string>
+  <string name="msg_commskip_back">Terug na waar jy was</string>
+  <string name="msg_commskip_start_show">Begin van show</string>
   <string name="pref_title_backend_ip">IP -adres of DNS -naam</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">Mythtv Backend Port</string>

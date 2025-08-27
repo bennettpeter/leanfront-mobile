@@ -54,12 +54,12 @@
     <string name="pref_commskip_end">End Position Adjustment (seconds)</string>
 
     <string name="msg_commskip_none">There is no Commercial Break or Cut List Data for this Recording.</string>
-    <string name="msg_commskip_start">Skipped %1$ 02d:%2$02d. Start of Commercial Break.</string>
-    <string name="msg_commskip_end">Skipped %1$ 02d:%2$02d. End of Commercial Break.</string>
-    <string name="msg_commskip_last">No More Commercial Breaks.</string>
-    <string name="msg_commskip_skipped">Skipped %1$ 02d:%2$02d. Commercial Break Skipped.</string>
-    <string name="msg_commskip_back">Skipped %1$ 02d:%2$02d. Back to where you were.</string>
-    <string name="msg_commskip_start_show">Skipped %1$ 02d:%2$02d. Start of Show.</string>
+    <string name="msg_commskip_start">Start of Commercial Break</string>
+    <string name="msg_commskip_end">End of Commercial Break</string>
+    <string name="msg_commskip_last">No More Commercial Breaks</string>
+    <string name="msg_commskip_skipped">Commercial Break Skipped</string>
+    <string name="msg_commskip_back">Back to where you were</string>
+    <string name="msg_commskip_start_show">Start of Show</string>
 
     <string name="pref_title_backend_ip">IP Address or DNS name</string>
     <string name="pref_title_backend">MythTV Backend</string>

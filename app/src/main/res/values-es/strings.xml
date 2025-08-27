@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Ajuste de posición de inicio (segundos)</string>
   <string name="pref_commskip_end">Ajuste de la posición final (segundos)</string>
   <string name="msg_commskip_none">No hay datos de lista de descanso comercial o de corte para esta grabación.</string>
-  <string name="msg_commskip_start">Omitió %1 $ 02D: %2 $ 02D. Comienzo de las salidas comerciales.</string>
-  <string name="msg_commskip_end">Omitió %1 $ 02D: %2 $ 02D. Fin de la ruptura comercial.</string>
+  <string name="msg_commskip_start">Comienzo de la ruptura comercial</string>
+  <string name="msg_commskip_end">Fin de la ruptura comercial</string>
   <string name="msg_commskip_last">No más descansos comerciales.</string>
-  <string name="msg_commskip_skipped">Break Commercial Skoned.</string>
-  <string name="msg_commskip_back">Omitió %1 $ 02D: %2 $ 02D. De vuelta a donde estabas.</string>
-  <string name="msg_commskip_start_show">Omitió %1 $ 02D: %2 $ 02D. Comienzo del espectáculo.</string>
+  <string name="msg_commskip_skipped">Break Commercial Skoned</string>
+  <string name="msg_commskip_back">De vuelta a donde estabas</string>
+  <string name="msg_commskip_start_show">Comienzo del espectáculo</string>
   <string name="pref_title_backend_ip">Dirección IP o nombre de DNS</string>
   <string name="pref_title_backend">Backend mythtv</string>
   <string name="pref_title_myth_port">Puerto de backend mythtv</string>

@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Käynnistä asennon säätö (sekunnit)</string>
   <string name="pref_commskip_end">Loppuasennon säätö (sekunnit)</string>
   <string name="msg_commskip_none">Tätä nauhoitusta varten ei ole kaupallista taukoa tai leikkaustietoa.</string>
-  <string name="msg_commskip_start">Ohitettu %1 $ 02d: %2 $ 02d. Kaupallisen tauon aloitus.</string>
-  <string name="msg_commskip_end">Ohitettu %1 $ 02d: %2 $ 02d. Kaupallisen tauon loppu.</string>
+  <string name="msg_commskip_start">Kaupallisen tauon alku</string>
+  <string name="msg_commskip_end">Kaupallisen tauon loppu</string>
   <string name="msg_commskip_last">Ei enää kaupallisia taukoja.</string>
-  <string name="msg_commskip_skipped">Kaupallinen tauko ohitettiin.</string>
-  <string name="msg_commskip_back">Ohitettu %1 $ 02d: %2 $ 02d. Takaisin sinne, missä olit.</string>
-  <string name="msg_commskip_start_show">Ohitettu %1 $ 02d: %2 $ 02d. Näyttelyn aloitus.</string>
+  <string name="msg_commskip_skipped">Kaupallinen tauko ohitettiin</string>
+  <string name="msg_commskip_back">Takaisin sinne, missä olit</string>
+  <string name="msg_commskip_start_show">Näyttelyn alku</string>
   <string name="pref_title_backend_ip">IP -osoite tai DNS -nimi</string>
   <string name="pref_title_backend">Mythtv tausta</string>
   <string name="pref_title_myth_port">MythTV -taustaportti</string>

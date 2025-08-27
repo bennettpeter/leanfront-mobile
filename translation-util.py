@@ -54,7 +54,7 @@ def doCheckTranslations(default_dict, code, location, desc, keylist:list):
             value = xvalue.replace("\\'","'")
             destString = translate(value, code)
             xdestString = destString.replace("'","\\'")
-            print("Updating string '%s' -> '%s'" % (value, destString))
+            print("Updating string '%s' -> '%s'" % (value, xdestString))
             dest_dict[key] = xdestString
     saveFile(location, default_dict, dest_dict)
 

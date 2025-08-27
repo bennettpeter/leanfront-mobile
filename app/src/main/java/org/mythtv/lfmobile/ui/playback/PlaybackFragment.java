@@ -118,7 +118,13 @@ public class PlaybackFragment extends Fragment {
         long secs = Math.abs(range%60l);
 
         Context ctx = getContext();
-        Toast.makeText(ctx, ctx.getString(msgnum,mins,secs), Toast.LENGTH_LONG)
+        String time;
+        if (msgnum == R.string.msg_commskip_none)
+            time = "";
+        else
+            time = String.format(" (%1$ 02d:%2$02d).", mins, secs);
+        String msg = ctx.getString(msgnum) + time;
+        Toast.makeText(ctx, msg, Toast.LENGTH_LONG)
             .show();
 
 

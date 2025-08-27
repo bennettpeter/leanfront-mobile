@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Startpositionseinstellung (Sekunden)</string>
   <string name="pref_commskip_end">Endpositionseinstellung (Sekunden)</string>
   <string name="msg_commskip_none">Für diese Aufzeichnung gibt es keine kommerziellen Pause- oder Schnittlistendaten.</string>
-  <string name="msg_commskip_start">Übersprungen %1 $ 02d: %2 $ 02d. Beginn der kommerziellen Pause.</string>
-  <string name="msg_commskip_end">Übersprungen %1 $ 02d: %2 $ 02d. Ende der kommerziellen Pause.</string>
+  <string name="msg_commskip_start">Beginn der kommerziellen Pause</string>
+  <string name="msg_commskip_end">Ende der kommerziellen Pause</string>
   <string name="msg_commskip_last">Keine kommerziellen Pausen mehr.</string>
-  <string name="msg_commskip_skipped">Kommerzielle Pause übersprungen.</string>
-  <string name="msg_commskip_back">Übersprungen %1 $ 02d: %2 $ 02d. Zurück dorthin, wo du warst.</string>
-  <string name="msg_commskip_start_show">Übersprungen %1 $ 02d: %2 $ 02d. Beginn der Show.</string>
+  <string name="msg_commskip_skipped">Kommerzielle Pause übersprungen</string>
+  <string name="msg_commskip_back">Zurück zu wo du warst</string>
+  <string name="msg_commskip_start_show">Beginn der Show</string>
   <string name="pref_title_backend_ip">IP -Adresse oder DNS -Name</string>
   <string name="pref_title_backend">Mythtv Backend</string>
   <string name="pref_title_myth_port">Mythtv Backend Port</string>

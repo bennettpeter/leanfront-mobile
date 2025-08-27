@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Avvio della posizione della posizione (secondi)</string>
   <string name="pref_commskip_end">Regolazione della posizione finale (secondi)</string>
   <string name="msg_commskip_none">Non ci sono dati di interruzione o taglio commerciale per questa registrazione.</string>
-  <string name="msg_commskip_start">Skiped %1 $ 02d: %2 $ 02d. Inizio delle pause commerciali.</string>
-  <string name="msg_commskip_end">Skiped %1 $ 02d: %2 $ 02d. Fine della pausa commerciale.</string>
+  <string name="msg_commskip_start">Inizio della pausa commerciale</string>
+  <string name="msg_commskip_end">Fine commerciale</string>
   <string name="msg_commskip_last">Niente più pause commerciali.</string>
-  <string name="msg_commskip_skipped">SCATTURA COMMERCIALE Stited.</string>
-  <string name="msg_commskip_back">Skiped %1 $ 02d: %2 $ 02d. Torna a dove eri.</string>
-  <string name="msg_commskip_start_show">Skiped %1 $ 02d: %2 $ 02d. Inizio dello spettacolo.</string>
+  <string name="msg_commskip_skipped">SCATTURA COMMERCIALE Stited</string>
+  <string name="msg_commskip_back">Torna a dove eri</string>
+  <string name="msg_commskip_start_show">Inizio dello spettacolo</string>
   <string name="pref_title_backend_ip">Indirizzo IP o nome DNS</string>
   <string name="pref_title_backend">Backend Mythtv</string>
   <string name="pref_title_myth_port">Porta backend MythTV</string>

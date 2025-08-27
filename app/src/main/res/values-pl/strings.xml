@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Regulacja pozycji początkowej (sekundy)</string>
   <string name="pref_commskip_end">Regulacja pozycji końcowej (sekundy)</string>
   <string name="msg_commskip_none">Dla tego nagrywania nie ma danych dotyczących przełomowych ani cięć komercyjnych.</string>
-  <string name="msg_commskip_start">Pomijam %1 02d: %2 02d $. Początek przerwy komercyjnej.</string>
-  <string name="msg_commskip_end">Pomijam %1 02d: %2 02d $. Koniec przerwy komercyjnej.</string>
+  <string name="msg_commskip_start">Początek przerwy komercyjnej</string>
+  <string name="msg_commskip_end">Koniec przerwy komercyjnej</string>
   <string name="msg_commskip_last">Nigdy więcej przerw handlowych.</string>
-  <string name="msg_commskip_skipped">Przerwa komercyjna pominęła.</string>
-  <string name="msg_commskip_back">Pomijam %1 02d: %2 02d $. Wracając do miejsca, w którym byłeś.</string>
-  <string name="msg_commskip_start_show">Pomijam %1 02d: %2 02d $. Początek show.</string>
+  <string name="msg_commskip_skipped">Przerwa komercyjna pominęła</string>
+  <string name="msg_commskip_back">Wracając do miejsca, w którym byłeś</string>
+  <string name="msg_commskip_start_show">Początek show</string>
   <string name="pref_title_backend_ip">Adres IP lub nazwa DNS</string>
   <string name="pref_title_backend">Backend mithtv</string>
   <string name="pref_title_myth_port">Port Backend Mythtv</string>

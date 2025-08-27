@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Startpositieaanpassing (seconden)</string>
   <string name="pref_commskip_end">Eindpositie -aanpassing (seconden)</string>
   <string name="msg_commskip_none">Er zijn geen commerciële break- of snitlijstgegevens voor deze opname.</string>
-  <string name="msg_commskip_start">SKIPT %1 $ 02D: %2 $ 02D. Start van commerciële pauze.</string>
-  <string name="msg_commskip_end">SKIPT %1 $ 02D: %2 $ 02D. Einde van de commerciële pauze.</string>
+  <string name="msg_commskip_start">Start van commerciële pauze</string>
+  <string name="msg_commskip_end">Einde van de commerciële pauze</string>
   <string name="msg_commskip_last">Geen commerciële pauzes meer.</string>
-  <string name="msg_commskip_skipped">Commerciële pauze overgeslagen.</string>
-  <string name="msg_commskip_back">SKIPT %1 $ 02D: %2 $ 02D. Terug naar waar je was.</string>
-  <string name="msg_commskip_start_show">SKIPT %1 $ 02D: %2 $ 02D. START VAN SHOW.</string>
+  <string name="msg_commskip_skipped">Commerciële pauze overgeslagen</string>
+  <string name="msg_commskip_back">Terug naar waar je was</string>
+  <string name="msg_commskip_start_show">START VAN SHOW</string>
   <string name="pref_title_backend_ip">IP -adres of DNS -naam</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">Mythtv backend -poort</string>

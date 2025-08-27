@@ -44,12 +44,12 @@
   <string name="pref_commskip_start">Ρύθμιση θέσης έναρξης (δευτερόλεπτα)</string>
   <string name="pref_commskip_end">Ρύθμιση τερματισμού θέσης (δευτερόλεπτα)</string>
   <string name="msg_commskip_none">Δεν υπάρχουν δεδομένα διαφημίσεων ή λίστας για αυτήν την εγγραφή.</string>
-  <string name="msg_commskip_start">Παραλείπονται %1 $ 02D: %2 $ 02D. Έναρξη εμπορικού διάλειμμα.</string>
-  <string name="msg_commskip_end">Παραλείπονται %1 $ 02D: %2 $ 02D. Τέλος εμπορικού διάλειμμα.</string>
+  <string name="msg_commskip_start">Έναρξη εμπορικού διάλειμμα</string>
+  <string name="msg_commskip_end">Τέλος εμπορικού διάλειμμα</string>
   <string name="msg_commskip_last">Δεν υπάρχουν άλλα διαφημιστικά διαλείμματα.</string>
-  <string name="msg_commskip_skipped">Το διαφημιστικό διάλειμμα παραλείφθηκε.</string>
-  <string name="msg_commskip_back">Παραλείπονται %1 $ 02D: %2 $ 02D. Επιστροφή στο σημείο που ήσασταν.</string>
-  <string name="msg_commskip_start_show">Παραλείπονται %1 $ 02D: %2 $ 02D. Έναρξη της επίδειξης.</string>
+  <string name="msg_commskip_skipped">Παραλείφθηκε διαφημιστικό διάλειμμα</string>
+  <string name="msg_commskip_back">Επιστροφή στο σημείο που ήσασταν</string>
+  <string name="msg_commskip_start_show">Έναρξη της επίδειξης</string>
   <string name="pref_title_backend_ip">Διεύθυνση IP ή όνομα DNS</string>
   <string name="pref_title_backend">Mythtv backend</string>
   <string name="pref_title_myth_port">Θύρα backend mythtv</string>
