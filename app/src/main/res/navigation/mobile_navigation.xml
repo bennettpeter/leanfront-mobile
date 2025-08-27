@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_videolist"
-        android:name="org.mythtv.mobfront.ui.videolist.VideoListFragment"
+        android:name="org.mythtv.lfmobile.ui.videolist.VideoListFragment"
         android:label="@string/menu_videolist"
         tools:layout="@layout/fragment_videolist">
     </fragment>
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="org.mythtv.mobfront.ui.settings.SettingsFragment"
+        android:name="org.mythtv.lfmobile.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"/>
 
     <fragment
         android:id="@+id/nav_upcoming"
-        android:name="org.mythtv.mobfront.ui.upcoming.UpcomingListFragment"
+        android:name="org.mythtv.lfmobile.ui.upcoming.UpcomingListFragment"
         android:label="@string/menu_upcoming"/>
 
 </navigation>

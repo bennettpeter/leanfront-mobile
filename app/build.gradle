@@ -11,7 +11,7 @@ task gitinfo {
 }
 
 android {
-    namespace 'org.mythtv.mobfront'
+    namespace 'org.mythtv.lfmobile'
     compileSdk 35
     lintOptions{
         disable 'MissingTranslation'

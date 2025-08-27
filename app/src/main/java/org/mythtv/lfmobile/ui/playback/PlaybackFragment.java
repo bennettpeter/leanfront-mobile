@@ -1,0 +1,543 @@
+package org.mythtv.lfmobile.ui.playback;
+
+import androidx.annotation.OptIn;
+import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProvider;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.HttpDataSource;
+import androidx.media3.exoplayer.DefaultRenderersFactory;
+import androidx.media3.exoplayer.ExoPlaybackException;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.ui.AspectRatioFrameLayout;
+
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import org.mythtv.lfmobile.R;
+import org.mythtv.lfmobile.data.Action;
+import org.mythtv.lfmobile.data.AsyncBackendCall;
+import org.mythtv.lfmobile.data.BackendCache;
+import org.mythtv.lfmobile.data.CommBreakTable;
+import org.mythtv.lfmobile.data.Settings;
+import org.mythtv.lfmobile.databinding.FragmentPlaybackBinding;
+import org.mythtv.lfmobile.player.MyExtractorsFactory;
+import org.mythtv.lfmobile.player.MyRenderersFactory;
+
+
+@UnstableApi
+public class PlaybackFragment extends Fragment {
+
+    private PlaybackViewModel viewModel;
+    private FragmentPlaybackBinding binding;
+    private final String prefAudio = Settings.getString("pref_audio");
+    private final String prefVideo = Settings.getString("pref_video");
+
+    private static final String TAG = "lfm";
+    static final String CLASS = "PlaybackFragment";
+    private long mTimeLastError = 0;
+    AlertDialog dialog;
+    private DialogDismiss dialogDismiss = new DialogDismiss();
+    private AspectRatioFrameLayout contentFrame;
+
+    public static PlaybackFragment newInstance() {
+        return new PlaybackFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(PlaybackViewModel.class);
+        Intent intent =  getActivity().getIntent();
+        viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
+        viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0l);
+        viewModel.frameRate = intent.getFloatExtra(PlaybackActivity.FRAMERATE, 30f);
+        setPlaySettings();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentPlaybackBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+        viewModel.commSkipToast.observe(getViewLifecycleOwner(), (long[] markrange) -> {
+            commskipToast(markrange);
+        });
+        viewModel.commBreakDlg.observe(getViewLifecycleOwner(), (Long newPosition) -> {
+            commBreakDlg(newPosition);
+        });
+        return root;
+    }
+
+    @SuppressLint("StringFormatInvalid")
+    private void commskipToast(long[] markrange) {
+        int mark = (int) markrange[0];
+        long range = markrange[1];
+        int msgnum;
+        switch (mark) {
+            case CommBreakTable.MARK_CUT_START: msgnum = R.string.msg_commskip_start; break;
+            case CommBreakTable.MARK_CUT_END:   msgnum = R.string.msg_commskip_end; break;
+            case -1:                            msgnum = R.string.msg_commskip_last; break;
+            case -2:                            msgnum = R.string.msg_commskip_skipped; break;
+            case -3:                            msgnum = R.string.msg_commskip_back; break;
+            case -4:                            msgnum = R.string.msg_commskip_start_show; break;
+            case -5:                            msgnum = R.string.msg_commskip_none; break;
+            default: return;
+        }
+        range = range / 1000l;
+        long mins = range/60l;
+        long secs = Math.abs(range%60l);
+
+        Context ctx = getContext();
+        Toast.makeText(ctx, ctx.getString(msgnum,mins,secs), Toast.LENGTH_LONG)
+            .show();
+
+
+    }
+
+    // pass in 0 to dismiss dialog
+    private void commBreakDlg(long newPosition) {
+        dismissDialog();
+        if (newPosition == 0)
+            return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.title_comm_playing)
+                .setItems(R.array.menu_commplaying,
+                        (dialog, which) -> {
+                            // The 'which' argument contains the index position
+                            // of the selected item
+                            switch (which) {
+                                // 0 = skip commercial
+                                case 0:
+                                    if (viewModel.player.getCurrentPosition()
+                                            < newPosition) {
+                                        viewModel.player.seekTo(newPosition);
+                                    }
+                                    break;
+                                // 1 = do not skip commercial. Defaults to doing nothing
+                            }
+                        })
+                .setOnDismissListener(dialogDismiss);
+        dialog = builder.create();
+        dialog.show();
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+        lp.x=0;
+        lp.y=0;
+        lp.width= Resources.getSystem().getDisplayMetrics().widthPixels / 4;
+        lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
+        dialog.getWindow().setAttributes(lp);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(192,192,192,192)));
+
+    }
+
+    public void dismissDialog() {
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+        dialog = null;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Build.VERSION.SDK_INT > 23) {
+            initializePlayer(true);
+            viewModel.maybePlaying = true;
+        }
+    }
+    public void onResume() {
+        super.onResume();
+        if ((Build.VERSION.SDK_INT <= 23 || viewModel.player == null)) {
+            initializePlayer(true);
+            viewModel.maybePlaying = true;
+        }
+        hideNavigation();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Build.VERSION.SDK_INT <= 23) {
+            if (binding.playerView != null) {
+                binding.playerView.onPause();
+                viewModel.maybePlaying = false;
+            }
+            setBookmark();
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Build.VERSION.SDK_INT > 23) {
+            if (binding.playerView != null) {
+                binding.playerView.onPause();
+                viewModel.maybePlaying = false;
+            }
+            setBookmark();
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void initializePlayer(boolean enableControls) {
+        MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
+        int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
+        if ("mediacodec".equals(prefAudio))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+        else if ("ffmpeg".equals(prefAudio))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
+        rFactory.setExtensionRendererMode(extMode);
+        extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
+        if ("mediacodec".equals(prefVideo))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+        else if ("ffmpeg".equals(prefVideo))
+            extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
+        rFactory.setVideoExtensionRendererMode(extMode);
+        rFactory.setEnableDecoderFallback(true);
+        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(), rFactory);
+        int seekBack = Settings.getInt("pref_skip_back") * 1000;
+        builder.setSeekBackIncrementMs(seekBack);
+        int seekFwd = Settings.getInt("pref_skip_fwd") * 1000;
+        builder.setSeekForwardIncrementMs(seekFwd);
+        viewModel.player = builder.build();
+        binding.playerView.setPlayer(viewModel.player);
+        binding.playerView.setSizeGetter(viewModel);
+        PlayerEventListener playerEventListener = new PlayerEventListener();
+        viewModel.player.addListener(playerEventListener);
+        MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
+        MyExtractorsFactory extFactory = new MyExtractorsFactory();
+        String auth = BackendCache.getInstance().authorization;
+        viewModel.fillTables(getActivity());
+        DataSource.Factory dsFactory =
+            () -> {
+                HttpDataSource.Factory factory = new DefaultHttpDataSource.Factory();
+                HttpDataSource dataSource = factory.createDataSource();
+                if (auth != null && auth.length() > 0)
+                    dataSource.setRequestProperty("Authorization", auth);
+                return dataSource;
+            };
+
+        DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
+                (dsFactory, extFactory);
+        ProgressiveMediaSource mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
+        mediaSource.setPossibleEmptyTrack(viewModel.possibleEmptyTrack);
+        viewModel.player.setMediaSource(mediaSource, viewModel.bookmark);
+        viewModel.player.prepare();
+        viewModel.player.play();
+        viewModel.startPlayback();
+        View previousButton = getView().findViewById(R.id.my_exo_prev);
+        if (previousButton != null) {
+            previousButton.setOnClickListener((View v) -> {
+                long ret = 0;
+                if ("skipcom".equals(viewModel.prevnextOption)){
+                    ret = viewModel.skipComBack();
+                }
+                if (ret == 0) {
+                    viewModel.prevnextOption = null;
+                    long pos = viewModel.player.getCurrentPosition() - viewModel.jump * 60000;
+                    if (pos < 0l)
+                        pos = 100l;
+                    viewModel.player.seekTo(pos);
+                }
+                binding.playerView.showController();
+            });
+        }
+        View nextButton = getView().findViewById(R.id.my_exo_next);
+        if (nextButton != null) {
+            nextButton.setOnClickListener((View v) -> {
+                long ret = 0;
+                if ("skipcom".equals(viewModel.prevnextOption)){
+                    ret = viewModel.skipComForward();
+                }
+                if (ret == 0) {
+                    viewModel.prevnextOption = null;
+                    long pos = viewModel.player.getCurrentPosition() + viewModel.jump * 60000l;
+                    viewModel.player.seekTo(pos);
+                }
+                binding.playerView.showController();
+            });
+        }
+        ImageView aspectButton = getView().findViewById(R.id.my_aspect);
+        if (aspectButton != null) {
+            aspectButton.setOnClickListener((View v) -> {
+                viewModel.currentAspectIx++;
+                if (viewModel.currentAspectIx >= viewModel.aspectValues.length)
+                    viewModel.currentAspectIx = 0;
+                viewModel.currentAspect = viewModel.aspectValues[viewModel.currentAspectIx];
+                if (contentFrame == null)
+                    contentFrame = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+                contentFrame.setAspectRatio(viewModel.currentAspect);
+                aspectButton.setImageResource(viewModel.ASPECT_DRAWABLES[viewModel.currentAspectIx]);
+                binding.playerView.showController();
+           });
+        }
+        ImageView zoomButton = getView().findViewById(R.id.my_zoom);
+        if (zoomButton != null) {
+            zoomButton.setOnClickListener((View v) -> {
+                viewModel.currentResizeIx++;
+                if (viewModel.currentResizeIx >= viewModel.RESIZE_MODES.length)
+                    viewModel.currentResizeIx = 0;
+                viewModel.currentResizeMode = viewModel.RESIZE_MODES[viewModel.currentResizeIx];
+                if (contentFrame == null)
+                    contentFrame = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+                contentFrame.setResizeMode(viewModel.currentResizeMode);
+                zoomButton.setImageResource(viewModel.RESIZE_DRAWABLES[viewModel.currentResizeIx]);
+                binding.playerView.showController();
+            });
+        }
+
+    }
+
+
+    protected void releasePlayer() {
+        if (viewModel.player != null) {
+            viewModel.player.release();
+            viewModel.player = null;
+            binding.playerView.setPlayer(/* player= */ null);
+        }
+    }
+    public void hideNavigation () {
+        if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
+            View view = getView();
+            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+    }
+
+    void setBookmark() {
+        if (viewModel.player == null)
+            return;
+        viewModel.bookmark = viewModel.player.getCurrentPosition();
+        long duration = viewModel.player.getDuration();
+        int action2 = Action.DUMMY;
+        // Clear bookmark if at end of video and set watched
+        if (duration - viewModel.bookmark < 10000) {
+            viewModel.bookmark = 0;
+            action2 = Action.SET_WATCHED;
+        }
+        long params[] = new long[2];
+        params[0] = viewModel.bookmark;
+        params[1] =  (long) (viewModel.frameRate * 100.0f) * params[0] / 100000;
+        AsyncBackendCall call = new AsyncBackendCall(null);
+        call.videos.add(viewModel.video);
+        call.params = params;
+        call.execute(Action.SET_BOOKMARK, action2);
+    }
+
+    public void markWatched(boolean watched) {
+        AsyncBackendCall call = new AsyncBackendCall(null);
+        call.videos.add(viewModel.video);
+        call.params = new Boolean(watched);
+        call.execute(Action.SET_WATCHED);
+    }
+
+    private void setPlaySettings() {
+//        viewModel.possibleEmptyTrack = "true".equals(Settings.getString("pref_poss_empty"));
+
+    }
+
+    class PlayerEventListener implements Player.Listener {
+        private int mDialogStatus = 0;
+        private static final int DIALOG_NONE   = 0;
+        private static final int DIALOG_ACTIVE = 1;
+        private static final int DIALOG_EXIT   = 2;
+        private static final int DIALOG_RETRY  = 3;
+
+        @Override
+        public void onPlayerError(@NonNull PlaybackException ex) {
+            handlePlayerError(ex, -1);
+        }
+
+        @OptIn(markerClass = UnstableApi.class)
+        private void handlePlayerError(Exception ex, int msgNum) {
+            Throwable cause = null;
+            if (ex != null)
+                Log.e(TAG, CLASS + " Player Error " + viewModel.video.title + " " + viewModel.video.videoUrl, ex);
+            long now = System.currentTimeMillis();
+            int recommendation = 0;
+            boolean setPossibleEmptyTrack = false;
+            if (ex != null && ex instanceof ExoPlaybackException) {
+                ExoPlaybackException error = (ExoPlaybackException)ex;
+                switch (error.type) {
+                    case ExoPlaybackException.TYPE_REMOTE:
+                        msgNum = R.string.pberror_remote;
+                        cause = null;
+                        break;
+                    case ExoPlaybackException.TYPE_RENDERER:
+                        msgNum = R.string.pberror_renderer;
+                        cause = error.getRendererException();
+                        // handle error caused by selecting an unsupported audio track
+                        if (cause instanceof MediaCodecRenderer.DecoderInitializationException) {
+                            String mimeType = ((MediaCodecRenderer.DecoderInitializationException) cause).mimeType;
+                            if (mimeType != null && mimeType.startsWith("audio")) {
+                                recommendation = R.string.pberror_recommend_audio;
+                            }
+                        }
+                        break;
+                    case ExoPlaybackException.TYPE_SOURCE:
+                        msgNum = R.string.pberror_source;
+                        cause = error.getSourceException();
+                        if (cause != null && cause.getMessage().startsWith("Unexpected ArrayIndexOutOfBoundsException")) {
+                            msgNum = R.string.pberror_extractor_array;
+                            break;
+                        }
+                        else {
+                            setPossibleEmptyTrack = true;
+                            msgNum = R.string.pberror_source;
+                        }
+                        break;
+                    case ExoPlaybackException.TYPE_UNEXPECTED:
+                        msgNum = R.string.pberror_unexpected;
+                        cause = error.getUnexpectedException();
+//                        if (mPlayerGlue.getSavedCurrentPosition() < 200
+                        if (viewModel.savedCurrentPosition < 200
+                                && "Playback stuck buffering and not loading".equals(cause.getMessage()))
+                            setPossibleEmptyTrack = true;
+                        // this error comes from fire stick 4k when selecting an mpeg level l2 audio track
+                        if ("Multiple renderer media clocks enabled.".equals(cause.getMessage()))
+                            recommendation = R.string.pberror_recommend_ffmpeg;
+                        break;
+                    default:
+                        msgNum = R.string.pberror_default;
+                        cause = null;
+                        break;
+                }
+            }
+
+            Context context = getContext();
+            if (context != null) {
+                StringBuilder msg = new StringBuilder();
+                if (msgNum > -1)
+                    msg.append(context.getString(msgNum));
+                if (ex != null)
+                    msg.append("\n").append(ex.getMessage());
+                String alertMsg = msg.toString();
+                if (cause != null)
+                    msg.append("\n").append(cause.getMessage());
+                Log.e(TAG, CLASS + " Player Error " + msg);
+                // if we are near the start or end
+                long currPos = viewModel.savedCurrentPosition;
+                long duration = viewModel.savedDuration;
+                boolean failAtStart = duration <= 0 || currPos <= 0;
+                boolean failAtEnd = !failAtStart && Math.abs(duration - currPos) < 10000;
+                if (mDialogStatus == DIALOG_NONE) {
+                    // If there has been over 30 seconds since last error report
+                    // try to recover from error by playing on.
+                    if (failAtEnd
+                            || mTimeLastError < now - 30000 ) {
+//                        if ("true".equals(Settings.getString("pref_error_toast"))) {
+                            Toast.makeText(getActivity(),
+                                    getActivity().getString(msgNum),
+                                    Toast.LENGTH_LONG)
+                                    .show();
+//                        }
+                        // if we are at the end - just end playback
+                        if (failAtEnd)
+                            markWatched(true);
+                        else {
+                            // Try to continue playback
+                            if (currPos > 0)
+                                viewModel.bookmark = currPos;
+                            if (setPossibleEmptyTrack && !viewModel.possibleEmptyTrack) {
+                                viewModel.possibleEmptyTrack = true;
+                                viewModel.player.stop();
+                                initializePlayer(true);
+                            }
+                            else
+                                initializePlayer(true);
+                        }
+                        mTimeLastError = now;
+                    }
+                    else {
+                        // More than 1 error per 30 seconds.
+                        // Alert message for user to decide on continuing.
+                        AlertDialogListener listener = new AlertDialogListener();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle(R.string.pberror_title);
+                        if (recommendation > 0)
+                            builder.setMessage(recommendation);
+                        else
+                            builder.setMessage(alertMsg);
+                        // add a button
+                        builder.setPositiveButton(R.string.pberror_button_continue, listener);
+                        builder.setNegativeButton(R.string.pberror_button_exit, listener);
+                        builder.setOnDismissListener(
+                                dialog -> {
+                                    if (mDialogStatus != DIALOG_RETRY)
+                                        getActivity().finish();
+                                    mDialogStatus = DIALOG_NONE;
+                                });
+                        builder.show();
+                        mDialogStatus = DIALOG_ACTIVE;
+                        mTimeLastError = 0;
+                    }
+                }
+            }
+        }
+
+        class AlertDialogListener implements DialogInterface.OnClickListener {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        mDialogStatus = DIALOG_RETRY;
+                        viewModel.bookmark = viewModel.savedCurrentPosition;
+                        initializePlayer(true);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        mDialogStatus = DIALOG_EXIT;
+                        break;
+                }
+            }
+        }
+
+    }
+    class DialogDismiss implements DialogInterface.OnDismissListener {
+        @Override
+        public void onDismiss(DialogInterface dialogInterface) {
+            if (dialog == dialogInterface)
+                dialog = null;
+        }
+    }
+
+}

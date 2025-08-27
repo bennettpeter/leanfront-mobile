@@ -13,6 +13,6 @@
         android:layout_height="match_parent"
         app:layoutManager="GridLayoutManager"
         android:layout_margin="1px"
-        tools:context=".ui.videolist.VideoListFragment" />
+        tools:context=".lfmobile.ui.videolist.VideoListFragment" />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
