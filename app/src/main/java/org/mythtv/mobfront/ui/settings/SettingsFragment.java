@@ -3,6 +3,7 @@ package org.mythtv.mobfront.ui.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
@@ -120,6 +121,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
             findPreference("pref_backend_userid").setVisible(false);
             findPreference("pref_backend_passwd").setVisible(false);
         }
+//        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+//        bar.setDisplayHomeAsUpEnabled(true);
+//        bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP|ActionBar.DISPLAY_SHOW_HOME,
+//                ActionBar.DISPLAY_HOME_AS_UP|ActionBar.DISPLAY_SHOW_HOME);
     }
 
     @Override

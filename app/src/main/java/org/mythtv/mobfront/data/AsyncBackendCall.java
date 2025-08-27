@@ -1,7 +1,9 @@
 package org.mythtv.mobfront.data;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
+import android.os.Looper;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -29,14 +31,12 @@ public class AsyncBackendCall implements Runnable {
     private ArrayList<XmlNode> xmlResults = new ArrayList<>();
     private Integer[] inTasks;
     private int[] tasks;
-    private Activity activity;
     private OnBackendCallListener listener;
     private final static ExecutorService executor = Executors.newCachedThreadPool();
-    final String TAG = "mfe";
+    private static final String TAG = "lfm";
     final String CLASS = "AsyncBackendCall";
 
-    public AsyncBackendCall(@Nullable Activity activity, @Nullable OnBackendCallListener listener) {
-        this.activity = activity;
+    public AsyncBackendCall(@Nullable OnBackendCallListener listener) {
         this.listener = listener;
     }
 
@@ -83,10 +83,8 @@ public class AsyncBackendCall implements Runnable {
             e.printStackTrace();
         } finally {
             if (listener != null) {
-                if (activity != null)
-                    activity.runOnUiThread(() -> listener.onPostExecute(this));
-                else
-                    listener.onPostExecute(this);
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(() -> listener.onPostExecute(this));
             }
         }
     }
@@ -338,7 +336,18 @@ public class AsyncBackendCall implements Runnable {
                         commBreakTable.offSetType = CommBreakTable.OFFSET_FRAME;
                     break;
                 }
-
+                case Action.GETUPCOMINGLIST:
+                    try {
+                        boolean showAll = false;
+                        if (params != null)
+                            showAll = ((Boolean)params).booleanValue();
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Dvr/GetUpcomingList?ShowAll=" + showAll);
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception In GETUPCOMINGLIST ", e);
+                    }
+                    break;
             }
             xmlResults.add(xmlResult);
         }

@@ -35,6 +35,7 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.bumptech.glide.request.RequestOptions;
 
+import org.mythtv.mobfront.MainActivity;
 import org.mythtv.mobfront.MyApplication;
 import org.mythtv.mobfront.R;
 import org.mythtv.mobfront.data.Action;
@@ -61,8 +62,8 @@ import java.util.Objects;
  * the [RecyclerView] using LinearLayoutManager in a small screen
  * and shows items using GridLayoutManager in a large screen.
  */
-public class VideoListFragment extends Fragment {
-    private static final String TAG = "mfe";
+public class VideoListFragment extends MainActivity.MyFragment {
+    private static final String TAG = "lfm";
     private static final String CLASS = "VideoListFragment";
     private FragmentVideolistBinding binding;
     private VideoListModel videoListModel;
@@ -141,7 +142,6 @@ public class VideoListFragment extends Fragment {
                     for (int ix = 0; ix < videoListModel.recGroups.size(); ix++)
                         menu.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
                 }
-//                }
                 MenuProvider.super.onPrepareMenu(menu);
             }
             @Override
@@ -151,23 +151,27 @@ public class VideoListFragment extends Fragment {
                     videoListModel.setRecGroup(menuItem.getTitle().toString());
                     refresh();
                     return true;
-                } else if (id == android.R.id.home) {
-                    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                        requireActivity().getOnBackPressedDispatcher().onBackPressed();
-                        return true;
-                    }
-                } else if (id == R.id.menu_refresh) {
-                    if (binding != null && binding.swiperefresh != null) {
-                        binding.swiperefresh.setRefreshing(true);
-                        videoListModel.startFetch();
-                    }
-                    return true;
                 }
                 return false;
             }
-        });
+        },getViewLifecycleOwner());
     }
 
+    public boolean navigateUp() {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    public void startFetch() {
+        if (videoListModel != null && binding != null
+                && binding.swiperefresh != null) {
+            binding.swiperefresh.setRefreshing(true);
+            videoListModel.startFetch();
+        }
+    }
     void refresh() {
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
@@ -189,21 +193,21 @@ public class VideoListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity)getActivity()).myFragment = this;
         if (menuProvider != null) {
             getActivity().addMenuProvider(menuProvider);
-//            getActivity().invalidateMenu();
         }
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("MythTV");
         if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP)
             ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(videoListModel.recGroup);
         else if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
             ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(videoListModel.title);
-        videoListModel.refresh();
         refresh();
     }
 
     @Override
     public void onPause() {
+        ((MainActivity)getActivity()).myFragment = null;
         if (menuProvider != null) {
             getActivity().removeMenuProvider(menuProvider);
             getActivity().invalidateMenu();
@@ -246,7 +250,7 @@ public class VideoListFragment extends Fragment {
         }
         int progflags = Integer.parseInt(video.progflags);
         boolean watched = ((progflags & Video.FL_WATCHED) != 0);
-        AsyncBackendCall call = new AsyncBackendCall(getActivity(),
+        AsyncBackendCall call = new AsyncBackendCall(
             taskRunner -> {
                 long [] bookmark = (long[])taskRunner.response;
                 if (bookmark[0] == -1 && bookmark[1] == -1) {
@@ -289,7 +293,7 @@ public class VideoListFragment extends Fragment {
                         case Action.DELETE:
                         case Action.DELETE_AND_RERECORD:
                         case Action.ALLOW_RERECORD:
-                            AsyncBackendCall call2 = new AsyncBackendCall(getActivity(),null);
+                            AsyncBackendCall call2 = new AsyncBackendCall(null);
                             call2.videos.add(video);
                             call2.execute(item.getItemId());
                             return true;
@@ -305,7 +309,7 @@ public class VideoListFragment extends Fragment {
 
 //    static final String [] XMLTAGS_VIDEO_INFO = {"VideoStreamInfos","VideoStreamInfo"};
     private void play(Video video, boolean fromBookmark) {
-        AsyncBackendCall call = new AsyncBackendCall(getActivity(),
+        AsyncBackendCall call = new AsyncBackendCall(
                 taskRunner -> {
             long [] bookmark = (long[])taskRunner.response;
             if (bookmark[0] == -1 && bookmark[1] == -1) {
@@ -366,20 +370,6 @@ public class VideoListFragment extends Fragment {
             subtitle.append('S').append(video.season).append('E').append(video.episode)
                     .append(' ');
         }
-//        String recDate = null;
-//        if (video.starttime!= null) {
-//            try {
-//            SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
-//            DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
-//                    (MyApplication.getAppContext());
-//            if (video.starttime != null) {
-//                Date date = dbFormat.parse(video.starttime + "+0000");
-//                recDate = outFormat.format(date);
-//            }
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//        }
         if (video.subtitle == null || video.subtitle.trim().length() == 0
                 || video.type == Video.TYPE_VIDEO) {
             subtitle.append(video.title);
@@ -387,8 +377,6 @@ public class VideoListFragment extends Fragment {
                 subtitle.append(": ");
         }
         subtitle.append(video.subtitle);
-//        if (recDate != null)
-//            subtitle.append(" (").append(recDate).append(")");
         return subtitle.toString();
     }
 
@@ -431,15 +419,13 @@ public class VideoListFragment extends Fragment {
             String airdate = null;
             if (video.airdate != null) {
                 try {
-                    SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
+                    final SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    final DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
                             (MyApplication.getAppContext());
                     if ("01-01".equals(video.airdate.substring(5)))
                         airdate = video.airdate.substring(0, 4);
                     else {
                         Date date = dbFormat.parse(video.airdate);
-//                        String origDate = outFormat.format(date);
-//                    if (!Objects.equals(origDate,recDate))
                         airdate = outFormat.format(date);
                     }
                 } catch (ParseException e) {
@@ -449,13 +435,11 @@ public class VideoListFragment extends Fragment {
             String recDate = null;
             if (video.starttime!= null) {
                 try {
-                    SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
-                    DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
+                    final SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
+                    final DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
                             (MyApplication.getAppContext());
-                    if (video.starttime != null) {
-                        Date date = dbFormat.parse(video.starttime + "+0000");
-                        recDate = outFormat.format(date);
-                    }
+                    Date date = dbFormat.parse(video.starttime + "+0000");
+                    recDate = outFormat.format(date);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -525,12 +509,6 @@ public class VideoListFragment extends Fragment {
                             .into(holder.itemImageView);
                 }
             }
-//            if (video.type == Video.TYPE_VIDEO
-//                || video.type == Video.TYPE_EPISODE)
-//                holder.optionsView.setVisibility(View.VISIBLE);
-//            else
-//                holder.optionsView.setVisibility(View.INVISIBLE);
-
         }
     }
 
@@ -540,7 +518,6 @@ public class VideoListFragment extends Fragment {
         private final TextView itemTitleView;
         private final TextView itemDateView;
         private final TextView itemDescView;
-//        private final TextView optionsView;
         private final ImageView playIconView;
 
         public VideoListViewHolder(ItemVideolistBinding binding, VideoListFragment fragment) {
@@ -549,21 +526,13 @@ public class VideoListFragment extends Fragment {
             itemTitleView = binding.itemTitle;
             itemDateView = binding.itemDate;
             itemDescView = binding.itemDesc;
-//            optionsView = binding.itemOptions;
             playIconView = binding.playIcon;
-//            binding.getRoot().setOnClickListener( (view) ->  {
             itemImageView.setOnClickListener((View v) -> {
                 fragment.onItemClick(getBindingAdapterPosition());
             });
             binding.getRoot().setOnClickListener((View v) -> {
                 fragment.onItemMore(v, getBindingAdapterPosition());
             });
-//            textView.setOnClickListener((View v) -> {
-//                if (fragment.orientation == Configuration.ORIENTATION_PORTRAIT)
-//                    imageView.performClick();
-//                else
-//                    optionsView.performClick();
-//            });
         }
     }
 }

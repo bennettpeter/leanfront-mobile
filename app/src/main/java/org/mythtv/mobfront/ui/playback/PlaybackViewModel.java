@@ -52,7 +52,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     private final Updater updater = new Updater();
     final MutableLiveData<long[]> commSkipToast = new MutableLiveData<>();
     final MutableLiveData<Long> commBreakDlg = new MutableLiveData<>();
-    final String TAG = "mfe";
+    private static final String TAG = "lfm";
     final String CLASS = "PlaybackViewModel";
     // aspectValues[0] will change from 0f to the default value of the video
     float[] aspectValues = {0f, 1.333333f, 1.7777777f, 0.5625f};
@@ -94,7 +94,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     }
 
     void fillTables(Activity activity) {
-        AsyncBackendCall call = new AsyncBackendCall(activity, (caller) -> {
+        AsyncBackendCall call = new AsyncBackendCall((caller) -> {
             if (commBreakTable.frameratex1000 > 1)
                 frameRate = (float) (commBreakTable.frameratex1000 / 1000.);
             if (commBreakTable.entries.length > 0)

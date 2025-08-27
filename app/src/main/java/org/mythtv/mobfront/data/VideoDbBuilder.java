@@ -99,7 +99,7 @@ public class VideoDbBuilder {
     public static final String XMLTAG_CALLSIGN = "CallSign";
     public static final String XMLTAG_CHANNELNAME = "ChannelName";
 
-    private static final String TAG = "mfe";
+    private static final String TAG = "lfm";
     private static final String CLASS = "VideoDbBuilder";
 
     private Context mContext;

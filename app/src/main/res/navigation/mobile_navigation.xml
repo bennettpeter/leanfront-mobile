@@ -16,4 +16,10 @@
         android:id="@+id/nav_settings"
         android:name="org.mythtv.mobfront.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"/>
+
+    <fragment
+        android:id="@+id/nav_upcoming"
+        android:name="org.mythtv.mobfront.ui.upcoming.UpcomingListFragment"
+        android:label="@string/menu_upcoming"/>
+
 </navigation>

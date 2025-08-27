@@ -12,8 +12,8 @@ public class CommBreakTable {
     // default to 1 to prevent a zero division if not set.
     public long frameratex1000 = 1;
 
-    private static final String TAG = "lfe";
-    private static final String CLASS = "CommBreakTable";
+    private static final String TAG = "lfm";
+    final String CLASS = "CommBreakTable";
     public static final int MARK_COMM_START = 4;
     public static final int MARK_COMM_END   = 5;
     public static final int MARK_CUT_START   = 1;

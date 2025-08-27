@@ -61,7 +61,7 @@ public class PlaybackFragment extends Fragment {
     private final String prefAudio = Settings.getString("pref_audio");
     private final String prefVideo = Settings.getString("pref_video");
 
-    static final String TAG = "mfe";
+    private static final String TAG = "lfm";
     static final String CLASS = "PlaybackFragment";
     private long mTimeLastError = 0;
     AlertDialog dialog;
@@ -211,6 +211,12 @@ public class PlaybackFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer(boolean enableControls) {
         MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
@@ -352,14 +358,14 @@ public class PlaybackFragment extends Fragment {
         long params[] = new long[2];
         params[0] = viewModel.bookmark;
         params[1] =  (long) (viewModel.frameRate * 100.0f) * params[0] / 100000;
-        AsyncBackendCall call = new AsyncBackendCall(getActivity(), null);
+        AsyncBackendCall call = new AsyncBackendCall(null);
         call.videos.add(viewModel.video);
         call.params = params;
         call.execute(Action.SET_BOOKMARK, action2);
     }
 
     public void markWatched(boolean watched) {
-        AsyncBackendCall call = new AsyncBackendCall(getActivity(), null);
+        AsyncBackendCall call = new AsyncBackendCall(null);
         call.videos.add(viewModel.video);
         call.params = new Boolean(watched);
         call.execute(Action.SET_WATCHED);

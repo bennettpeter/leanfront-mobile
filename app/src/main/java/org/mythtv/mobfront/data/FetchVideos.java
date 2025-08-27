@@ -59,8 +59,8 @@ public class FetchVideos implements Runnable{
         void onPostExecute(FetchVideos taskRunner);
     }
 
-    private static final String TAG = "mfe";
-    private static final String CLASS = "FetchVideos";
+    private static final String TAG = "lfm";
+    final String CLASS = "FetchVideos";
     public static final String RECORDEDID = "RecordedId";
     public static final String RECTYPE = "RecType";
     public static final String RECGROUP = "RecGroup";

@@ -11,6 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -29,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavController navController;
-    static final String TAG = "mfe";
+    public MyFragment myFragment;
+    private static final String TAG = "lfm";
     static final String CLASS = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +89,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.nav_settings) {
-            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-            navController.navigate(R.id.nav_settings);
+    if (item.getItemId() == R.id.menu_refresh && myFragment != null) {
+            myFragment.startFetch();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        if (myFragment != null)
+            myFragment.navigateUp();
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
@@ -110,5 +114,12 @@ public class MainActivity extends AppCompatActivity {
             navController.navigate(R.id.nav_settings);
         }
         viewModel.startMythTask();
+    }
+
+    public static abstract class MyFragment extends Fragment {
+        public abstract void startFetch();
+        public boolean navigateUp(){
+            return false;
+        }
     }
 }

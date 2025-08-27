@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class XmlNode {
-    private static final String TAG = "mfe";
+    private static final String TAG = "lfm";
     private static final String CLASS = "XmlNode";
 
     private String name;

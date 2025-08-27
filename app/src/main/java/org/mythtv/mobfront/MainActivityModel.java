@@ -12,6 +12,7 @@ import org.mythtv.mobfront.data.BackendCache;
 import org.mythtv.mobfront.data.Settings;
 import org.mythtv.mobfront.data.XmlNode;
 import org.mythtv.mobfront.ui.settings.SettingsFragment;
+import org.mythtv.mobfront.ui.videolist.VideoListModel;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
@@ -30,7 +31,7 @@ public class MainActivityModel extends ViewModel {
     private static int TASK_INTERVAL = 240;
     private ScheduledExecutorService executor = null;
     private static boolean mWasInBackground = true;
-    static final String TAG = "mfe";
+    private static final String TAG = "lfm";
     static final String CLASS = "MainActivityModel";
     final MutableLiveData<Integer> navigate = new MutableLiveData<>();
     final MutableLiveData<Integer> toast = new MutableLiveData<>();
@@ -113,8 +114,12 @@ public class MainActivityModel extends ViewModel {
                             if (result.length() == 0) {
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
                                 BackendCache.getInstance().authorization = null;
-                            } else
+                            } else {
                                 BackendCache.getInstance().authorization = result;
+                                VideoListModel model = VideoListModel.getInstance();
+                                if (model != null)
+                                    model.startFetch();
+                            }
                         } catch (Exception e) {
                             Log.e(TAG, CLASS + " Exception in LoginUser.", e);
                             BackendCache.getInstance().authorization = null;
