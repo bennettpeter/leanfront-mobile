@@ -1,6 +1,6 @@
 # MythTV Lean Frontend (leanfront) mobile version: Android frontend for MythTV
 
-Leanfront, mobile version, is a frontend for MythTV that runs on Android phones and tablets. It is a version of [leanfront](https://github.com/bennettpeter/leanfront) for mobile devices. Many features of the Android TV version are not provided in the mobile version.
+Leanfront, mobile version, is a frontend for MythTV that runs on Android phones and tablets. It is a version of [leanfront](https://github.com/bennettpeter/leanfront) for mobile devices. Some features of the Android TV version are not provided in the mobile version.
 Leanfront, mobile version, supports playback of recordings and videos from MythTV.
 
 Leanfront can be installed from the [Google play store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront).
@@ -204,7 +204,7 @@ If you expose port 6544 to the internet, you can run leanfront remotely. In this
 
 ### Mythbackend idle shutdown
 
-If you have a mythbackend earlier than v30 you need to disable the mythbackend idle shutdown, as leanfront cannot prevent shutdown, even while playing. On v30 and later, leanfront prevents backend shutdown while leanfront is in the foreground on the TV.
+If you have a mythbackend earlier than v30 you need to disable the mythbackend idle shutdown, as leanfront cannot prevent shutdown, even while playing. On v30 and later, leanfront prevents backend shutdown while leanfront is in the foreground on the phone or tablet.
 
 ### Refresh Lists
 
