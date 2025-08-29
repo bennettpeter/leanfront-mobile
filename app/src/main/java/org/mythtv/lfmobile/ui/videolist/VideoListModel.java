@@ -236,10 +236,12 @@ public class VideoListModel extends ViewModel {
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
             return;
+        String fnSort = makeTitleSort("filename", '/').toString();
         String sql = "SELECT * FROM videoview "
                 + "WHERE rectype = 2 "
                 + "AND  filename like ? "
-                + "ORDER BY titlematch, filename ";
+                + "ORDER BY "
+                + fnSort;
         String [] parms;
         if (videoPath.length() > 0)
             parms = new String[]{videoPath + "/%"};
@@ -285,6 +287,33 @@ public class VideoListModel extends ViewModel {
         }
         videos.postValue(videoList);
         csr.close();
+    }
+
+    /**
+     * Create the Sql to sort with excluding articles "the" "a" etc at the front
+     * or at the front of directory names
+     * @param columnName Column for sorting on
+     * @param delim Delimiter to use - ^ for title and / for directory
+     * @return StringBuilder with resulting phrase for "order by"
+     */
+    public static StringBuilder makeTitleSort(String columnName, char delim) {
+        final String[] articles = MyApplication.getAppContext().getResources()
+                .getStringArray(R.array.title_sort_articles);
+        // Sort uppercase title
+        // REPLACE(REPLACE(REPLACE('^'||UPPER(title),'^THE ','^'),'^A ','^'),'^AN ','^')
+        StringBuilder titleSort = new StringBuilder();
+        titleSort.append("'").append(delim).append("'||UPPER(")
+                .append(columnName).append(")");
+        for (String article : articles) {
+            // Empty entries may be a single space
+            article = article.trim();
+            if (article != null && article.length() > 0) {
+                titleSort.insert(0, "REPLACE(");
+                titleSort.append(",'").append(delim).append(article)
+                        .append(" ','").append(delim).append("')");
+            }
+        }
+        return titleSort;
     }
 
 }
