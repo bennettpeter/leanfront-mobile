@@ -97,8 +97,9 @@ public class MainActivityModel extends ViewModel {
                         return;
 
                     int toastMsg = 0;
+                    BackendCache bCache =  BackendCache.getInstance();
                     if (loginNeededNow) {
-                        BackendCache.getInstance().loginNeeded = true;
+                        bCache.loginNeeded = true;
                         try {
                             String result = null;
                             StringBuilder urlBuilder = new StringBuilder
@@ -113,9 +114,10 @@ public class MainActivityModel extends ViewModel {
                             connection = true;
                             if (result.length() == 0) {
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
-                                BackendCache.getInstance().authorization = null;
+                                bCache.authorization = null;
                             } else {
-                                BackendCache.getInstance().authorization = result;
+                                bCache.authorization = result;
+                                bCache.getWsdl();
                                 VideoListModel model = VideoListModel.getInstance();
                                 if (model != null)
                                     model.startFetch();

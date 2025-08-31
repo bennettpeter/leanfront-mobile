@@ -13,7 +13,10 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -345,6 +348,83 @@ public class AsyncBackendCall implements Runnable {
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception In GETUPCOMINGLIST ", e);
+                    }
+                    break;
+                case Action.DVR_WSDL:
+                    try {
+                        String url = XmlNode.mythApiUrl(null,
+                                "/Dvr/wsdl");
+                        xmlResult = XmlNode.fetch(url, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception getting Dvr wsdl.", e);
+                    }
+                    break;
+                case Action.BACKEND_INFO:
+                {
+                    String urlString = null;
+                    BackendCache bCache = BackendCache.getInstance();
+                    try {
+                        urlString = XmlNode.mythApiUrl(null,
+                                "/Status/GetStatus");
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Getting backend Info.", e);
+                    }
+                    if (xmlResult != null) {
+                        String version = xmlResult.getAttribute("version");
+                        if (version != null) {
+                            int period = version.indexOf('.');
+                            if (period > 0) {
+                                bCache.mythTvVersion = Integer.parseInt(version.substring(0, period));
+                                if (bCache.mythTvVersion == 0 && period == 1)
+                                    // For versions like 0.24
+                                    bCache.mythTvVersion = Integer.parseInt(version.substring(2,4));
+                            }
+                        }
+                        String dateStr = xmlResult.getAttribute("ISODate");
+                        if (dateStr != null) {
+                            SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
+                            try {
+                                Date backendTime = dbFormat.parse(dateStr + "+0000");
+                                bCache.mTimeAdjustment = backendTime.getTime() - System.currentTimeMillis();
+                                Log.i(TAG, CLASS + " Time difference " + bCache.mTimeAdjustment + " milliseconds");
+                            } catch (ParseException e) {
+                                Log.e(TAG, CLASS + " Exception getting backend time " + urlString, e);
+                            }
+                        }
+                    }
+                    // Find if we support the LastPlayPos API's
+                    long tResult = 0;
+                    XmlNode testNode = null;
+                    try {
+                        urlString = XmlNode.mythApiUrl(null,
+                                "/Dvr/GetLastPlayPos?RecordedId=-1");
+                        testNode = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception in GetLastPlayPos. " + e);
+                    }
+                    if (testNode != null) {
+                        try {
+                            tResult = Long.parseLong(testNode.getString());
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                            tResult = 0;
+                        }
+                    }
+                    if (tResult == -1)
+                        bCache.supportLastPlayPos = true;
+                    else
+                        bCache.supportLastPlayPos = false;
+                    Log.i(TAG, CLASS + " Last Play Position Support:" + bCache.supportLastPlayPos);
+                    break;
+                    }
+                case Action.GET_HOSTNAME:
+                    try {
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Myth/GetHostName");
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception in Myth/GetHostName.", e);
                     }
                     break;
             }
