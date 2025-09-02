@@ -1,6 +1,8 @@
 # MythTV Lean Frontend (leanfront) mobile version: Android frontend for MythTV
 
-Leanfront, mobile version, is a frontend for MythTV that runs on Android phones and tablets. It is a version of [leanfront](https://github.com/bennettpeter/leanfront) for mobile devices. Some features of the Android TV version are not provided in the mobile version.
+**For the Android TV version of leanfront see  https://github.com/bennettpeter/leanfront .**
+
+Leanfront, mobile version, is a frontend for MythTV that runs on Android phones and tablets. Some features of the Android TV version are not yet provided in the mobile version.
 Leanfront, mobile version, supports playback of recordings and videos from MythTV.
 
 Leanfront can be installed from the [Google play store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront).
@@ -22,7 +24,7 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 - [Playback controls](#playback-controls)
 - [General Operation](#general-operation)
     - [Status Port](#status-port)
-    - [Mythbackend idle shutdown](#mythvackend-idle-shutdown)
+    - [Mythbackend idle shutdown](#mythbackend-idle-shutdown)
     - [Refresh Lists](#refresh-lists)
 - [Building](#building)
 - [Internationalization](#internationalization)
@@ -96,7 +98,7 @@ If your backend has been set up to require user authentication for the service A
 ## Installing leanfront
 You need an Android phone or tablet. For TV devices see [leanfront](https://github.com/bennettpeter/leanfront).
 
-Leanfront will be available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront). Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from google, you do not need to uninstall, the play store will upgrade it.
+Leanfront is available in the [Google Play Store](https://play.google.com/store/apps/details?id=org.mythtv.leanfront). Either go to play.google.com or use the play store from the android device and search for MythTV or leanfront. If you have previously installed an apk from the download site, you do not need to uninstall, the play store will upgrade it.
 
 ### Side Load
 Preferably use the play store or app store for installation.
@@ -212,14 +214,15 @@ To refresh the list from the backend either tap the refresh icon at the top of t
 
 ## Building
 
-- Clone from github.com bennettpeter/leanfront.git.
+- Clone from github.com bennettpeter/leanfront-mobile.git.
 - Run ./update_dependencies.sh. This will download 3 repositories and check out the appropriate branches / tags.
-- Download and install [Android Studio][studio]. Also download the latest ndk and Cmake from within android studio. Look in the "Build" tab for a message about this. If you encounter this, switch to the requested NDK version.
-- Note the ndk version is referenced in the app/build.gradle file. You need to either download the version that is specified there or else update there to match the version you downloaded.
-- In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/25.1.8937393
+- Download and install [Android Studio][studio].
+- Look in the file app/build.gradle for the line like *ndkVersion '28.2.13676358'*. Install the specified ndk version from the menu Tools/SDKManager in App Studio. ALso install CMake from the SDK Tools.
+- Starting in November 2025 you need to use ndk 28 or higher to satisfy a Google Play Store requirement for 16K pages.
+- In the $HOME/Android directory create a link to the ndk, for example android-ndk -> Sdk/ndk/28.2.13676358
 - Run build_ffmpeg.sh.
 - Open the project in [Android Studio][studio].
-- Compile and deploy to your Android TV device (such as a Shield or Amazon fire stick).
+- Compile and deploy to your phone or tablet.
 - If you do not want to build this yourself, see [Installing Leanfront](#installing-leanfront).
 - Set up the backend in Settings on the first run.
 
