@@ -21,5 +21,6 @@
 
     <style name="Theme.MythTVmobile.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.MythTVmobile.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+<!--    <style name="Theme.MythTVmobile.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
+    <style name="Theme.MythTVmobile.PopupOverlay" parent="Theme.MaterialComponents.DayNight.DarkActionBar" />
 </resources>

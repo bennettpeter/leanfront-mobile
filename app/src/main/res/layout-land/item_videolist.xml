@@ -35,7 +35,6 @@
         android:layout_marginBottom="4dp"
         android:paddingLeft="284dp"
         android:paddingRight="16dp"
-        android:textColor="@color/black"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -48,7 +47,6 @@
         android:layout_marginBottom="4dp"
         android:paddingLeft="284dp"
         android:paddingRight="16dp"
-        android:textColor="@color/black"
         android:textStyle="normal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/item_title"/>
@@ -63,7 +61,6 @@
         android:paddingRight="16dp"
         android:maxLines="6"
         android:ellipsize="end"
-        android:textColor="@color/black"
         android:textStyle="normal"
         android:gravity="top"
         app:layout_constraintStart_toStartOf="parent"
