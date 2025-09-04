@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.FetchVideos;
+import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.data.Video;
 import org.mythtv.lfmobile.data.VideoCursorMapper;
 import org.mythtv.lfmobile.data.VideoDbHelper;
@@ -124,6 +125,16 @@ public class VideoListModel extends ViewModel {
     }
     private void loadRecGroup(String recGroup) {
         videoList.clear();
+        // Add an "All" entry at the top to represent all series together
+        {
+            Video video = new Video.VideoBuilder()
+                    .id(-1).title(allTitle)
+                    .subtitle("")
+                    .progflags("0")
+                    .build();
+            video.type = Video.TYPE_SERIES;
+            videoList.add(video);
+        }
         // Load only a list of unique titles
         Context context = MyApplication.getAppContext();
         VideoDbHelper dbh = VideoDbHelper.getInstance(context);
@@ -177,16 +188,27 @@ public class VideoListModel extends ViewModel {
             return;
         StringBuilder sql = new StringBuilder("SELECT * FROM video "
                 + "WHERE rectype = 1 ");
-        String [] parms;
+        ArrayList <String> parms = new ArrayList<>();
         if (allTitle.equals(recGroup)) {
             sql.append("AND recgroup != 'Deleted' ");
-            parms = new String[]{title};
         } else{
             sql.append("AND recgroup = ? ");
-            parms = new String[]{recGroup, title};
+            parms.add(recGroup);
         }
-        sql.append("AND title = ? ORDER BY airdate, starttime");
-        Cursor csr = db.rawQuery(sql.toString(), parms);
+        if (!allTitle.equals(title)) {
+            sql.append("AND title = ? ");
+            parms.add(title);
+        }
+        String ascdesc = Settings.getString("pref_seq_ascdesc");
+        String sort = Settings.getString("pref_seq");
+        sql.append("ORDER BY ")
+            .append(sort).append(" ").append(ascdesc);
+        if ("airdate".equals(sort))
+            sql.append(", ")
+                .append("season ").append(ascdesc).append(", ")
+                .append("episode ").append(ascdesc).append(", ")
+                .append("starttime ").append(ascdesc);
+        Cursor csr = db.rawQuery(sql.toString(), parms.toArray(new String[]{}));
         VideoCursorMapper mapper = new VideoCursorMapper();
         if (csr.moveToFirst()) {
             mapper.bindColumns(csr);

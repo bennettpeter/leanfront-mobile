@@ -306,7 +306,6 @@ public class VideoListFragment extends MainActivity.MyFragment {
 
     }
 
-//    static final String [] XMLTAGS_VIDEO_INFO = {"VideoStreamInfos","VideoStreamInfo"};
     private void play(Video video, boolean fromBookmark) {
         AsyncBackendCall call = new AsyncBackendCall(
                 taskRunner -> {
@@ -369,12 +368,9 @@ public class VideoListFragment extends MainActivity.MyFragment {
             subtitle.append('S').append(video.season).append('E').append(video.episode)
                     .append(' ');
         }
-        if (video.subtitle == null || video.subtitle.trim().length() == 0
-                || video.type == Video.TYPE_VIDEO) {
-            subtitle.append(video.title);
-            if (video.subtitle != null && video.subtitle.trim().length() > 0)
-                subtitle.append(": ");
-        }
+        subtitle.append(video.title);
+        if (video.subtitle != null && video.subtitle.trim().length() > 0)
+            subtitle.append(": ");
         subtitle.append(video.subtitle);
         return subtitle.toString();
     }
@@ -395,8 +391,9 @@ public class VideoListFragment extends MainActivity.MyFragment {
                 }
                 @Override
                 public boolean areContentsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
-                    return getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem))
-                            && Objects.equals(oldItem.cardImageUrl, newItem.cardImageUrl);
+                    return Objects.equals(oldItem.cardImageUrl, newItem.cardImageUrl)
+                        && getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem));
+
                 }
             });
             this.fragment = fragment;
@@ -518,6 +515,7 @@ public class VideoListFragment extends MainActivity.MyFragment {
         private final TextView itemDateView;
         private final TextView itemDescView;
         private final ImageView playIconView;
+        private final VideoListFragment fragment;
 
         public VideoListViewHolder(ItemVideolistBinding binding, VideoListFragment fragment) {
             super(binding.getRoot());
@@ -526,6 +524,7 @@ public class VideoListFragment extends MainActivity.MyFragment {
             itemDateView = binding.itemDate;
             itemDescView = binding.itemDesc;
             playIconView = binding.playIcon;
+            this.fragment = fragment;
             itemImageView.setOnClickListener((View v) -> {
                 fragment.onItemClick(getBindingAdapterPosition());
             });

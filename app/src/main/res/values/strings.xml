@@ -90,7 +90,13 @@
     <string name="pref_entry_prevnext_comskip">Skip Commercial</string>
     <string name="pref_value_prevnext_jump">jump</string>
     <string name="pref_value_prevnext_comskip">skipcom</string>
-
+    <string name="pref_title_lists">Program List Options</string>
+    <string name="pref_seq">Sort by</string>
+    <string name="pref_seq_orig_airdate">Original Air Date</string>
+    <string name="pref_seq_recorded_date">Recorded Date</string>
+    <string name="pref_seq_ascdesc">Sort Order</string>
+    <string name="pref_seq_ascending">Sort Ascending</string>
+    <string name="pref_seq_descending">Sort Descending</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
@@ -110,6 +116,9 @@
     <string name="sdef_jump" translatable="false">5</string>
     <!-- values jump or skipcom  -->
     <string name="sdef_prevnext" translatable="false">jump</string>
+<!--    Values airdate or starttime-->
+    <string name="sdef_seq" translatable="false">starttime</string>
+    <string name="sdef_seq_ascdesc" translatable="false">asc</string>
 
     <string name="resume_last">Play from last play position</string>
     <string name="play">Play from start</string>

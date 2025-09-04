@@ -52,19 +52,22 @@
     <PreferenceCategory
         android:title="@string/pref_title_playback">
 
-        <DropDownPreference
+        <ListPreference
             android:key="pref_audio"
             android:title="@string/pref_ff_title"
             android:entries="@array/decode_pref_entries"
             app:useSimpleSummaryProvider="true"
-            android:entryValues="@array/decode_values"/>
+            android:dialogTitle="@string/pref_ff_title"
+            android:entryValues="@array/decode_values"
+            android:defaultValue="auto"/>
 
-        <DropDownPreference
+        <ListPreference
             android:key="pref_video"
             android:title="@string/pref_ff_video_title"
             android:entries="@array/decode_pref_entries"
             app:useSimpleSummaryProvider="true"
-            android:entryValues="@array/decode_values"/>
+            android:entryValues="@array/decode_values"
+            android:defaultValue="auto"/>
 
         <EditTextPreference
             android:key="pref_skip_fwd"
@@ -87,19 +90,23 @@
             android:dialogTitle="@string/pref_title_jump"
             android:defaultValue="5"/>
 
-        <DropDownPreference
+        <ListPreference
             android:key="pref_prevnext"
             android:title="@string/pref_title_prevnext"
             android:entries="@array/prevnext_entries"
             app:useSimpleSummaryProvider="true"
-            android:entryValues="@array/prevnext_values"/>
+            android:dialogTitle="@string/pref_title_prevnext"
+            android:entryValues="@array/prevnext_values"
+            android:defaultValue="@string/pref_value_prevnext_jump"/>
 
-        <DropDownPreference
+        <ListPreference
             android:key="pref_commskip"
             android:title="@string/title_commskip"
             android:entries="@array/commskip_pref_entries"
             app:useSimpleSummaryProvider="true"
-            android:entryValues="@array/commskip_values"/>
+            android:dialogTitle="@string/title_commskip"
+            android:entryValues="@array/commskip_values"
+            android:defaultValue="0"/>
 
         <EditTextPreference
             android:key="pref_commskip_start"
@@ -123,5 +130,26 @@
             android:defaultValue="2"/>
 
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_title_lists">
 
+        <ListPreference
+            android:key="pref_seq"
+            android:title="@string/pref_seq"
+            android:entries="@array/seq_pref_entries"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_seq"
+            android:entryValues="@array/seq_values"
+            android:defaultValue="starttime"/>
+
+        <ListPreference
+            android:key="pref_seq_ascdesc"
+            android:title="@string/pref_seq_ascdesc"
+            android:entries="@array/ascdesc_pref_entries"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_seq_ascdesc"
+            android:entryValues="@array/ascdesc_values"
+            android:defaultValue="asc"/>
+
+    </PreferenceCategory>
 </PreferenceScreen>

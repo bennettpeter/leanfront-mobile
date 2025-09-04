@@ -48,4 +48,25 @@
         <item>@string/pref_value_prevnext_comskip</item>
     </string-array>
 
+    <string-array name="seq_pref_entries">
+        <item>@string/pref_seq_orig_airdate</item>
+        <item>@string/pref_seq_recorded_date</item>
+    </string-array>
+
+    <string-array name="seq_values">
+        <item>airdate</item>
+        <item>starttime</item>
+    </string-array>
+
+    <string-array name="ascdesc_pref_entries">
+        <item>@string/pref_seq_ascending</item>
+        <item>@string/pref_seq_descending</item>
+    </string-array>
+
+    <string-array name="ascdesc_values">
+        <item>asc</item>
+        <item>desc</item>
+    </string-array>
+
+
 </resources>
