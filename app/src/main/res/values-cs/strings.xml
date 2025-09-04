@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Přeskočit komerční</string>
   <string name="pref_value_prevnext_jump">skok</string>
   <string name="pref_value_prevnext_comskip">Skipcom</string>
+  <string name="pref_title_lists">Možnosti seznamu programů</string>
+  <string name="pref_seq">Třídit</string>
+  <string name="pref_seq_orig_airdate">Původní datum vzduchu</string>
+  <string name="pref_seq_recorded_date">Zaznamenané datum</string>
+  <string name="pref_seq_ascdesc">Sřídněte pořadí</string>
+  <string name="pref_seq_ascending">Třídit vzestup</string>
+  <string name="pref_seq_descending">Třídit klesání</string>
   <string name="resume_last">Hrajte z poslední hry</string>
   <string name="play">Hrajte od začátku</string>
   <string name="menu_mark_unwatched">Mark As Unhethed</string>

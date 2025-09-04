@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Sauter la publicité</string>
   <string name="pref_value_prevnext_jump">saut</string>
   <string name="pref_value_prevnext_comskip">skipcom</string>
+  <string name="pref_title_lists">Options de liste de programmes</string>
+  <string name="pref_seq">Trier par</string>
+  <string name="pref_seq_orig_airdate">Date d\'air d\'origine</string>
+  <string name="pref_seq_recorded_date">Date enregistrée</string>
+  <string name="pref_seq_ascdesc">Tri</string>
+  <string name="pref_seq_ascending">Tri ascendant</string>
+  <string name="pref_seq_descending">Trier descendant</string>
   <string name="resume_last">Jouer de la dernière position de jeu</string>
   <string name="play">Jouer depuis le début</string>
   <string name="menu_mark_unwatched">Marquez comme non fixé</string>

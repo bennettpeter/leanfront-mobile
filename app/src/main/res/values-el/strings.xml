@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Παραλείψτε το διαφημιστικό</string>
   <string name="pref_value_prevnext_jump">άλμα</string>
   <string name="pref_value_prevnext_comskip">σκακιές</string>
+  <string name="pref_title_lists">Επιλογές λίστας προγραμμάτων</string>
+  <string name="pref_seq">Ταξινομίζω</string>
+  <string name="pref_seq_orig_airdate">Αρχική ημερομηνία αέρα</string>
+  <string name="pref_seq_recorded_date">Ημερομηνία καταγραφής</string>
+  <string name="pref_seq_ascdesc">Ταξινόμηση</string>
+  <string name="pref_seq_ascending">Ταξινόμηση</string>
+  <string name="pref_seq_descending">Ταξινόμηση φθίνουσας</string>
   <string name="resume_last">Παίξτε από την τελευταία θέση παιχνιδιού</string>
   <string name="play">Παίξτε από την αρχή</string>
   <string name="menu_mark_unwatched">Σηματοδοτείται ως ακατέργαστο</string>

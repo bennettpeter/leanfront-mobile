@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Slaan kommersieel oor</string>
   <string name="pref_value_prevnext_jump">spring</string>
   <string name="pref_value_prevnext_comskip">skipcom</string>
+  <string name="pref_title_lists">Programlysopsies</string>
+  <string name="pref_seq">Sorteer deur</string>
+  <string name="pref_seq_orig_airdate">Oorspronklike lugdatum</string>
+  <string name="pref_seq_recorded_date">Opgeneem datum</string>
+  <string name="pref_seq_ascdesc">Sorteer bestelling</string>
+  <string name="pref_seq_ascending">Sorteer stygend</string>
+  <string name="pref_seq_descending">Sorteer dalend</string>
   <string name="resume_last">Speel uit die laaste speelposisie</string>
   <string name="play">Speel van die begin af</string>
   <string name="menu_mark_unwatched">Merk so onbewustelik</string>

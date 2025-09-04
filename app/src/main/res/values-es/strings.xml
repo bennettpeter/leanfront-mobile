@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Omitir comercial</string>
   <string name="pref_value_prevnext_jump">saltar</string>
   <string name="pref_value_prevnext_comskip">skipcom</string>
+  <string name="pref_title_lists">Opciones de lista de programas</string>
+  <string name="pref_seq">Ordenar por</string>
+  <string name="pref_seq_orig_airdate">Fecha de aire original</string>
+  <string name="pref_seq_recorded_date">Fecha registrada</string>
+  <string name="pref_seq_ascdesc">Orden de clasificación</string>
+  <string name="pref_seq_ascending">Ordenar ascendente</string>
+  <string name="pref_seq_descending">Clasificar descendiendo</string>
   <string name="resume_last">Jugar desde la última posición de juego</string>
   <string name="play">Jugar desde el inicio</string>
   <string name="menu_mark_unwatched">Mark como no</string>

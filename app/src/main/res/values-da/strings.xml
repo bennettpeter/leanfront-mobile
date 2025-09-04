@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Spring over kommerciel</string>
   <string name="pref_value_prevnext_jump">springe</string>
   <string name="pref_value_prevnext_comskip">Skipcom</string>
+  <string name="pref_title_lists">Programlisteindstillinger</string>
+  <string name="pref_seq">Sorter efter</string>
+  <string name="pref_seq_orig_airdate">Original luftdato</string>
+  <string name="pref_seq_recorded_date">Registreret dato</string>
+  <string name="pref_seq_ascdesc">Sorter ordre</string>
+  <string name="pref_seq_ascending">Sorterer stigende</string>
+  <string name="pref_seq_descending">Sorter faldende</string>
   <string name="resume_last">Spil fra sidste legeposition</string>
   <string name="play">Spil fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>

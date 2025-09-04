@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Pomiń reklamę</string>
   <string name="pref_value_prevnext_jump">skok</string>
   <string name="pref_value_prevnext_comskip">Skipcom</string>
+  <string name="pref_title_lists">Opcje listy programów</string>
+  <string name="pref_seq">Sortować</string>
+  <string name="pref_seq_orig_airdate">Oryginalna data powietrza</string>
+  <string name="pref_seq_recorded_date">Nagrana data</string>
+  <string name="pref_seq_ascdesc">Sortować zamówienie</string>
+  <string name="pref_seq_ascending">Sortować rosnące</string>
+  <string name="pref_seq_descending">Sortować schodzenie</string>
   <string name="resume_last">Graj z ostatniej pozycji gry</string>
   <string name="play">Grać od początku</string>
   <string name="menu_mark_unwatched">Znak jako nieuczciony</string>

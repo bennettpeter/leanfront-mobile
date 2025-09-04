@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Pule o comercial</string>
   <string name="pref_value_prevnext_jump">pular</string>
   <string name="pref_value_prevnext_comskip">Skipcom</string>
+  <string name="pref_title_lists">Opções da lista de programas</string>
+  <string name="pref_seq">Ordenar por</string>
+  <string name="pref_seq_orig_airdate">Data do ar original</string>
+  <string name="pref_seq_recorded_date">Data registrada</string>
+  <string name="pref_seq_ascdesc">Ordem de classificação</string>
+  <string name="pref_seq_ascending">Classificar ascendente</string>
+  <string name="pref_seq_descending">Classificar descendo</string>
   <string name="resume_last">Jogue da última posição de jogo</string>
   <string name="play">Jogue desde o início</string>
   <string name="menu_mark_unwatched">Marque como não acumulado</string>

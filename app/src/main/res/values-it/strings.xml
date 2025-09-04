@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Salta la pubblicità</string>
   <string name="pref_value_prevnext_jump">salto</string>
   <string name="pref_value_prevnext_comskip">skipcom</string>
+  <string name="pref_title_lists">Opzioni dell\'elenco dei programmi</string>
+  <string name="pref_seq">Ordinare da</string>
+  <string name="pref_seq_orig_airdate">Data dell\'aria originale</string>
+  <string name="pref_seq_recorded_date">Data registrata</string>
+  <string name="pref_seq_ascdesc">Ordina l\'ordine</string>
+  <string name="pref_seq_ascending">Ordinare ascendente</string>
+  <string name="pref_seq_descending">Ordina la discendenza</string>
   <string name="resume_last">Gioca dall\'ultima posizione di gioco</string>
   <string name="play">Gioca dall\'inizio</string>
   <string name="menu_mark_unwatched">Segna come nonostante</string>

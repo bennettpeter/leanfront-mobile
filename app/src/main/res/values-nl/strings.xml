@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Sla de commerciële over</string>
   <string name="pref_value_prevnext_jump">springen</string>
   <string name="pref_value_prevnext_comskip">Skipcom</string>
+  <string name="pref_title_lists">Opties voor programmalijsten</string>
+  <string name="pref_seq">Sorteren</string>
+  <string name="pref_seq_orig_airdate">Originele luchtdatum</string>
+  <string name="pref_seq_recorded_date">Opgenomen datum</string>
+  <string name="pref_seq_ascdesc">Sorteer volgorde</string>
+  <string name="pref_seq_ascending">Sorteer stijgende</string>
+  <string name="pref_seq_descending">Sorteren dalen</string>
   <string name="resume_last">Speel vanuit de laatste speelpositie</string>
   <string name="play">Speel vanaf het begin</string>
   <string name="menu_mark_unwatched">Markeer als niet -uitgesproken</string>

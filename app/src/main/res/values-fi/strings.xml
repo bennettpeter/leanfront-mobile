@@ -74,6 +74,13 @@
   <string name="pref_entry_prevnext_comskip">Ohittaa kaupallinen</string>
   <string name="pref_value_prevnext_jump">hypätä</string>
   <string name="pref_value_prevnext_comskip">Skipcom</string>
+  <string name="pref_title_lists">Ohjelmaluettelon vaihtoehdot</string>
+  <string name="pref_seq">Lajitella</string>
+  <string name="pref_seq_orig_airdate">Alkuperäinen ilmapäivä</string>
+  <string name="pref_seq_recorded_date">Tallennettu päivämäärä</string>
+  <string name="pref_seq_ascdesc">Lajitella järjestys</string>
+  <string name="pref_seq_ascending">Lajitella nouseva</string>
+  <string name="pref_seq_descending">Lajitella</string>
   <string name="resume_last">Pelata viimeisimmästä pelialueesta</string>
   <string name="play">Pelaaminen alusta alkaen</string>
   <string name="menu_mark_unwatched">Merkitä</string>
