@@ -187,11 +187,8 @@ public class FetchVideos implements Runnable{
                 SQLiteDatabase db = dbh.getWritableDatabase();
                 db.beginTransaction();
                 for (ContentValues row : contentValuesList) {
-                    long id = db.insert(VideoContract.VideoEntry.TABLE_NAME,null,row);
-                    if (id == -1) {
-                        success = false;
-                        break;
-                    }
+                    long id = db.insertWithOnConflict(VideoContract.VideoEntry.TABLE_NAME,
+                            null,row,SQLiteDatabase.CONFLICT_IGNORE);
                 }
                 if (success)
                     db.setTransactionSuccessful();
