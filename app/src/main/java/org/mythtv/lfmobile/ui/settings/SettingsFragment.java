@@ -100,6 +100,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     ((EditTextPreference)pref).setText(validateNumber(action, -1, 60, 5));
                     return false;
                 });
+        EditTextPreference p = findPreference("pref_tweak_ts_search_pkts");
+        p.setOnPreferenceChangeListener((pref,action) -> {
+                    ((EditTextPreference)pref).setText(validateNumber(action, 600, 100000, 2600));
+                    return false;
+                });
+        p.setDialogMessage(R.string.pref_tweaks_desc);
 
         if (!BackendCache.getInstance().loginNeeded) {
             findPreference("pref_backend_userid").setVisible(false);

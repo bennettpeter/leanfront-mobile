@@ -152,4 +152,16 @@
             android:defaultValue="asc"/>
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_tweaks_title">
+
+        <EditTextPreference
+            android:key="pref_tweak_ts_search_pkts"
+            android:title="@string/pref_tweak_ts_search_pkts"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_tweak_ts_search_pkts"
+            android:defaultValue="2600"/>
+
+    </PreferenceCategory>
 </PreferenceScreen>

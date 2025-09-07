@@ -97,6 +97,9 @@
     <string name="pref_seq_ascdesc">Sort Order</string>
     <string name="pref_seq_ascending">Sort Ascending</string>
     <string name="pref_seq_descending">Sort Descending</string>
+    <string name="pref_tweaks_title">Advanced</string>
+    <string name="pref_tweaks_desc">Please read the documentation before changing TS Search Packets.</string>
+    <string name="pref_tweak_ts_search_pkts">TS Search Packets (default 2600)</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
