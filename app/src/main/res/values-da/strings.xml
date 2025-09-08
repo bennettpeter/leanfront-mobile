@@ -81,6 +81,9 @@
   <string name="pref_seq_ascdesc">Sorter ordre</string>
   <string name="pref_seq_ascending">Sorterer stigende</string>
   <string name="pref_seq_descending">Sorter faldende</string>
+  <string name="pref_tweaks_title">Fremskreden</string>
+  <string name="pref_tweaks_desc">Læs dokumentationen, inden du ændrer TS -søgepakker.</string>
+  <string name="pref_tweak_ts_search_pkts">TS -søgningspakker (standard 2600)</string>
   <string name="resume_last">Spil fra sidste legeposition</string>
   <string name="play">Spil fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>

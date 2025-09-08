@@ -81,6 +81,9 @@
   <string name="pref_seq_ascdesc">Orden de clasificación</string>
   <string name="pref_seq_ascending">Ordenar ascendente</string>
   <string name="pref_seq_descending">Clasificar descendiendo</string>
+  <string name="pref_tweaks_title">Avanzado</string>
+  <string name="pref_tweaks_desc">Lea la documentación antes de cambiar los paquetes de búsqueda de TS.</string>
+  <string name="pref_tweak_ts_search_pkts">Paquetes de búsqueda TS (predeterminado 2600)</string>
   <string name="resume_last">Jugar desde la última posición de juego</string>
   <string name="play">Jugar desde el inicio</string>
   <string name="menu_mark_unwatched">Mark como no</string>

@@ -81,6 +81,9 @@
   <string name="pref_seq_ascdesc">Sortować zamówienie</string>
   <string name="pref_seq_ascending">Sortować rosnące</string>
   <string name="pref_seq_descending">Sortować schodzenie</string>
+  <string name="pref_tweaks_title">Zaawansowany</string>
+  <string name="pref_tweaks_desc">Przeczytaj dokumentację przed zmianą pakietów wyszukiwania TS.</string>
+  <string name="pref_tweak_ts_search_pkts">Pakiety wyszukiwania TS (domyślnie 2600)</string>
   <string name="resume_last">Graj z ostatniej pozycji gry</string>
   <string name="play">Grać od początku</string>
   <string name="menu_mark_unwatched">Znak jako nieuczciony</string>

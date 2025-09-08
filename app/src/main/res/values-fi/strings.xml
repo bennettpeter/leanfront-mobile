@@ -81,6 +81,9 @@
   <string name="pref_seq_ascdesc">Lajitella järjestys</string>
   <string name="pref_seq_ascending">Lajitella nouseva</string>
   <string name="pref_seq_descending">Lajitella</string>
+  <string name="pref_tweaks_title">Edistynyt</string>
+  <string name="pref_tweaks_desc">Lue asiakirjat ennen TS -hakupakettien vaihtamista.</string>
+  <string name="pref_tweak_ts_search_pkts">TS -hakupaketit (oletus 2600)</string>
   <string name="resume_last">Pelata viimeisimmästä pelialueesta</string>
   <string name="play">Pelaaminen alusta alkaen</string>
   <string name="menu_mark_unwatched">Merkitä</string>

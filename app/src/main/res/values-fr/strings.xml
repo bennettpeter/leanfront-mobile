@@ -81,6 +81,9 @@
   <string name="pref_seq_ascdesc">Tri</string>
   <string name="pref_seq_ascending">Tri ascendant</string>
   <string name="pref_seq_descending">Trier descendant</string>
+  <string name="pref_tweaks_title">Avancé</string>
+  <string name="pref_tweaks_desc">Veuillez lire la documentation avant de modifier les paquets de recherche TS.</string>
+  <string name="pref_tweak_ts_search_pkts">Paquets de recherche TS (par défaut 2600)</string>
   <string name="resume_last">Jouer de la dernière position de jeu</string>
   <string name="play">Jouer depuis le début</string>
   <string name="menu_mark_unwatched">Marquez comme non fixé</string>

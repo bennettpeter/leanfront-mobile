@@ -81,6 +81,9 @@
   <string name="pref_seq_ascdesc">Sorteer volgorde</string>
   <string name="pref_seq_ascending">Sorteer stijgende</string>
   <string name="pref_seq_descending">Sorteren dalen</string>
+  <string name="pref_tweaks_title">Geavanceerd</string>
+  <string name="pref_tweaks_desc">Lees de documentatie voordat u TS -zoekpakketten wijzigt.</string>
+  <string name="pref_tweak_ts_search_pkts">Ts zoekpakketten (standaard 2600)</string>
   <string name="resume_last">Speel vanuit de laatste speelpositie</string>
   <string name="play">Speel vanaf het begin</string>
   <string name="menu_mark_unwatched">Markeer als niet -uitgesproken</string>

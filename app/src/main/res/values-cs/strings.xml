@@ -81,6 +81,9 @@
   <string name="pref_seq_ascdesc">Sřídněte pořadí</string>
   <string name="pref_seq_ascending">Třídit vzestup</string>
   <string name="pref_seq_descending">Třídit klesání</string>
+  <string name="pref_tweaks_title">Moderní</string>
+  <string name="pref_tweaks_desc">Před změnou paketů vyhledávání TS si prosím přečtěte dokumentaci.</string>
+  <string name="pref_tweak_ts_search_pkts">TS vyhledávací pakety (výchozí 2600)</string>
   <string name="resume_last">Hrajte z poslední hry</string>
   <string name="play">Hrajte od začátku</string>
   <string name="menu_mark_unwatched">Mark As Unhethed</string>
