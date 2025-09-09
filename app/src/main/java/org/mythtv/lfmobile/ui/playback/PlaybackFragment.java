@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
@@ -31,6 +32,7 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.exoplayer.source.SampleQueue;
 import androidx.media3.ui.AspectRatioFrameLayout;
 
 import android.util.Log;
@@ -40,6 +42,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.mythtv.lfmobile.R;
@@ -264,9 +268,9 @@ public class PlaybackFragment extends Fragment {
 
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (dsFactory, extFactory);
-        ProgressiveMediaSource mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
-        mediaSource.setPossibleEmptyTrack(viewModel.possibleEmptyTrack);
-        viewModel.player.setMediaSource(mediaSource, viewModel.bookmark);
+        viewModel.mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
+        viewModel.mediaSource.setPossibleEmptyTrack(viewModel.possibleEmptyTrack);
+        viewModel.player.setMediaSource(viewModel.mediaSource, viewModel.bookmark);
         viewModel.player.prepare();
         viewModel.player.play();
         viewModel.startPlayback();
@@ -330,9 +334,93 @@ public class PlaybackFragment extends Fragment {
                 binding.playerView.showController();
             });
         }
+        ImageView syncButton = getView().findViewById(R.id.my_sync);
+        if (syncButton != null) {
+            syncButton.setOnClickListener((vsb ) -> {
+                binding.playerView.hideController();
+                AlertDialog.Builder dlgBuilder = new AlertDialog.Builder(getContext());
+//                        R.style.Theme_AppCompat_Dialog_Alert);
+                dlgBuilder.setTitle(R.string.title_select_audiosync)
+                        .setView(R.layout.player_seekbar)
+                        .setOnDismissListener(dialogDismiss);
+                dialog = dlgBuilder.create();
+                dialog.show();
+
+                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+                lp.x=0;
+                lp.y=0;
+                lp.width= Resources.getSystem().getDisplayMetrics().widthPixels / 2;
+                lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                dialog.getWindow().setAttributes(lp);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(192,192,192,192)));
+                SeekBar seekBar = dialog.findViewById(R.id.seekbar);
+                seekBar.setMax(5000); // --2500ms to +2500ms
+                seekBar.setProgress((int)(viewModel.sampleOffsetUs/1000 + 2500));
+                TextView seekValue = dialog.findViewById(R.id.seekbar_value);
+                String text = String.format("%+d",viewModel.sampleOffsetUs / 1000);
+                seekValue.setText(text);
+                TextView textMinus = dialog.findViewById(R.id.textminus);
+                textMinus.setOnClickListener((vtm )-> {
+                    int value = (int)(viewModel.sampleOffsetUs/1000 + 2500);
+                    if (value > 50)
+                        value -= 50;
+                    seekBar.setProgress(value);
+                });
+                TextView textPlus = dialog.findViewById(R.id.textplus);
+                textPlus.setOnClickListener((vtp )-> {
+                    int value = (int)(viewModel.sampleOffsetUs/1000 + 2500);
+                    if (value <= 4950)
+                        value += 50;
+                    seekBar.setProgress(value);
+                });
+                seekBar.setOnSeekBarChangeListener(
+                        new SeekBar.OnSeekBarChangeListener() {
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
+                                value = value / 50 * 50;
+                                viewModel.sampleOffsetUs = ((long)value - 2500) * 1000;
+                                String text1 = String.format("%+d",viewModel.sampleOffsetUs / 1000);
+                                seekValue.setText(text1);
+                                setAudioSync();
+                            }
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {  }
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {  }
+                        }
+                );
+
+
+            });
+        }
 
     }
 
+    @OptIn(markerClass = UnstableApi.class)
+    public void setAudioSync() {
+        boolean found = false;
+        SampleQueue[] sampleQueues = viewModel.mediaSource.getSampleQueues();
+        for (SampleQueue sampleQueue : sampleQueues) {
+            if (MimeTypes.isAudio(sampleQueue.getUpstreamFormat().sampleMimeType)) {
+                sampleQueue.setSampleOffsetUs(viewModel.sampleOffsetUs);
+                found = true;
+            }
+        }
+        if (found) {
+//             This check is needed to prevent it continually resetting, because
+//             this routine is called again 5 seconds after doing the moveBackward
+            if (viewModel.priorSampleOffsetUs != viewModel.sampleOffsetUs)
+                moveBackward(50);
+            viewModel.priorSampleOffsetUs = viewModel.sampleOffsetUs;
+        }
+    }
+
+    public void moveBackward(int millis) {
+        long newPosition = viewModel.player.getCurrentPosition() - millis;
+        newPosition = (newPosition < 0) ? 0 : newPosition;
+        viewModel.player.seekTo(newPosition);
+    }
 
     protected void releasePlayer() {
         if (viewModel.player != null) {

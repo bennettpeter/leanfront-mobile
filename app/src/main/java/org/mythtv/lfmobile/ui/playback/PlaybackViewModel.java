@@ -13,6 +13,7 @@ import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.Renderer;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.PlayerView;
 
@@ -67,6 +68,9 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     static final int [] RESIZE_DRAWABLES = {R.drawable.ic_zoom_button,R.drawable.ic_zoom_large};
     int currentResizeIx = 0;
     int currentResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
+    long sampleOffsetUs = 0;
+    long priorSampleOffsetUs = 0;
+    ProgressiveMediaSource mediaSource;
 
     @OptIn(markerClass = UnstableApi.class)
     @Override

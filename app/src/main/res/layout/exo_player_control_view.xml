@@ -63,6 +63,10 @@
       <ImageButton android:id="@id/exo_vr"
           style="@style/ExoStyledControls.Button.Bottom.VR"/>
 
+      <ImageButton android:id="@+id/my_sync"
+          android:src="@drawable/ic_av_timer"
+          style="@style/ExoStyledControls.Button.Bottom.CC"/>
+
       <ImageButton android:id="@+id/my_zoom"
           android:src="@drawable/ic_zoom_button"
           style="@style/ExoStyledControls.Button.Bottom.CC"/>

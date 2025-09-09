@@ -37,6 +37,7 @@
     <string name="title_comm_playing">Commercial or Cut Playing</string>
     <string name="menu_comm_skip">Skip</string>
     <string name="menu_comm_notskip">Do not Skip</string>
+    <string name="title_select_audiosync">Adjust Audio Sync</string>
 
 
     <!-- Words to exclude from the start titles when sorting.
