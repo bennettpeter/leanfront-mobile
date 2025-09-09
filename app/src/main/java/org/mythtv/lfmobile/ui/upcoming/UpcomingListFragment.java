@@ -208,13 +208,13 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
             holder.itemStatusView.setTextColor(color);
 
             StringBuilder titleStr = new StringBuilder();
+            titleStr.append(item.title);
+            if (item.subTitle != null || item.season > 0) {
+                titleStr.append(": ").append(item.subTitle);
+            }
             if (item.season > 0 && item.episode > 0) {
                 titleStr.append("S").append(item.season).append("E").append(item.episode)
                         .append(" ");
-            }
-            titleStr.append(item.title);
-            if (item.subTitle != null) {
-                titleStr.append(": ").append(item.subTitle);
             }
             holder.itemTitleView.setText(titleStr);
             holder.itemDescView.setText(item.description);

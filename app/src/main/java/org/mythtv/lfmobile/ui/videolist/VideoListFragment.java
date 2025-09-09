@@ -364,14 +364,17 @@ public class VideoListFragment extends MainActivity.MyFragment {
         if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
                 && "Deleted".equals(video.recGroup))
             subtitle.append("\uD83D\uDDD1");
-        if (video.season != null && video.season.compareTo("0") > 0) {
+        subtitle.append(video.title);
+        boolean haveSeason = video.season != null && video.season.compareTo("0") > 0;
+        boolean haveSubtitle = video.subtitle != null && video.subtitle.trim().length() > 0;
+        if (haveSeason || haveSubtitle)
+            subtitle.append(": ");
+        if (haveSeason) {
             subtitle.append('S').append(video.season).append('E').append(video.episode)
                     .append(' ');
         }
-        subtitle.append(video.title);
-        if (video.subtitle != null && video.subtitle.trim().length() > 0)
-            subtitle.append(": ");
-        subtitle.append(video.subtitle);
+        if (haveSubtitle)
+            subtitle.append(video.subtitle);
         return subtitle.toString();
     }
 
