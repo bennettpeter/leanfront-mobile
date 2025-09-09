@@ -34,6 +34,7 @@
   <string name="title_comm_playing">Reproducción comercial o de corte</string>
   <string name="menu_comm_skip">Saltar</string>
   <string name="menu_comm_notskip">No te salteas</string>
+  <string name="title_select_audiosync">Ajustar la sincronización de audio</string>
   <string name="sort_exclude_1">EL</string>
   <string name="sort_exclude_2"> </string>
   <string name="sort_exclude_3">UN</string>

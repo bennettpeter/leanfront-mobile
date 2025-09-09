@@ -34,6 +34,7 @@
   <string name="title_comm_playing">Komerční nebo řezané hraní</string>
   <string name="menu_comm_skip">Přeskočit</string>
   <string name="menu_comm_notskip">Nevynechávejte</string>
+  <string name="title_select_audiosync">Upravit zvukovou synchronizaci</string>
   <string name="sort_exclude_1">THE</string>
   <string name="sort_exclude_2">A</string>
   <string name="sort_exclude_3">AN</string>

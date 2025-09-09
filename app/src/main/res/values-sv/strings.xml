@@ -34,6 +34,7 @@
   <string name="title_comm_playing">Kommersiellt eller klippt spelande</string>
   <string name="menu_comm_skip">Hoppa</string>
   <string name="menu_comm_notskip">Hoppa inte över</string>
+  <string name="title_select_audiosync">Justera ljudsynkronisering</string>
   <string name="sort_exclude_1">DE</string>
   <string name="sort_exclude_2"> </string>
   <string name="sort_exclude_3">EN</string>

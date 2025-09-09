@@ -34,6 +34,7 @@
   <string name="title_comm_playing">Commercieel of gesneden spelen</string>
   <string name="menu_comm_skip">Overslaan</string>
   <string name="menu_comm_notskip">Niet overslaan</string>
+  <string name="title_select_audiosync">Pas de audio -synchronisatie aan</string>
   <string name="sort_exclude_1">DE</string>
   <string name="sort_exclude_2"> </string>
   <string name="sort_exclude_3">EEN</string>

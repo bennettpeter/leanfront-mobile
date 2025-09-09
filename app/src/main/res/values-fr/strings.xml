@@ -34,6 +34,7 @@
   <string name="title_comm_playing">Jeu commercial ou coupé</string>
   <string name="menu_comm_skip">Sauter</string>
   <string name="menu_comm_notskip">Ne sautez pas</string>
+  <string name="title_select_audiosync">Ajuster la synchronisation audio</string>
   <string name="sort_exclude_1">SE</string>
   <string name="sort_exclude_2">ERÄS</string>
   <string name="sort_exclude_3">YKSI</string>

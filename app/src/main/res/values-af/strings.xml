@@ -34,6 +34,7 @@
   <string name="title_comm_playing">Kommersieel of sny speel</string>
   <string name="menu_comm_skip">Huppel</string>
   <string name="menu_comm_notskip">Moenie oorslaan nie</string>
+  <string name="title_select_audiosync">Pas klank -sinkronisering aan</string>
   <string name="sort_exclude_1">DIE</string>
   <string name="sort_exclude_2">\'N</string>
   <string name="sort_exclude_3"> </string>

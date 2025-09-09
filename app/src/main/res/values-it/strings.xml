@@ -34,6 +34,7 @@
   <string name="title_comm_playing">Giocamento commerciale o tagliato</string>
   <string name="menu_comm_skip">Saltare</string>
   <string name="menu_comm_notskip">Non saltare</string>
+  <string name="title_select_audiosync">Regola la sincronizzazione audio</string>
   <string name="sort_exclude_1">IL</string>
   <string name="sort_exclude_2">UN</string>
   <string name="sort_exclude_3"> </string>
