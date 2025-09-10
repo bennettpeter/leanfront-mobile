@@ -145,7 +145,7 @@ public class VideoListModel extends ViewModel {
             + "WHERE rectype = 1 ");
         String [] parms;
         if (allTitle.equals(recGroup)) {
-            sql.append("AND recgroup != 'Deleted' ");
+            sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
             parms = new String[0];
         } else {
             sql.append("AND recgroup = ? ");
@@ -190,7 +190,7 @@ public class VideoListModel extends ViewModel {
                 + "WHERE rectype = 1 ");
         ArrayList <String> parms = new ArrayList<>();
         if (allTitle.equals(recGroup)) {
-            sql.append("AND recgroup != 'Deleted' ");
+            sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
         } else{
             sql.append("AND recgroup = ? ");
             parms.add(recGroup);
