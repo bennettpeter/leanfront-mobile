@@ -495,7 +495,7 @@ public class VideoListFragment extends MainActivity.MyFragment {
                     RequestOptions options = new RequestOptions();
                     if (video.type == Video.TYPE_SERIES)
                         options.error(R.drawable.ic_movie_24px);
-
+                    options.timeout(5000);
                     String auth =  BackendCache.getInstance().authorization;
                     LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
                     if (auth != null && auth.length() > 0)
