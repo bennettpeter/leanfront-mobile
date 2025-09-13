@@ -12,6 +12,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,7 +61,6 @@ public class AsyncBackendCall implements Runnable {
     }
 
     public void execute(Integer... tasks) {
-        Log.i("mfe","AsyncBackendCall.execute:" + tasks[0]);
         this.inTasks = tasks;
         executor.submit(this);
     }
@@ -427,6 +428,72 @@ public class AsyncBackendCall implements Runnable {
                         Log.e(TAG, CLASS + " Exception in Myth/GetHostName.", e);
                     }
                     break;
+                case Action.FILELENGTH: {
+                    // params: -1 or null to bypass check for changing
+                    //         0 or a value to check for changing
+                    // mValue is prior file length to be checked against
+                    // Try 5 times until file length increases.
+                    long priorLength = -1;
+                    if (params != null)
+                        priorLength = (Long) params;
+                    String urlString = video.videoUrl;
+                    long fileLength = -1;
+                    for (int counter = 0; counter < 5; counter++) {
+                        try {
+                            // pause 1 second between attempts
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        HttpURLConnection urlConnection = null;
+                        try {
+                            URL url = new URL(urlString);
+                            urlConnection = (HttpURLConnection) url.openConnection();
+                            urlConnection.addRequestProperty("Cache-Control", "no-cache");
+                            urlConnection.addRequestProperty("Accept-Encoding", "identity");
+                            String auth = BackendCache.getInstance().authorization;
+                            if (auth != null && auth.length() > 0)
+                                urlConnection.addRequestProperty("Authorization", auth);
+                            urlConnection.setConnectTimeout(1000);
+                            urlConnection.setReadTimeout(1000);
+                            urlConnection.setRequestMethod("HEAD");
+                            Log.i(TAG, CLASS + " URL: " + urlString);
+                            urlConnection.connect();
+                            try {
+                                Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
+                                        + " " + urlConnection.getResponseMessage());
+                            } catch (Exception ignored) {
+                                // Sometimes there is a ProtocolException in the urlConnection.getResponseCode
+                                // Ignore the error so that we can continue
+                            }
+                            String strContentLeng = urlConnection.getHeaderField("Content-Length");
+                            if (strContentLeng == null) {
+                                Log.e(TAG, CLASS + " FileLength failure. Content-Length null ");
+                                // try again
+                                continue;
+                            } else {
+                                fileLength = Long.parseLong(strContentLeng);
+                            }
+                            if (fileLength == -1)
+                                Log.e(TAG, CLASS + " FileLength failure. strContentLeng: " + strContentLeng);
+                            if (priorLength == -1 || fileLength > priorLength)
+                                break;
+                        } catch (Exception e) {
+                            try {
+                                Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
+                                        + " " + urlConnection.getResponseMessage());
+                            } catch (IOException ioException) {
+                                ioException.printStackTrace();
+                            }
+                            Log.e(TAG, CLASS + " Exception getting file length.", e);
+                        } finally {
+                            if (urlConnection != null)
+                                urlConnection.disconnect();
+                        }
+                    }
+                    response = new Long(fileLength);
+                    break;
+                }
+
             }
             xmlResults.add(xmlResult);
         }

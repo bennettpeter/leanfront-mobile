@@ -19,6 +19,7 @@
         app:show_timeout="10000"
         app:resize_mode="fit"
         android:background="@color/black"
+        app:time_bar_scrubbing_enabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -5,10 +5,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.media3.common.Format;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -42,42 +45,55 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     private boolean lastSeekIsFwd;
     private long lastSeekTime;
 
-    private final int commBreakOption =  Settings.getInt("pref_commskip");
+    private final int commBreakOption = Settings.getInt("pref_commskip");
     // Note this will be cleared if it was set as skipcom and there is no commercial data
-    String prevnextOption =  Settings.getString("pref_prevnext");
-    final int jump =  Settings.getInt("pref_jump");
+    String prevnextOption = Settings.getString("pref_prevnext");
+    final int jump = Settings.getInt("pref_jump");
+    final int seekBack = Settings.getInt("pref_skip_back");
+    final int seekFwd = Settings.getInt("pref_skip_fwd");
+
     public static final int COMMBREAK_OFF = 0;
     public static final int COMMBREAK_NOTIFY = 1;
     public static final int COMMBREAK_SKIP = 2;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Updater updater = new Updater();
     final MutableLiveData<long[]> commSkipToast = new MutableLiveData<>();
     final MutableLiveData<Long> commBreakDlg = new MutableLiveData<>();
+    final MutableLiveData<Long> durationLive = new MutableLiveData<>();
+    // parameters are Exception and integer
+    final MutableLiveData<Object[]> playerErrorLive = new MutableLiveData<>();
     private static final String TAG = "lfm";
     final String CLASS = "PlaybackViewModel";
     // aspectValues[0] will change from 0f to the default value of the video
     float[] aspectValues = {0f, 1.333333f, 1.7777777f, 0.5625f};
-    static final int [] ASPECT_DRAWABLES = {R.drawable.ic_aspect_button,
+    static final int[] ASPECT_DRAWABLES = {R.drawable.ic_aspect_button,
             R.drawable.ic_aspect_4x3, R.drawable.ic_aspect_16x9, R.drawable.ic_aspect_9x16};
     int currentAspectIx = 0;
     float currentAspect = 0.0f;
-    static final int [] RESIZE_MODES = {
-        AspectRatioFrameLayout.RESIZE_MODE_FIT,
-        AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+    static final int[] RESIZE_MODES = {
+            AspectRatioFrameLayout.RESIZE_MODE_FIT,
+            AspectRatioFrameLayout.RESIZE_MODE_ZOOM
     };
-    static final int [] RESIZE_DRAWABLES = {R.drawable.ic_zoom_button,R.drawable.ic_zoom_large};
+    static final int[] RESIZE_DRAWABLES = {R.drawable.ic_zoom_button, R.drawable.ic_zoom_large};
     int currentResizeIx = 0;
     int currentResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
     long sampleOffsetUs = 0;
     long priorSampleOffsetUs = 0;
     ProgressiveMediaSource mediaSource;
+    long playbackStartTime;
+    long statusMonitorTime;
+    long fileLength;
+    boolean isIncreasing;
+    PlayerEventListener playerEventListener;
+    static final int STATUS_MONITOR_INTERVAL = 5000;
+    float speed = 1.0f;
+
 
     @OptIn(markerClass = UnstableApi.class)
     @Override
     public VideoSize getVideoSize() {
         VideoSize vs = player.getVideoSize();
         int count = player.getRendererCount();
-        for (int ix = 0; ix < count; ix++ ) {
+        for (int ix = 0; ix < count; ix++) {
             Renderer renderer = player.getRenderer(ix);
             if (renderer.getState() != Renderer.STATE_DISABLED) {
                 if ("ExperimentalFfmpegVideoRenderer".equals(renderer.getName())) {
@@ -90,7 +106,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
                 }
             }
         }
-        aspectValues[0] =  (float)vs.width / (float)vs.height * vs.pixelWidthHeightRatio;
+        aspectValues[0] = (float) vs.width / (float) vs.height * vs.pixelWidthHeightRatio;
         if (currentAspectIx != 0)
             vs = new VideoSize(vs.width, vs.height,
                     currentAspect * (float) vs.height / (float) vs.width);
@@ -139,8 +155,8 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     }
 
     void startPlayback() {
-        handler.postDelayed(updater, 2000);
-    }
+        handler.postDelayed(new Updater(), 1000);
+   }
 
     void onUpdateProgress() {
         long currPos = savedCurrentPosition;
@@ -157,7 +173,73 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             }
             onCommBreak(next, currPos);
         }
+        durationLive.postValue(savedDuration);
     }
+
+    public long getDuration() {
+        if (savedDuration == 0 || isIncreasing) {
+            long duration = player.getDuration();
+            if (isIncreasing && duration > 0 && playbackStartTime > 0)
+                duration += System.currentTimeMillis() - playbackStartTime;
+            if (duration > 0)
+                savedDuration = duration;
+        }
+        return savedDuration;
+    }
+
+    /**
+     * Get the file length at this time
+     *
+     * @param multiCheck indicates to check up to 5 times to see if it changed
+     */
+    public void getFileLength(boolean multiCheck) {
+        long priorFileLeng = 0;
+        if (multiCheck)
+            priorFileLeng = fileLength;
+        else
+            priorFileLeng = -1;
+        AsyncBackendCall call = new AsyncBackendCall((caller) -> {
+            long newLength = (Long) caller.response;
+            // If file has got bigger, resume with bigger file
+            Log.i(TAG, CLASS + " File Length changed from " + fileLength + " to " + newLength);
+            if (newLength == -1) {
+                playerErrorLive.postValue(new Object[] {null, R.string.pberror_file_length_fail});
+            }
+            if (fileLength > 0 && newLength > fileLength)
+                isIncreasing = true;
+            else
+                isIncreasing = false;
+            fileLength = newLength;
+            if (isIncreasing)
+                startStatusMonitor();
+        });
+        call.videos.add(video);
+        call.params = priorFileLeng;
+        call.execute(Action.FILELENGTH);
+    }
+
+    void startStatusMonitor() {
+        statusMonitorTime = System.currentTimeMillis();
+        handler.postDelayed(new Runnable() {
+            long timeCheck = statusMonitorTime;
+            @Override
+            public void run() {
+                // discard any tasks that  are from a prior player
+                // also only have one in queue at a time by discarding
+                // any that are from a prior call.
+                if (player == null || timeCheck != statusMonitorTime)
+                    return;
+                getFileLength(false);
+                if (player.getPlaybackParameters().speed > 1.0f) {
+                    if (player.getCurrentPosition() > getDuration() - 10000) {
+                        speed = 1.0f;
+                        player.setPlaybackSpeed(speed);
+                    }
+                }
+            }
+        },STATUS_MONITOR_INTERVAL);
+    }
+
 
     public void onCommBreak(long nextCommBreakMs, long position) {
         long newPosition = -1;
@@ -199,9 +281,10 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         }
         setNextCommBreak(-1);
     }
+
     private boolean commSkipCheck() {
         if (commBreakTable == null || commBreakTable.entries.length == 0) {
-            commSkipToast.postValue(new long[] {-5, 0});
+            commSkipToast.postValue(new long[]{-5, 0});
             return false;
         }
         return true;
@@ -213,7 +296,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         long position = player.getCurrentPosition();
         if (lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
             player.seekTo(lastSeekFrom);
-            commSkipToast.postValue(new long[] {-3,lastSeekFrom - position});
+            commSkipToast.postValue(new long[]{-3, lastSeekFrom - position});
             lastSeekTime = 0;
             return lastSeekFrom;
         }
@@ -238,9 +321,9 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         // If this is a start point, prevent it from immediately skipping
         if (mark == CommBreakTable.MARK_CUT_START)
             priorCommBreak = newPosition
-                    + (long)Settings.getInt("pref_commskip_start") * 1000;
+                    + (long) Settings.getInt("pref_commskip_start") * 1000;
         player.seekTo(newPosition);
-        commSkipToast.postValue(new long[] {mark, newPosition - position});
+        commSkipToast.postValue(new long[]{mark, newPosition - position});
         lastSeekFrom = position;
         lastSeekIsFwd = false;
         lastSeekTime = System.currentTimeMillis();
@@ -251,9 +334,9 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         if (!commSkipCheck())
             return 0;
         long position = player.getCurrentPosition();
-        if (! lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
+        if (!lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
             player.seekTo(lastSeekFrom);
-            commSkipToast.postValue(new long[] {-3, lastSeekFrom - position});
+            commSkipToast.postValue(new long[]{-3, lastSeekFrom - position});
             lastSeekTime = 0;
             return lastSeekFrom;
         }
@@ -275,14 +358,14 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             // If this is a start point, prevent it from immediately skipping
             if (mark == CommBreakTable.MARK_CUT_START)
                 priorCommBreak = newPosition
-                        + (long)Settings.getInt("pref_commskip_start") * 1000;
+                        + (long) Settings.getInt("pref_commskip_start") * 1000;
             player.seekTo(newPosition);
-            commSkipToast.postValue(new long[] {mark, newPosition - position});
+            commSkipToast.postValue(new long[]{mark, newPosition - position});
             lastSeekFrom = position;
             lastSeekIsFwd = true;
             lastSeekTime = System.currentTimeMillis();
         } else
-            commSkipToast.postValue(new long[] {-1, 0});
+            commSkipToast.postValue(new long[]{-1, 0});
         return newPosition;
     }
 
@@ -293,19 +376,38 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
 
 
     class Updater implements Runnable {
-    @Override
+        long timeCheck = playbackStartTime;
+        @Override
         public void run() {
+            // discard any tasks that  are from a prior player
+            if (player == null || timeCheck != playbackStartTime)
+                return;
             try {
-                if (maybePlaying && player != null) {
-                    savedDuration = player.getDuration();
+                if (maybePlaying) {
+                    getDuration();
                     savedCurrentPosition = player.getCurrentPosition();
                     onUpdateProgress();
-                    handler.postDelayed(this,1000);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                handler.postDelayed(this, 1000);
             }
         }
     }
 
+    static class PlayerEventListener implements Player.Listener {
+
+        PlaybackViewModel viewModel;
+        PlayerEventListener(PlaybackViewModel viewModel) {
+            this.viewModel = viewModel;
+        }
+
+        @Override
+        public void onPlayerError(@NonNull PlaybackException ex) {
+            viewModel.playerErrorLive.postValue(new Object[] {ex, -1});
+        }
+
+
+    }
 }

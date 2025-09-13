@@ -2,6 +2,7 @@ package org.mythtv.lfmobile.player;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -12,6 +13,7 @@ import androidx.media3.exoplayer.audio.AudioRendererEventListener;
 import androidx.media3.exoplayer.audio.AudioSink;
 import androidx.media3.exoplayer.metadata.MetadataOutput;
 import androidx.media3.exoplayer.text.TextOutput;
+import androidx.media3.exoplayer.text.TextRenderer;
 import androidx.media3.exoplayer.video.VideoRendererEventListener;
 
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -97,5 +99,17 @@ public class MyRenderersFactory extends DefaultRenderersFactory {
         buildMiscellaneousRenderers(context, eventHandler, extensionRendererMode, renderersList);
         return renderersList.toArray(new Renderer[0]);
     }
+
+    protected void buildTextRenderers(
+            Context context,
+            TextOutput output,
+            Looper outputLooper,
+            @ExtensionRendererMode int extensionRendererMode,
+            ArrayList<Renderer> out) {
+        TextRenderer r = new TextRenderer(output, outputLooper);
+        r.experimentalSetLegacyDecodingEnabled(true);
+        out.add(r);
+    }
+
 
 }
