@@ -83,8 +83,8 @@ dependencies {
     androidTestImplementation libs.espresso.core
 
     implementation libs.preference.ktx
-    implementation libs.glide
     implementation libs.swiperefreshlayout
+    implementation libs.glide.v505
 
     // These are here as we build our own custom version
     implementation project(':media-lib-exoplayer')
