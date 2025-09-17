@@ -100,12 +100,21 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     ((EditTextPreference)pref).setText(validateNumber(action, -1, 60, 5));
                     return false;
                 });
-        EditTextPreference p = findPreference("pref_tweak_ts_search_pkts");
-        p.setOnPreferenceChangeListener((pref,action) -> {
+        findPreference("pref_tweak_ts_search_pkts")
+                .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, 600, 100000, 2600));
                     return false;
                 });
-        p.setDialogMessage(R.string.pref_tweaks_desc);
+        findPreference("pref_drag_range")
+                .setOnPreferenceChangeListener((pref,action) -> {
+            ((EditTextPreference)pref).setText(validateNumber(action, 5, 60, 20));
+            return false;
+        });
+        findPreference("pref_drag_accel")
+                .setOnPreferenceChangeListener((pref,action) -> {
+                    ((EditTextPreference)pref).setText(validateFloat(action, 1f, 10f, 3.5f));
+                    return false;
+                });
 
         if (!BackendCache.getInstance().loginNeeded) {
             findPreference("pref_backend_userid").setVisible(false);
@@ -160,5 +169,23 @@ public class SettingsFragment extends PreferenceFragmentCompat
         s = String.valueOf(i);
         return s;
     }
+
+    private static String validateFloat(Object action, float min, float max, float defValue) {
+        String s;
+        float f;
+        s = action.toString();
+        try {
+            f = Float.parseFloat(s);
+        } catch (Exception e) {
+            f = defValue;
+        }
+        if (f < min)
+            f = min;
+        else if (f > max)
+            f = max;
+        s = String.valueOf(f);
+        return s;
+    }
+
 
 }

@@ -34,8 +34,10 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.DefaultTimeBar;
 
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -74,6 +76,15 @@ public class PlaybackFragment extends Fragment {
     private AspectRatioFrameLayout contentFrame;
     private StringBuilder formatBuilder;
     private Formatter formatter;
+    private View contentView;
+    private GestureDetector gestureDetector;
+    private GestureProcess gestureProcess = new GestureProcess();
+    private int skipBack = Settings.getInt("pref_skip_back");
+    private int skipFwd = Settings.getInt("pref_skip_fwd");
+    private float downXPos;
+    private long downPlayPos;
+    private float seekRange = Settings.getFloat("pref_drag_range") * 60000f;
+    private float seekAccel = Settings.getFloat("pref_drag_accel");
 
     public static PlaybackFragment newInstance() {
         return new PlaybackFragment();
@@ -205,7 +216,22 @@ public class PlaybackFragment extends Fragment {
         }
         setupControls();
         setObservers();
+        contentView = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+        if (contentView != null) {
+            gestureDetector = new GestureDetector(getContext(),gestureProcess);
+            contentView.setOnTouchListener((View vv, MotionEvent event) -> {
+                gestureDetector.onTouchEvent(event);
+                int action = event.getAction();
+                if (action == MotionEvent.ACTION_DOWN) {
+                    downXPos = event.getX();
+                    downPlayPos = viewModel.player.getCurrentPosition();
+                } else if (action == MotionEvent.ACTION_MOVE)
+                    dragAction(event);
+                return true;
+            });
+        }
     }
+
     public void onResume() {
         super.onResume();
         if ((Build.VERSION.SDK_INT <= 23 || viewModel.player == null)) {
@@ -324,6 +350,12 @@ public class PlaybackFragment extends Fragment {
         viewModel.player.seekTo(newPosition);
     }
 
+    private void moveForward(int millis) {
+        long newPosition = viewModel.player.getCurrentPosition() + millis;
+        newPosition = (newPosition < 0) ? 0 : newPosition;
+        seekTo(newPosition);
+    }
+
     protected void releasePlayer() {
         if (viewModel.player != null) {
             viewModel.player.release();
@@ -373,6 +405,8 @@ public class PlaybackFragment extends Fragment {
     }
 
     void seekTo(long position) {
+        if (position < 0)
+            position = 100;
         boolean doReset = false;
         long newPosition;
         if (viewModel.getDuration() > viewModel.player.getDuration()
@@ -675,6 +709,16 @@ public class PlaybackFragment extends Fragment {
         }
     }
 
+    void dragAction(MotionEvent event) {
+        binding.playerView.showController();
+        float distance = (event.getX() - downXPos) / contentView.getWidth();
+        float absDist = Math.abs(distance);
+        long msecs = (long) (Math.pow(absDist,seekAccel) * seekRange);
+        if (distance < 0.0f)
+            msecs = -msecs;
+        seekTo(downPlayPos + msecs);
+    }
+
     class AlertDialogListener implements DialogInterface.OnClickListener {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -700,6 +744,32 @@ public class PlaybackFragment extends Fragment {
             if (dialog == dialogInterface)
                 dialog = null;
         }
+    }
+
+    class GestureProcess extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
+            View pv = getView().findViewById(R.id.player_view);
+            if (pv != null) {
+                pv.performClick();
+                return true;
+            }
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public boolean onDoubleTap(@NonNull MotionEvent e) {
+            binding.playerView.showController();
+            float pos = e.getX() / contentView.getWidth();
+            if (pos < 0.333)
+                moveBackward(skipBack * 1000);
+            else if (pos < 0.667)
+                Util.handlePlayPauseButtonAction(viewModel.player);
+            else
+                moveForward(skipFwd * 1000);
+            return true;
+        }
+
     }
 
 }

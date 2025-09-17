@@ -101,6 +101,10 @@
     <string name="pref_tweaks_title">Advanced</string>
     <string name="pref_tweaks_desc">Please read the documentation before changing TS Search Packets.</string>
     <string name="pref_tweak_ts_search_pkts">TS Search Packets (default 2600)</string>
+    <string name="pref_drag_range">Drag Seek Range Minutes</string>
+    <string name="pref_drag_range_desc">Maximum number of minutes to seek when dragging the full width of playback</string>
+    <string name="pref_drag_accel">Drag Acceleration</string>
+    <string name="pref_drag_accel_desc">Set 1.0 for linear dragging. Set a higher value for exponential acceleration.</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
@@ -110,6 +114,8 @@
     <string name="sdef_skip_fwd" translatable="false">60</string>
     <string name="sdef_skip_back" translatable="false">10</string>
     <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>
+    <string name="sdef_drag_range" translatable="false">20</string>
+    <string name="sdef_drag_accel" translatable="false">3.5</string>
     <string name="sdef_poss_empty" translatable="false">false</string>
     <!-- 0=off, 1=notify, 2=skip   -->
     <string name="sdef_commskip" translatable="false">0</string>

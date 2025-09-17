@@ -88,8 +88,24 @@ public class Settings {
         }
     }
 
+    public static float getFloat(String key, @Nullable String group) {
+        String str = getString(key, group).trim();
+        if (str.length() == 0)
+            return 0f;
+        try {
+            return Float.parseFloat(str);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0f;
+        }
+    }
+
     public static int getInt(String key) {
         return getInt(key,null);
+    }
+
+    public static float getFloat(String key) {
+        return getFloat(key,null);
     }
 
     public static void putString(SharedPreferences.Editor editor, String key,

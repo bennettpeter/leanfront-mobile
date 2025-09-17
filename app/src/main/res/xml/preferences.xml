@@ -129,6 +129,22 @@
             android:dialogTitle="@string/pref_num_cc_chans"
             android:defaultValue="2"/>
 
+        <EditTextPreference
+            android:key="pref_drag_range"
+            android:title="@string/pref_drag_range"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_drag_range"
+            android:dialogMessage="@string/pref_drag_range_desc"
+            android:defaultValue="20"/>
+
+        <EditTextPreference
+            android:key="pref_drag_accel"
+            android:title="@string/pref_drag_accel"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_drag_accel"
+            android:dialogMessage="@string/pref_drag_accel_desc"
+            android:defaultValue="3.5"/>
+
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/pref_title_lists">
@@ -161,6 +177,7 @@
             android:title="@string/pref_tweak_ts_search_pkts"
             app:useSimpleSummaryProvider="true"
             android:dialogTitle="@string/pref_tweak_ts_search_pkts"
+            android:dialogMessage="@string/pref_tweaks_desc"
             android:defaultValue="2600"/>
 
     </PreferenceCategory>
