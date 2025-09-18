@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -230,6 +231,7 @@ public class PlaybackFragment extends Fragment {
                 return true;
             });
         }
+        setConfig(requireActivity().getResources().getConfiguration());
     }
 
     public void onResume() {
@@ -268,6 +270,22 @@ public class PlaybackFragment extends Fragment {
             viewModel.speed = viewModel.player.getPlaybackParameters().speed;
             releasePlayer();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setConfig(newConfig);
+    }
+
+    void setConfig(Configuration newConfig) {
+        TextView position = getView().findViewById(androidx.media3.ui.R.id.exo_position);
+        TextView duration = getView().findViewById(R.id.my_duration);
+        int textSize = 14;
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            textSize = 36;
+        position.setTextSize(textSize);
+        duration.setTextSize(textSize);
     }
 
     @Override
