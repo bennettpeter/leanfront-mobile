@@ -145,6 +145,13 @@
             android:dialogMessage="@string/pref_drag_accel_desc"
             android:defaultValue="3.5"/>
 
+        <EditTextPreference
+            android:key="pref_duration_textsize"
+            android:title="@string/pref_duration_textsize"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_duration_textsize"
+            android:defaultValue="14"/>
+
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/pref_title_lists">

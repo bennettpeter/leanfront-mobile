@@ -46,11 +46,20 @@
       <TextView android:id="@id/exo_position"
           style="@style/ExoStyledControls.TimeText.Position"/>
 
-      <TextView
+      <TextView android:id="@+id/my_skip_sep"
+          android:visibility="gone"
+          style="@style/ExoStyledControls.TimeText.Separator"/>
+
+      <TextView android:id="@+id/my_skip_duration"
+          android:visibility="gone"
+          style="@style/ExoStyledControls.TimeText.Position"/>
+
+      <TextView android:id="@+id/my_dur_sep"
           style="@style/ExoStyledControls.TimeText.Separator"/>
 
       <TextView android:id="@+id/my_duration"
           style="@style/ExoStyledControls.TimeText.Duration"/>
+
 
     </LinearLayout>
 

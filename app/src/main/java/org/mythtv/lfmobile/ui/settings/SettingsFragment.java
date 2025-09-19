@@ -116,6 +116,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     return false;
                 });
 
+        findPreference("pref_duration_textsize")
+                .setOnPreferenceChangeListener((pref,action) -> {
+                    ((EditTextPreference)pref).setText(validateNumber(action, 14, 50, 14));
+                    return false;
+                });
+
         if (!BackendCache.getInstance().loginNeeded) {
             findPreference("pref_backend_userid").setVisible(false);
             findPreference("pref_backend_passwd").setVisible(false);

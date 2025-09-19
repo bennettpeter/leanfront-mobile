@@ -86,6 +86,7 @@ public class PlaybackFragment extends Fragment {
     private long downPlayPos;
     private float seekRange = Settings.getFloat("pref_drag_range") * 60000f;
     private float seekAccel = Settings.getFloat("pref_drag_accel");
+    private int prefTextSize = Settings.getInt("pref_duration_textsize");
 
     public static PlaybackFragment newInstance() {
         return new PlaybackFragment();
@@ -217,7 +218,7 @@ public class PlaybackFragment extends Fragment {
         }
         setupControls();
         setObservers();
-        contentView = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+        contentView = getView().findViewById(R.id.player_view);
         if (contentView != null) {
             gestureDetector = new GestureDetector(getContext(),gestureProcess);
             contentView.setOnTouchListener((View vv, MotionEvent event) -> {
@@ -226,7 +227,7 @@ public class PlaybackFragment extends Fragment {
                 if (action == MotionEvent.ACTION_DOWN) {
                     downXPos = event.getX();
                     downPlayPos = viewModel.player.getCurrentPosition();
-                } else if (action == MotionEvent.ACTION_MOVE)
+                } else if (action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_UP)
                     dragAction(event);
                 return true;
             });
@@ -281,11 +282,18 @@ public class PlaybackFragment extends Fragment {
     void setConfig(Configuration newConfig) {
         TextView position = getView().findViewById(androidx.media3.ui.R.id.exo_position);
         TextView duration = getView().findViewById(R.id.my_duration);
+        TextView skipDuration = getView().findViewById(R.id.my_skip_duration);
+        TextView skipSep = getView().findViewById(R.id.my_skip_sep);
+        TextView durSep = getView().findViewById(R.id.my_dur_sep);
         int textSize = 14;
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-            textSize = 36;
+            textSize = prefTextSize;
+        ;
         position.setTextSize(textSize);
         duration.setTextSize(textSize);
+        skipSep.setTextSize(textSize);
+        durSep.setTextSize(textSize);
+        skipDuration.setTextSize(textSize);
     }
 
     @Override
@@ -728,12 +736,22 @@ public class PlaybackFragment extends Fragment {
     }
 
     void dragAction(MotionEvent event) {
+        TextView skipDuration = getView().findViewById(R.id.my_skip_duration);
+        TextView skipSeparator = getView().findViewById(R.id.my_skip_sep);
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            skipDuration.setVisibility(View.GONE);
+            skipSeparator.setVisibility(View.GONE);
+            return;
+        }
         binding.playerView.showController();
         float distance = (event.getX() - downXPos) / contentView.getWidth();
         float absDist = Math.abs(distance);
         long msecs = (long) (Math.pow(absDist,seekAccel) * seekRange);
         if (distance < 0.0f)
             msecs = -msecs;
+        skipDuration.setVisibility(View.VISIBLE);
+        skipSeparator.setVisibility(View.VISIBLE);
+        skipDuration.setText(Util.getStringForTime(formatBuilder, formatter, msecs));
         seekTo(downPlayPos + msecs);
     }
 

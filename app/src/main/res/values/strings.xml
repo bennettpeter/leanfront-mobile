@@ -105,6 +105,7 @@
     <string name="pref_drag_range_desc">Maximum number of minutes to seek when dragging the full width of playback</string>
     <string name="pref_drag_accel">Drag Acceleration</string>
     <string name="pref_drag_accel_desc">Set 1.0 for linear dragging. Set a higher value for exponential acceleration.</string>
+    <string name="pref_duration_textsize">Playback Progress Text Size in Landscape Orientation</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
@@ -116,6 +117,7 @@
     <string name="sdef_tweak_ts_search_pkts" translatable="false">2600</string>
     <string name="sdef_drag_range" translatable="false">20</string>
     <string name="sdef_drag_accel" translatable="false">3.5</string>
+    <string name="sdef_duration_textsize" translatable="false">14</string>
     <string name="sdef_poss_empty" translatable="false">false</string>
     <!-- 0=off, 1=notify, 2=skip   -->
     <string name="sdef_commskip" translatable="false">0</string>
