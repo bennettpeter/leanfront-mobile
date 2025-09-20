@@ -790,7 +790,7 @@ public class PlaybackFragment extends Fragment {
                 pv.performClick();
                 return true;
             }
-            return super.onSingleTapConfirmed(e);
+            return true;
         }
 
         @Override
