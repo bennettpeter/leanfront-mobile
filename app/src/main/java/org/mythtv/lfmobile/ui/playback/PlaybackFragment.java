@@ -83,7 +83,9 @@ public class PlaybackFragment extends Fragment {
     private int skipBack = Settings.getInt("pref_skip_back");
     private int skipFwd = Settings.getInt("pref_skip_fwd");
     private float downXPos;
+    private int screenDPI;
     private long downPlayPos;
+    private boolean dragInProgress;
     private float seekRange = Settings.getFloat("pref_drag_range") * 60000f;
     private float seekAccel = Settings.getFloat("pref_drag_accel");
     private int prefTextSize = Settings.getInt("pref_duration_textsize");
@@ -233,6 +235,7 @@ public class PlaybackFragment extends Fragment {
             });
         }
         setConfig(requireActivity().getResources().getConfiguration());
+        screenDPI = getContext().getResources().getDisplayMetrics().densityDpi;
     }
 
     public void onResume() {
@@ -738,14 +741,24 @@ public class PlaybackFragment extends Fragment {
     void dragAction(MotionEvent event) {
         TextView skipDuration = getView().findViewById(R.id.my_skip_duration);
         TextView skipSeparator = getView().findViewById(R.id.my_skip_sep);
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        if (dragInProgress && event.getAction() == MotionEvent.ACTION_UP) {
             skipDuration.setVisibility(View.GONE);
             skipSeparator.setVisibility(View.GONE);
+            dragInProgress = false;
             return;
         }
-        binding.playerView.showController();
         float distance = (event.getX() - downXPos) / contentView.getWidth();
         float absDist = Math.abs(distance);
+        if (!dragInProgress) {
+            float absDistInch = Math.abs((event.getX() - downXPos) / screenDPI);
+            float absLeftDistInch = Math.abs(downXPos / screenDPI);
+            float absRightDistInch = Math.abs(((float)contentView.getWidth() -downXPos) / screenDPI);
+            if (absLeftDistInch < 0.1f || absRightDistInch < 0.1f || absDistInch < 0.1f)
+                return;
+            else
+                dragInProgress = true;
+        }
+        binding.playerView.showController();
         long msecs = (long) (Math.pow(absDist,seekAccel) * seekRange);
         if (distance < 0.0f)
             msecs = -msecs;
@@ -785,11 +798,7 @@ public class PlaybackFragment extends Fragment {
     class GestureProcess extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
-            View pv = getView().findViewById(R.id.player_view);
-            if (pv != null) {
-                pv.performClick();
-                return true;
-            }
+            contentView.performClick();
             return true;
         }
 
