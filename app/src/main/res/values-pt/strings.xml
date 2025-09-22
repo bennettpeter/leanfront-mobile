@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Avançado</string>
   <string name="pref_tweaks_desc">Leia a documentação antes de alterar os pacotes de pesquisa do TS.</string>
   <string name="pref_tweak_ts_search_pkts">Pacotes de pesquisa TS (padrão 2600)</string>
+  <string name="pref_drag_range">Drag Seek Lange Minutes</string>
+  <string name="pref_drag_range_desc">Número máximo de minutos para procurar ao arrastar toda a largura da reprodução</string>
+  <string name="pref_drag_accel">Aceleração de arrasto</string>
+  <string name="pref_drag_accel_desc">Defina 1.0 para arrastar linear. Defina um valor mais alto para aceleração exponencial.</string>
+  <string name="pref_duration_textsize">Tamanho do texto do progresso da reprodução na orientação da paisagem</string>
   <string name="resume_last">Jogue da última posição de jogo</string>
   <string name="play">Jogue desde o início</string>
   <string name="menu_mark_unwatched">Marque como não acumulado</string>

@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Fremskreden</string>
   <string name="pref_tweaks_desc">Læs dokumentationen, inden du ændrer TS -søgepakker.</string>
   <string name="pref_tweak_ts_search_pkts">TS -søgningspakker (standard 2600)</string>
+  <string name="pref_drag_range">Drag Seak Range Minutes</string>
+  <string name="pref_drag_range_desc">Maksimalt antal minutter at søge, når man trækker den fulde bredde af afspilning</string>
+  <string name="pref_drag_accel">Træk acceleration</string>
+  <string name="pref_drag_accel_desc">Indstil 1.0 til lineær trækning. Indstil en højere værdi for eksponentiel acceleration.</string>
+  <string name="pref_duration_textsize">Afspilningens fremskridt Tekststørrelse i landskabsorientering</string>
   <string name="resume_last">Spil fra sidste legeposition</string>
   <string name="play">Spil fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>

@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Edistynyt</string>
   <string name="pref_tweaks_desc">Lue asiakirjat ennen TS -hakupakettien vaihtamista.</string>
   <string name="pref_tweak_ts_search_pkts">TS -hakupaketit (oletus 2600)</string>
+  <string name="pref_drag_range">Vedä etsiä etäisyyttä minuutteja</string>
+  <string name="pref_drag_range_desc">Enimmäismäärä minuutteja etsimään, kun vedetään toiston koko leveys</string>
+  <string name="pref_drag_accel">Kiihtyvyys</string>
+  <string name="pref_drag_accel_desc">Aseta 1.0 lineaariseen vetämiseen. Aseta suurempi arvo eksponentiaaliselle kiihtyvyydelle.</string>
+  <string name="pref_duration_textsize">Toiston edistymisen tekstin koko maisemasuunnassa</string>
   <string name="resume_last">Pelata viimeisimmästä pelialueesta</string>
   <string name="play">Pelaaminen alusta alkaen</string>
   <string name="menu_mark_unwatched">Merkitä</string>

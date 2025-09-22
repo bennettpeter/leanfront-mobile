@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Avansert</string>
   <string name="pref_tweaks_desc">Les dokumentasjonen før du endrer TS -søkepakker.</string>
   <string name="pref_tweak_ts_search_pkts">TS -søkepakker (standard 2600)</string>
+  <string name="pref_drag_range">Dra Søk rekke minutter</string>
+  <string name="pref_drag_range_desc">Maksimalt antall minutter å søke når du drar full bredde på avspilling</string>
+  <string name="pref_drag_accel">Dra akselerasjon</string>
+  <string name="pref_drag_accel_desc">Sett 1.0 for lineær dra. Angi en høyere verdi for eksponentiell akselerasjon.</string>
+  <string name="pref_duration_textsize">Avspilling Fremgangstekststørrelse i landskapsorientering</string>
   <string name="resume_last">Spill fra siste lekestilling</string>
   <string name="play">Spill fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>

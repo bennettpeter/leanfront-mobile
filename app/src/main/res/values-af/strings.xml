@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Gevorderd</string>
   <string name="pref_tweaks_desc">Lees die dokumentasie voordat u TS -soekpakkies verander.</string>
   <string name="pref_tweak_ts_search_pkts">TS -soekpakkies (standaard 2600)</string>
+  <string name="pref_drag_range">Drag Soek reeks minute</string>
+  <string name="pref_drag_range_desc">Maksimum aantal minute om te soek wanneer u die volle breedte van die afspeel sleep</string>
+  <string name="pref_drag_accel">Sleep versnelling</string>
+  <string name="pref_drag_accel_desc">Stel 1.0 vir lineêre sleep. Stel \'n hoër waarde vir eksponensiële versnelling.</string>
+  <string name="pref_duration_textsize">Afspeel vordering teksgrootte in landskapsoriëntasie</string>
   <string name="resume_last">Speel uit die laaste speelposisie</string>
   <string name="play">Speel van die begin af</string>
   <string name="menu_mark_unwatched">Merk so onbewustelik</string>

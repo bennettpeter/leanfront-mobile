@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Προχωρημένος</string>
   <string name="pref_tweaks_desc">Διαβάστε την τεκμηρίωση πριν αλλάξετε τα πακέτα αναζήτησης TS.</string>
   <string name="pref_tweak_ts_search_pkts">Πακέτα αναζήτησης TS (προεπιλογή 2600)</string>
+  <string name="pref_drag_range">Σύρετε τα λεπτά αναζήτησης</string>
+  <string name="pref_drag_range_desc">Μέγιστος αριθμός λεπτών για να αναζητήσετε όταν σύρετε το πλήρες πλάτος της αναπαραγωγής</string>
+  <string name="pref_drag_accel">Συρράττω επιτάχυνση</string>
+  <string name="pref_drag_accel_desc">Ρυθμίστε 1.0 για γραμμική μεταφορά. Ορίστε υψηλότερη τιμή για εκθετική επιτάχυνση.</string>
+  <string name="pref_duration_textsize">Μέγεθος κειμένου προόδου αναπαραγωγής στον προσανατολισμό του τοπίου</string>
   <string name="resume_last">Παίξτε από την τελευταία θέση παιχνιδιού</string>
   <string name="play">Παίξτε από την αρχή</string>
   <string name="menu_mark_unwatched">Σηματοδοτείται ως ακατέργαστο</string>

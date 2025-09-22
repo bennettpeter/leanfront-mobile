@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Zaawansowany</string>
   <string name="pref_tweaks_desc">Przeczytaj dokumentację przed zmianą pakietów wyszukiwania TS.</string>
   <string name="pref_tweak_ts_search_pkts">Pakiety wyszukiwania TS (domyślnie 2600)</string>
+  <string name="pref_drag_range">Przeciągnij minuty zasięgu</string>
+  <string name="pref_drag_range_desc">Maksymalna liczba minut do szukania podczas przeciągania pełnej szerokości odtwarzania</string>
+  <string name="pref_drag_accel">Przeciągnij przyspieszenie</string>
+  <string name="pref_drag_accel_desc">Ustaw 1.0 do przeciągania liniowego. Ustaw wyższą wartość dla przyspieszenia wykładniczego.</string>
+  <string name="pref_duration_textsize">Odtwarzanie rozmiar tekstu w orientacji krajobrazu</string>
   <string name="resume_last">Graj z ostatniej pozycji gry</string>
   <string name="play">Grać od początku</string>
   <string name="menu_mark_unwatched">Znak jako nieuczciony</string>

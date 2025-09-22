@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Avancé</string>
   <string name="pref_tweaks_desc">Veuillez lire la documentation avant de modifier les paquets de recherche TS.</string>
   <string name="pref_tweak_ts_search_pkts">Paquets de recherche TS (par défaut 2600)</string>
+  <string name="pref_drag_range">Drag Seek Range Minutes</string>
+  <string name="pref_drag_range_desc">Nombre maximum de minutes à rechercher lors de la traînée totale de la lecture</string>
+  <string name="pref_drag_accel">Accélération de traînée</string>
+  <string name="pref_drag_accel_desc">Définissez 1.0 pour la traînée linéaire. Définissez une valeur plus élevée pour l\'accélération exponentielle.</string>
+  <string name="pref_duration_textsize">La lecture de la lecture Taille du texte dans l\'orientation du paysage</string>
   <string name="resume_last">Jouer de la dernière position de jeu</string>
   <string name="play">Jouer depuis le début</string>
   <string name="menu_mark_unwatched">Marquez comme non fixé</string>

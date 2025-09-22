@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Fortschrittlich</string>
   <string name="pref_tweaks_desc">Bitte lesen Sie die Dokumentation, bevor Sie die TS -Suchpakete ändern.</string>
   <string name="pref_tweak_ts_search_pkts">TS -Suchpakete (Standard 2600)</string>
+  <string name="pref_drag_range">Minute für Ziehen Sie die Seek -Reichweite</string>
+  <string name="pref_drag_range_desc">Maximale Anzahl von Minuten, um beim Ziehen der vollen Wiedergabebreite zu suchen</string>
+  <string name="pref_drag_accel">Beschleunigung ziehen</string>
+  <string name="pref_drag_accel_desc">Stellen Sie 1.0 für lineares Ziehen ein. Legen Sie einen höheren Wert für die exponentielle Beschleunigung fest.</string>
+  <string name="pref_duration_textsize">Wiedergabe Fortschritt Textgröße in der Landschaftsorientierung</string>
   <string name="resume_last">Spielen Sie von der letzten Spielposition ab</string>
   <string name="play">Von Anfang an spielen</string>
   <string name="menu_mark_unwatched">Markieren Sie als ungefolgt</string>

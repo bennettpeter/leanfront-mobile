@@ -85,6 +85,11 @@
   <string name="pref_tweaks_title">Moderní</string>
   <string name="pref_tweaks_desc">Před změnou paketů vyhledávání TS si prosím přečtěte dokumentaci.</string>
   <string name="pref_tweak_ts_search_pkts">TS vyhledávací pakety (výchozí 2600)</string>
+  <string name="pref_drag_range">Drag Seek Range Minutes</string>
+  <string name="pref_drag_range_desc">Při přetažení plné šířky přehrávání maximální počet minut</string>
+  <string name="pref_drag_accel">Přetažení zrychlení</string>
+  <string name="pref_drag_accel_desc">Nastavte 1.0 pro lineární tažení. Nastavte vyšší hodnotu pro exponenciální zrychlení.</string>
+  <string name="pref_duration_textsize">Velikost textu přehrávání v orientaci na krajinu</string>
   <string name="resume_last">Hrajte z poslední hry</string>
   <string name="play">Hrajte od začátku</string>
   <string name="menu_mark_unwatched">Mark As Unhethed</string>
