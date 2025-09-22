@@ -39,11 +39,11 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 ![](ScreenShots/Main_horz.png)
 
 - The main screen shows a scrolling list for the selected recording group or All. One icon is shown per series.
-- Select a group name or All from the menu obtained by tapping the &#8942; icon at the top right hand of the screen to see the [Series Screen](#series-screen).
+- Select a group name or All from the menu obtained by tapping the three dots **&#8942;** icon at the top right hand of the screen to see the [Series Screen](#series-screen).
 
 <details><summary>More details</summary>
 
-- The LiveTV group shows recordings already made from Live TV. This app does not support watching Live TV.
+- The Live TV group shows recordings already made or busy recording from Live TV. You can watch them but you cannot initiate Live TV from the app.
 - If you have Videos in the Video storage group on the MythTV backend, select "Videos" from the menu of recording groups to see the [Videos Screen](#videos-screen)
 - At the bottom you can select the Settings page or the Upcoming page.
 - In landscape mode, tap the menu icon at top left to get to the Settings or Upcoming page.
@@ -86,13 +86,30 @@ This displays upcoming recordings on the MythTV backend. You can use the menu ic
 
 ![](ScreenShots/Settings.png)
 
+In Settings, any value can be restored to its default by tapping it, deleting the contents and selecting OK.
+
+If an amount too high or too low is entered, it is automatically set to the maximum or minimum. If invalid data is entered (e.g. non-numeric value) it is set to the default. 
+
 <details><summary>Notes</summary>
 
 ### MythTV Backend
 
 If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanfront needs these to communicate with the backend. These do not show if you do not have a user authentication requirement, so most people will never see these prompts.
 
+### Audio Decode and Video Decode
+
+By default leanfront will use mediacodec hardware decoding for audio and video. If there is no hardware decoder it will switch to software decoding with ffmpeg. You can force it to only use mediacodec or to prefer software decoding.
+
+Software decoding of Video can show bad performance on most low-cost android TV devices. It works well on NVidia Shield. 
+
+### Advanced
+
 - **Maximum Recordings/Videos to load.** Leanfront can handle an unlimited number of recordings and videos. However loading huge numbers of recordings and videos results in excessively long times to load the listing. WIth 60,000 recordings it takes about 3 minutes to load he list from the backend and another 3 to 4 minutes to format the display. To avoid this, the system defaults to loading the only the most recent 10,000. If you are happy with waiting minutes for the screen to refresh, you can increase the value. If you want a quicker refresh you can reduce the value.
+
+The advanced section of settings includes a value that may need to be changed to suit unusual circumstances. Be careful when changing it as you may cause bad things to happen if you use inappropriate values.
+
+- **TS Search Packets.** Increase this if when playing a recording or other TS file, the recording length does not show in the OSD, and you cannot use skips or bookmarks. The default value supplied with exoplayer is 600. I have set a default value of 2600 in leanfront. The value is limited to a range of 600 - 100,000. Increasing the value will cause the start of playback to take longer and use more memory. Also skips forwards and back will take longer. Thus it is best to make this the smallest value that works for you.
+
 </details>
 
 ## Installing leanfront
@@ -126,7 +143,7 @@ The first time you run the app it will prompt you for the MythTV Backend setting
 - Video and Audio playback is supported using mediacodec (hardware) or ffmpeg (software). By default it will use mediacodec if it can, and will switch to ffmpeg if there is a media format not supported by mediacodec. There is a setting where you can change this default and force either mediacodec or ffmpeg.
 - Selection of alternate audio tracks during playback.
 - Playback from slave backends is supported.
-- Playing of Live TV is not supported.
+- Live TV is not supported. You can watch Live TV recordings but you cannot initiate Live TV from the app.
 - The *Master Backend Override* MythTV setting is supported. Playback will be from the master backend even for recordings made on a slave. However the Preview image still uses the slave backend, so it will not show if the slave is down.
 - Note that some phones do not support MPEG-2 playback. In this case MPEG-2 recordings are decoded via software.
 - Supports MythTV commercial breaks and cut list.
@@ -137,17 +154,13 @@ You can see a list of changes in each version by looking at the commit list in g
 
 ## Playback
 
-- Tapping the screen brings up the OSD playback controls.
-- Tapping outside the controls dismisses the OSD controls.
-- You can customize the Next (⏭) and Previous (⏮) buttons to either jump or skip commercials.
-- You can customize the length of jumps and skips.
-- If you are playing a recording that is in progress of being recorded or a LiveTV channel, playback will stop when it has played as much as was available at the start. To continue you will have to stop and resume playback. Currently the mobile version of leanfront does not fully support playback of recordings in progress.
+Recordings in progress are supported and the duration increases as the program is recorded.
 
 ### Bookmarks and Last Play Position
 
-Bookmarks in a recording or video are stored in the MythTV backend. On versions of mythbackend before v32-Pre-658-g48557d32c2 or v31.0-73-g7bf1284867, video bookmarks are not supported.
+Bookmarks in a recording or video are stored in the MythTV backend. On versions of mythbackend before v32-Pre-658-g48557d32c2 or v31.0-73-g7bf1284867, recording bookmarks are supported but video bookmarks are not supported.
 
-Last Play Position is always set upon stopping playback and the default on starting playback is to start at Last Play Position. It can be cleared from the episode or video menu..
+Last Play Position is always set upon stopping playback and the default on starting playback is to start at Last Play Position. It can be cleared from the episode or video menu.
 
 ### Commercial Break and Cut List
 
@@ -165,12 +178,11 @@ In the settings there are adjustments to start and end position that can be set.
 
 There is currently no way to edit a recording or video in leanfront. That can only be done in mythfrontend.
 
-Leanfront also supports skip and cut lists in Videos in the "Videos" storage group. For this you need mythbackend version v33-Pre-925-gf702d54093 or later, and you need to use the new http port (6744).
+Leanfront also supports skip and cut lists in Videos in the "Videos" storage group. For this you need mythbackend version v33-Pre-925-gf702d54093 or later.
 
 ## Live TV
 
-Live TV is not supported.
-
+Live TV is not supported. However you can play Live TV recordings initiated from somewhere else.
 
 ## Playback controls
 
@@ -178,7 +190,9 @@ Live TV is not supported.
 
 The following controls are available when tapping during playback.
 
-In the middle of the screen are icons previous, skip back, pause or play, skip forward, next. The number of seconds to skip can be selected in Settings. Previous and next can be set to jump back and forward or to skip commercials.
+Tapping the screen brings up the OSD playback controls. Tapping outside the controls dismisses the OSD controls.
+
+In the middle of the screen are icons previous, skip back, pause or play, skip forward, next. The number of seconds to skip can be selected in Settings. Previous (⏮) and Next (⏭) can be set to either jump back and forward or to skip commercials.
 
 The progress bar near the bottom can be dragged or tapped to navigate playback to a new position.
 
@@ -190,6 +204,22 @@ To the left of the CC button is the aspect ratio button. This is for use if the 
 
 To the left of the aspect ratio button is the zoom button. By default the picture is shrunk until it all fits in the screen. Tapping zoom changes it so that it expands until the entire screen is filled, keeping the aspect correct, and possibly cutting off parts of the picture along the edges.
 
+To the left the next button (clock face) is used for adjusting audio sync.
+
+### Double tap
+
+Double tap on the play screen while playing or paused is used as follows:
+
+- Left hand side of screen: Skip backwards. The number of seconds skipped is as set in the Settings.
+- Center of screen: Toggle play and pause.
+- Right hand side of screen: Skip forwards. The number of seconds skipped is as set in the Settings.
+
+### Drag across screen
+
+Dragging horizontally across the screen is used to move forwards or backwards in the show. It is exponential, the beginning of a drag gives a small increment, dragging further adds increasingly larger times.
+
+The amount moved and the exponential increase can be changed in Settings.
+
 ## General Operation
 
 ### Status Port
@@ -200,7 +230,7 @@ This is a temporary change, in V34 the port changes back to 6544, with the new f
 
 ### Authentication
 
-In MythTV V35, and authentication option has been added to MythTV services. See https://www.mythtv.org/wiki/Web_Application#API_and_Web_App_Authentication . If you setup Authentication Required, you will have to supply a user id and password to leanfront. Leanfront will automatically add User Name and Password to the Settings list and prompt you to enter them if you have enabled it on the backend. If you have not enabled it, those prompts will not be visible.
+In MythTV V35, an authentication option has been added to MythTV services. See https://www.mythtv.org/wiki/Web_Application#API_and_Web_App_Authentication . If you setup Authentication Required, you will have to supply a user id and password to leanfront. Leanfront will automatically add User Name and Password to the Settings list and prompt you to enter them if you have enabled it on the backend. If you have not enabled it, those prompts will not be visible.
 
 If you expose port 6544 to the internet, you can run leanfront remotely. In this case it is recommended to set a user id and password as described in the wiki article.
 
