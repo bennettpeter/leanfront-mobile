@@ -34,6 +34,8 @@ import androidx.media3.exoplayer.source.SampleQueue;
 import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.DefaultTimeBar;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -89,6 +91,8 @@ public class PlaybackFragment extends Fragment {
     private float seekRange = Settings.getFloat("pref_drag_range") * 60000f;
     private float seekAccel = Settings.getFloat("pref_drag_accel");
     private int prefTextSize = Settings.getInt("pref_duration_textsize");
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
 
     public static PlaybackFragment newInstance() {
         return new PlaybackFragment();
@@ -374,12 +378,16 @@ public class PlaybackFragment extends Fragment {
     }
 
     public void moveBackward(int millis) {
+        if (!viewModel.player.isCurrentMediaItemSeekable())
+            return;
         long newPosition = viewModel.player.getCurrentPosition() - millis;
         newPosition = (newPosition < 0) ? 0 : newPosition;
         viewModel.player.seekTo(newPosition);
     }
 
     private void moveForward(int millis) {
+        if (!viewModel.player.isCurrentMediaItemSeekable())
+            return;
         long newPosition = viewModel.player.getCurrentPosition() + millis;
         newPosition = (newPosition < 0) ? 0 : newPosition;
         seekTo(newPosition);
@@ -603,13 +611,33 @@ public class PlaybackFragment extends Fragment {
                             public void onStopTrackingTouch(SeekBar seekBar) {  }
                         }
                 );
-
-
             });
         }
+        handler.postDelayed(() ->{
+            enableControls();
+        }, 1000);
 
     }
 
+    void enableControls() {
+        Resources resources = getContext().getResources();
+        float buttonAlphaEnabled =
+                (float) resources.getInteger(androidx.media3.ui.R.integer.exo_media_button_opacity_percentage_enabled) / 100;
+        float buttonAlphaDisabled =
+                (float) resources.getInteger(androidx.media3.ui.R.integer.exo_media_button_opacity_percentage_disabled) / 100;
+        boolean canSeek = viewModel.player.isCurrentMediaItemSeekable();
+        View previousButton = getView().findViewById(R.id.my_exo_prev);
+        if (previousButton != null) {
+            previousButton.setEnabled(canSeek);
+            previousButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
+        }
+        View nextButton = getView().findViewById(R.id.my_exo_next);
+        if (nextButton != null) {
+            nextButton.setEnabled(canSeek);
+            nextButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
+        }
+
+    }
 
     private int mDialogStatus = 0;
     private static final int DIALOG_NONE   = 0;
@@ -739,6 +767,8 @@ public class PlaybackFragment extends Fragment {
     }
 
     void dragAction(MotionEvent event) {
+        if(!viewModel.player.isCurrentMediaItemSeekable())
+            return;
         TextView skipDuration = getView().findViewById(R.id.my_skip_duration);
         TextView skipSeparator = getView().findViewById(R.id.my_skip_sep);
         if (dragInProgress && event.getAction() == MotionEvent.ACTION_UP) {

@@ -407,7 +407,5 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         public void onPlayerError(@NonNull PlaybackException ex) {
             viewModel.playerErrorLive.postValue(new Object[] {ex, -1});
         }
-
-
     }
 }
