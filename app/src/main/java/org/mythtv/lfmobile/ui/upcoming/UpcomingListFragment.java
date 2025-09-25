@@ -126,7 +126,6 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
         ((MainActivity)getActivity()).myFragment = this;
         ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
         model.startFetch();
-//        refresh();
     }
 
     @Override
@@ -209,13 +208,16 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
 
             StringBuilder titleStr = new StringBuilder();
             titleStr.append(item.title);
-            if (item.subTitle != null || item.season > 0) {
-                titleStr.append(": ").append(item.subTitle);
+            boolean haveEpisode = item.episode > 0;
+            boolean haveSubtitle = item.subTitle != null && item.subTitle.trim().length() > 0;
+            if (haveEpisode || haveSubtitle)
+                titleStr.append(": ");
+            if (haveEpisode) {
+                titleStr.append('S').append(item.season).append('E').append(item.episode)
+                        .append(' ');
             }
-            if (item.season > 0 && item.episode > 0) {
-                titleStr.append("S").append(item.season).append("E").append(item.episode)
-                        .append(" ");
-            }
+            if (haveSubtitle)
+                titleStr.append(item.subTitle);
             holder.itemTitleView.setText(titleStr);
             holder.itemDescView.setText(item.description);
         }

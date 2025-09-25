@@ -365,11 +365,11 @@ public class VideoListFragment extends MainActivity.MyFragment {
                 && "Deleted".equals(video.recGroup))
             subtitle.append("\uD83D\uDDD1");
         subtitle.append(video.title);
-        boolean haveSeason = video.season != null && video.season.compareTo("0") > 0;
+        boolean haveEpisode = video.episode != null && video.episode.compareTo("0") > 0;
         boolean haveSubtitle = video.subtitle != null && video.subtitle.trim().length() > 0;
-        if (haveSeason || haveSubtitle)
+        if (haveEpisode || haveSubtitle)
             subtitle.append(": ");
-        if (haveSeason) {
+        if (haveEpisode) {
             subtitle.append('S').append(video.season).append('E').append(video.episode)
                     .append(' ');
         }
