@@ -615,7 +615,7 @@ public class PlaybackFragment extends Fragment {
         }
         handler.postDelayed(() ->{
             enableControls();
-        }, 1000);
+        }, 2000);
 
     }
 
@@ -625,16 +625,22 @@ public class PlaybackFragment extends Fragment {
                 (float) resources.getInteger(androidx.media3.ui.R.integer.exo_media_button_opacity_percentage_enabled) / 100;
         float buttonAlphaDisabled =
                 (float) resources.getInteger(androidx.media3.ui.R.integer.exo_media_button_opacity_percentage_disabled) / 100;
-        boolean canSeek = viewModel.player.isCurrentMediaItemSeekable();
-        View previousButton = getView().findViewById(R.id.my_exo_prev);
-        if (previousButton != null) {
-            previousButton.setEnabled(canSeek);
-            previousButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
-        }
-        View nextButton = getView().findViewById(R.id.my_exo_next);
-        if (nextButton != null) {
-            nextButton.setEnabled(canSeek);
-            nextButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
+        if (viewModel.player == null) {
+            handler.postDelayed(() ->{
+                enableControls();
+            }, 2000);
+        } else {
+            boolean canSeek = viewModel.player.isCurrentMediaItemSeekable();
+            View previousButton = getView().findViewById(R.id.my_exo_prev);
+            if (previousButton != null) {
+                previousButton.setEnabled(canSeek);
+                previousButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
+            }
+            View nextButton = getView().findViewById(R.id.my_exo_next);
+            if (nextButton != null) {
+                nextButton.setEnabled(canSeek);
+                nextButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
+            }
         }
 
     }
