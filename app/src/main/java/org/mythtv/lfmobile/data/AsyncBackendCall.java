@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -491,6 +492,38 @@ public class AsyncBackendCall implements Runnable {
                         }
                     }
                     response = new Long(fileLength);
+                    break;
+                }
+                case Action.GUIDE: {
+                    // params is array of objects
+                    // params[0]: Integer channel group id
+                    // params[1]: Date startTime
+                    // params[2]: Date endTime
+                    try {
+                        Object parm[] = (Object[]) params;
+                        SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                        sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Guide/GetProgramGuide?ChannelGroupId=" + parm[0]
+                                        + "&StartTime="
+                                        + URLEncoder.encode(sdfUTC.format((Date) parm[1]), "UTF-8")
+                                        + "&EndTime=" + URLEncoder.encode(sdfUTC.format((Date) parm[2]), "UTF-8")
+                                        + "&Details=true");
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Getting Guide.", e);
+                    }
+                    break;
+                }
+
+                case Action.CHAN_GROUPS: {
+                    try {
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Guide/GetChannelGroupList?IncludeEmpty=false");
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Getting Channel Groups.", e);
+                    }
                     break;
                 }
 

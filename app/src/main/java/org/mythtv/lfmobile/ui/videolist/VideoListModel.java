@@ -45,7 +45,7 @@ public class VideoListModel extends ViewModel {
         videos = new MutableLiveData<>();
         pageType = TYPE_RECGROUP;
         Context context = MyApplication.getAppContext();
-        allTitle = context.getString(R.string.group_all) + "\t";
+        allTitle = context.getString(R.string.all_title) + "\t";
         recGroup = allTitle;
         videosTitle = context.getString(R.string.group_videos) + "\t";
         setRecGroup(allTitle);

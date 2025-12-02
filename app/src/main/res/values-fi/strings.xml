@@ -8,7 +8,7 @@
   <string name="menu_settings">Asetukset</string>
   <string name="menu_show_all">Näyttää kaikki</string>
   <string name="row_header_channels">Kanavat</string>
-  <string name="group_all">Kaikki</string>
+  <string name="all_title">Kaikki</string>
   <string name="group_videos">Video</string>
   <string name="recgroup_title">Nauhoitusryhmä</string>
   <string name="error_cannot_play">Virhe: Videoa ei voi toistaa.</string>

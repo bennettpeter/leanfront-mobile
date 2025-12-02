@@ -76,7 +76,7 @@ dependencies {
     implementation libs.preference
     implementation libs.exifinterface
     implementation libs.lifecycle.process
-    implementation libs.firebase.crashlytics.buildtools
+//    implementation libs.firebase.crashlytics.buildtools
     implementation libs.legacy.support.v4
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

@@ -8,7 +8,7 @@
   <string name="menu_settings">Ajustes</string>
   <string name="menu_show_all">Mostrar todo</string>
   <string name="row_header_channels">Canales</string>
-  <string name="group_all">Todo</string>
+  <string name="all_title">Todo</string>
   <string name="group_videos">Videos</string>
   <string name="recgroup_title">Grupo de grabación</string>
   <string name="error_cannot_play">Error: no se puede reproducir el video.</string>

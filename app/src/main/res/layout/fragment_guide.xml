@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/top_part"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.guide.GuideFragment">
+
+    <LinearLayout
+        android:id="@+id/heading"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:text="@string/guide_channel"
+        android:layout_weight="25" />
+
+        <HorizontalScrollView
+            android:id="@+id/dateScrollView"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="75"
+            android:scrollbars="none"
+            >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/datelist"
+            android:layout_width="match_parent"
+            android:layout_height="18dp"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            />
+<!--            android:layout_gravity="center"-->
+<!--            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
+<!--            android:layout_marginStart="8dp"-->
+        </HorizontalScrollView>
+    </LinearLayout>
+<!--    android:layout_weight="75"-->
+
+    <LinearLayout
+        android:id="@+id/data"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/heading"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chanlist"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_weight="25"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <HorizontalScrollView
+            android:id="@+id/scrollView"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="75"
+            android:scrollbars="none"
+            >
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/proglist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+<!--            android:layout_marginStart="8dp"-->
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

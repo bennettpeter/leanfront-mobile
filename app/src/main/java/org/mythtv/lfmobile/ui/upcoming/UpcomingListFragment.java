@@ -47,9 +47,9 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
     private FragmentUpcomingBinding binding;
     private UpcomingListModel model;
     private ArrayList<UpcomingListModel.UpcomingItem> upcomingList;
-    private XmlNode upcomingNode;
     public static final int COLOR_WILLRECORD = 0xff00C000;
     public static final int COLOR_WONTRECORD = 0xffC00000;
+    private MenuProvider menuProvider;
 
 
     @Override
@@ -88,12 +88,14 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MenuHost menuHost = requireActivity();
-        menuHost.addMenuProvider(new MenuProvider() {
+//        MenuHost menuHost = requireActivity();
+//        menuHost.addMenuProvider(menuProvider = new MenuProvider() {
+        menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 MenuItem item = menu.add(R.id.upcoming_group, R.id.id_show_all, Menu.NONE, R.string.menu_show_all);
                 item.setCheckable(true);
+                item.setChecked(model.showAll);
             }
             @Override
             public void onPrepareMenu(@NonNull Menu menu) {
@@ -111,7 +113,7 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
                 }
                 return false;
             }
-        },getViewLifecycleOwner());
+        };
     }
 
 
@@ -124,8 +126,22 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
     public void onResume() {
         super.onResume();
         ((MainActivity)getActivity()).myFragment = this;
+        if (menuProvider != null) {
+            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+        }
+        ((MainActivity)getActivity()).myFragment = this;
         ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
         model.startFetch();
+    }
+
+    @Override
+    public void onPause() {
+        ((MainActivity)getActivity()).myFragment = null;
+        if (menuProvider != null) {
+            getActivity().removeMenuProvider(menuProvider);
+            getActivity().invalidateMenu();
+        }
+        super.onPause();
     }
 
     @Override

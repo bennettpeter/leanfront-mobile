@@ -15,7 +15,10 @@
         android:id="@+id/recgroup_group"
         android:checkableBehavior="none">
     </group>
-
+    <group
+        android:id="@+id/changroup_group"
+        android:checkableBehavior="none">
+    </group>
     <group
         android:id="@+id/upcoming_group"
         android:checkableBehavior="all">

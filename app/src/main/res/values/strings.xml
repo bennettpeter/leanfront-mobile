@@ -6,10 +6,11 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_upcoming">Upcoming</string>
     <string name="menu_settings">Settings</string>
+    <string name="menu_guide">Guide</string>
     <string name="menu_show_all">Show All</string>
 
     <string name="row_header_channels">Channels</string>
-    <string name="group_all">All</string>
+    <string name="all_title">All</string>
     <string name="group_videos">Videos</string>
     <string name="recgroup_title">Recording Group</string>
     <string name="error_cannot_play">Error: Cannot play the video.</string>
@@ -39,6 +40,9 @@
     <string name="menu_comm_notskip">Do not Skip</string>
     <string name="title_select_audiosync">Adjust Audio Sync</string>
 
+    <string name="guide_channel">Channel</string>
+    <string name="title_chan_group">Channel Group:</string>
+    <string name="note_program_continuation">(cont)</string>
 
     <!-- Words to exclude from the start titles when sorting.
     Must be in UPPER CASE-->

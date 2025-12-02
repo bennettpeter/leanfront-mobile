@@ -129,7 +129,8 @@ public class VideoListFragment extends MainActivity.MyFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         MenuHost menuHost = requireActivity();
-        menuHost.addMenuProvider(menuProvider = new MenuProvider() {
+//        menuHost.addMenuProvider(menuProvider = new MenuProvider() {
+        menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
             }
@@ -145,15 +146,17 @@ public class VideoListFragment extends MainActivity.MyFragment {
             }
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                int id = menuItem.getItemId();
-                if (id == 0) {
-                    videoListModel.setRecGroup(menuItem.getTitle().toString());
-                    refresh();
-                    return true;
+                if (menuItem.getGroupId() == R.id.recgroup_group) {
+                    int id = menuItem.getItemId();
+                    if (id == 0) {
+                        videoListModel.setRecGroup(menuItem.getTitle().toString());
+                        refresh();
+                        return true;
+                    }
                 }
                 return false;
             }
-        },getViewLifecycleOwner());
+        };
     }
 
     public boolean navigateUp() {
@@ -194,7 +197,7 @@ public class VideoListFragment extends MainActivity.MyFragment {
         super.onResume();
         ((MainActivity)getActivity()).myFragment = this;
         if (menuProvider != null) {
-            getActivity().addMenuProvider(menuProvider);
+            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("MythTV");
         if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP)

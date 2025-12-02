@@ -14,6 +14,10 @@
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/menu_settings" />
         <item
+            android:id="@+id/nav_guide"
+            android:icon="@drawable/ic_guide"
+            android:title="@string/menu_guide" />
+        <item
             android:id="@+id/nav_upcoming"
             android:icon="@drawable/ic_data_table_24px"
             android:title="@string/menu_upcoming" />

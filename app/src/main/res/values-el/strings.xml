@@ -8,7 +8,7 @@
   <string name="menu_settings">Ρυθμίσεις</string>
   <string name="menu_show_all">Δείχνουν όλα</string>
   <string name="row_header_channels">Κανάλια</string>
-  <string name="group_all">Ολοι</string>
+  <string name="all_title">Ολοι</string>
   <string name="group_videos">Βίντεο</string>
   <string name="recgroup_title">Ομάδα εγγραφής</string>
   <string name="error_cannot_play">Σφάλμα: Δεν είναι δυνατή η αναπαραγωγή του βίντεο.</string>

@@ -1,0 +1,434 @@
+package org.mythtv.lfmobile.ui.guide;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
+
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.os.Build;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
+import com.bumptech.glide.request.RequestOptions;
+
+import org.mythtv.lfmobile.MainActivity;
+import org.mythtv.lfmobile.MyApplication;
+import org.mythtv.lfmobile.R;
+import org.mythtv.lfmobile.data.BackendCache;
+import org.mythtv.lfmobile.data.Settings;
+import org.mythtv.lfmobile.data.XmlNode;
+import org.mythtv.lfmobile.databinding.FragmentGuideBinding;
+import org.mythtv.lfmobile.databinding.ItemChannelBinding;
+import org.mythtv.lfmobile.databinding.ItemProgBinding;
+import org.mythtv.lfmobile.databinding.ItemTimeslotBinding;
+import org.mythtv.lfmobile.ui.videolist.VideoListModel;
+
+public class GuideFragment extends MainActivity.MyFragment {
+    private static final String TAG = "lfm";
+    private static final String CLASS = "GuideFragment";
+    private FragmentGuideBinding binding;
+    private GuideViewModel model;
+    private boolean internalScroll;
+    private MenuProvider menuProvider;
+
+
+
+//    public static GuideFragment newInstance() {
+//        return new GuideFragment();
+//    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        model = new ViewModelProvider(this).get(GuideViewModel.class);
+        binding = FragmentGuideBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        DividerItemDecoration dec1 = new DividerItemDecoration(binding.datelist.getContext(),
+                DividerItemDecoration.HORIZONTAL);
+        dec1.setDrawable(binding.datelist.getContext().getDrawable(R.drawable.vert_divider));
+        DividerItemDecoration dec2 = new DividerItemDecoration(binding.datelist.getContext(),
+                DividerItemDecoration.VERTICAL);
+        dec2.setDrawable(binding.datelist.getContext().getDrawable(R.drawable.horz_divider));
+
+        // Setup Date / Time lost along the top
+        final RecyclerView.Adapter dateAdapter = new TimeslotListAdapter(this);
+        binding.datelist.setAdapter(dateAdapter);
+        model.dateLiveData.observe(getViewLifecycleOwner(), (list) -> {
+            synchronized(model) {
+                dateAdapter.notifyDataSetChanged();
+            }
+        });
+        binding.datelist.addItemDecoration(dec1);
+        binding.datelist.addItemDecoration(dec2);
+        GridLayoutManager mgr1 = new GridLayoutManager(getContext(),model.TIMESLOTS);
+        binding.datelist.setLayoutManager(mgr1);
+
+//        binding.datelist.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (!internalScroll) {
+//                    internalScroll = true;
+//                    binding.scrollView.scrollBy(dx, dy);
+//                    internalScroll = false;
+//                }
+//            }
+//        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            binding.dateScrollView.setOnScrollChangeListener( (View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
+                {
+                    //                super.onScrolled(recyclerView, dx, dy);
+                    if (!internalScroll) {
+                        internalScroll = true;
+//                        binding.chanlist.scrollBy(scrollX-oldScrollX, scrollY-oldScrollY);
+//                        binding.scrollView.smoothScrollBy(scrollX-oldScrollX, 0);
+                        binding.scrollView.smoothScrollTo(scrollX, 0);
+                        internalScroll = false;
+                    }
+                }
+            });
+        }
+
+
+
+
+        // Set up Channel list  along the left
+        final RecyclerView.Adapter chanAdapter = new ChannelListAdapter(this);
+        binding.chanlist.setAdapter(chanAdapter);
+        model.chanLiveData.observe(getViewLifecycleOwner(), (list) -> {
+            synchronized(model) {
+                chanAdapter.notifyDataSetChanged();
+                binding.proglist.getAdapter().notifyDataSetChanged();
+           }
+        });
+        binding.chanlist.addItemDecoration(dec1);
+        binding.chanlist.addItemDecoration(dec2);
+
+        binding.chanlist.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (!internalScroll) {
+                    internalScroll = true;
+                    binding.proglist.scrollBy(dx, dy);
+                    internalScroll = false;
+                }
+            }
+        });
+
+
+        // Set up Program list grid at center
+        final RecyclerView.Adapter progAdapter = new ProgListAdapter(this);
+        binding.proglist.setAdapter(progAdapter);
+        model.progLiveData.observe(getViewLifecycleOwner(), (list) -> {
+            synchronized(model) {
+                progAdapter.notifyDataSetChanged();
+            }
+        });
+        binding.proglist.addItemDecoration(dec1);
+        binding.proglist.addItemDecoration(dec2);
+        GridLayoutManager mgr = new GridLayoutManager(getContext(),model.TIMESLOTS);
+        binding.proglist.setLayoutManager(mgr);
+
+        binding.proglist.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (!internalScroll) {
+                    internalScroll = true;
+                    binding.chanlist.scrollBy(dx, dy);
+//                    binding.datelist.scrollBy(dx, dy);
+                    internalScroll = false;
+                }
+            }
+        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            binding.scrollView.setOnScrollChangeListener( (View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
+           {
+    //                super.onScrolled(recyclerView, dx, dy);
+                    if (!internalScroll) {
+                        internalScroll = true;
+//                        binding.chanlist.scrollBy(scrollX-oldScrollX, scrollY-oldScrollY);
+//                        binding.datelist.scrollBy(scrollX-oldScrollX, 0);
+//                        binding.dateScrollView.smoothScrollBy(scrollX-oldScrollX, 0);
+                        binding.dateScrollView.smoothScrollTo(scrollX, 0);
+                        internalScroll = false;
+                    }
+                }
+            });
+        }
+
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+//        MenuHost menuHost = getActivity();
+//        menuHost.addMenuProvider(menuProvider = new MenuProvider() {
+        menuProvider = new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+            }
+
+            @Override
+            public void onPrepareMenu(@NonNull Menu menu) {
+                menu.removeGroup(R.id.changroup_group);
+                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && model.chanGroupNames != null) {
+                    for (int ix = 0; ix < model.chanGroupNames.size(); ix++)
+                        menu.add(R.id.changroup_group, ix, ix, model.chanGroupNames.get(ix));
+                }
+                MenuProvider.super.onPrepareMenu(menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getGroupId() == R.id.changroup_group) {
+                    model.chanGroupIx = menuItem.getItemId();
+                    model.chanGroupId = model.chanGroupIDs.get(model.chanGroupIx);
+                    SharedPreferences.Editor editor = Settings.getEditor();
+                    Settings.putString(editor, "chan_group", model.chanGroupNames.get(model.chanGroupIx));
+                    editor.commit();
+                    refresh();
+                    return true;
+                }
+                return false;
+            }
+        };
+//        },getViewLifecycleOwner());
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)getActivity()).myFragment = this;
+        if (menuProvider != null) {
+            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+        }
+        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        String group  = Settings.getString("chan_group");
+        if (group.isEmpty())
+            group = MyApplication.getAppContext().getString(R.string.all_title) + "\t";
+        bar.setSubtitle(group);
+        // We will refresh everything here
+        if (model.timeslotList.isEmpty()) {
+            refresh();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        ((MainActivity)getActivity()).myFragment = null;
+        if (menuProvider != null) {
+            getActivity().removeMenuProvider(menuProvider);
+            getActivity().invalidateMenu();
+        }
+        super.onPause();
+    }
+
+    void refresh() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+//        if (activity == null)
+//            return;
+        ActionBar bar = activity.getSupportActionBar();
+        String group  = Settings.getString("chan_group");
+        if (group.isEmpty())
+            group = MyApplication.getAppContext().getString(R.string.all_title) + "\t";
+        bar.setSubtitle(group);
+//        binding.dateScrollView.scrollTo(0,0);
+        binding.dateScrollView.fullScroll(View.FOCUS_LEFT);
+
+//        bar.setSubtitle(model.chanGroupNames.get(model.chanGroupIx));
+//        bar.setDisplayHomeAsUpEnabled(false);
+//            Handler handler = new Handler(Looper.getMainLooper());
+//            handler.postDelayed( () -> {
+//                binding.dateScrollView.scrollTo(model.displayStartPos * 256, 0);
+//            }, 5000);
+        model.refresh();
+    }
+
+    @Override
+    public void startFetch() {
+        refresh();
+    }
+
+    private static class TimeslotListAdapter extends RecyclerView.Adapter
+            <TimeslotViewHolder> {
+        private GuideFragment fragment;
+        protected TimeslotListAdapter(GuideFragment fragment) {
+            this.fragment = fragment;
+        }
+
+
+        @NonNull
+        @Override
+        public TimeslotViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            ItemTimeslotBinding binding
+                    = ItemTimeslotBinding.inflate(LayoutInflater.from(parent.getContext()));
+            return new TimeslotViewHolder(binding, fragment);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull TimeslotViewHolder holder, int position) {
+            if (position < fragment.model.timeslotList.size()) {
+                String item = fragment.model.timeslotList.get(position);
+                holder.timeText.setText(item);
+            }
+            else
+                holder.timeText.setText("");
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return fragment.model.TIMESLOTS;
+        }
+    }
+
+    private static class TimeslotViewHolder extends RecyclerView.ViewHolder {
+        private final TextView timeText;
+
+        public TimeslotViewHolder(ItemTimeslotBinding binding, GuideFragment fragment) {
+            super(binding.getRoot());
+            timeText = binding.timeText;
+        }
+    }
+
+    private static class ChannelListAdapter extends RecyclerView.Adapter
+            <ChannelViewHolder> {
+        private GuideFragment fragment;
+        protected ChannelListAdapter(GuideFragment fragment) {
+            this.fragment = fragment;
+        }
+
+
+        @NonNull
+        @Override
+        public ChannelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            ItemChannelBinding binding
+                    = ItemChannelBinding.inflate(LayoutInflater.from(parent.getContext()));
+            return new ChannelViewHolder(binding, fragment);
+
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ChannelViewHolder holder, int position) {
+            ChannelSlot slot = fragment.model.chanList.get(position);
+
+            if (slot.iconURL == null) {
+                holder.channelImage.setImageDrawable(null);
+            }
+            else {
+                try {
+                    String imageUrl = XmlNode.mythApiUrl(null, slot.iconURL);
+                    RequestOptions options = new RequestOptions();
+                    options.timeout(5000);
+                    String auth = BackendCache.getInstance().authorization;
+                    LazyHeaders.Builder lzhb = new LazyHeaders.Builder();
+                    if (auth != null && auth.length() > 0)
+                        lzhb.addHeader("Authorization", auth);
+                    GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
+
+                    Glide.with(fragment.getContext())
+                            .load(url)
+                            .apply(options)
+                            .into(holder.channelImage);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    holder.channelImage.setImageDrawable(null);
+                }
+            }
+            holder.channelText.setText(slot.chanNum + " " + slot.callSign);
+        }
+
+        @Override
+        public int getItemCount() {
+            return fragment.model.chanList.size();
+        }
+    }
+
+    private static class ChannelViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView channelImage;
+        private final TextView channelText;
+
+        public ChannelViewHolder(ItemChannelBinding binding, GuideFragment fragment) {
+            super(binding.getRoot());
+            channelImage = binding.channelImage;
+            channelText = binding.channelText;
+        }
+    }
+
+    private static class ProgListAdapter extends RecyclerView.Adapter
+            <ProgViewHolder> {
+        private GuideFragment fragment;
+        protected ProgListAdapter(GuideFragment fragment) {
+            this.fragment = fragment;
+        }
+
+
+        @NonNull
+        @Override
+        public ProgViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            ItemProgBinding binding
+                    = ItemProgBinding.inflate(LayoutInflater.from(parent.getContext()));
+            return new ProgViewHolder(binding, fragment);
+
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ProgViewHolder holder, int position) {
+            holder.progText.setText("TEST");
+            holder.progStatus.setText("STATUS");
+        }
+
+        @Override
+        public int getItemCount() {
+//            return 2 * fragment.model.TIMESLOTS;
+            return fragment.model.chanList.size() * fragment.model.TIMESLOTS;
+        }
+    }
+
+    private static class ProgViewHolder extends RecyclerView.ViewHolder {
+        private final TextView progStatus;
+        private final TextView progText;
+
+        public ProgViewHolder(ItemProgBinding binding, GuideFragment fragment) {
+            super(binding.getRoot());
+            progStatus = binding.progStatus;
+            progText = binding.progText;
+        }
+    }
+
+
+
+
+}

@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private NavController navController;
     public MyFragment myFragment;
+    public static MainActivity mainActivity;
     private static final String TAG = "lfm";
     static final String CLASS = "MainActivity";
     @Override
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             navController.navigate(dest.intValue());
             viewModel.navigate.setValue(0);
         });
+        mainActivity = this;
 
     }
 

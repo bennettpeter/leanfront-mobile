@@ -8,7 +8,7 @@
   <string name="menu_settings">Nastavení</string>
   <string name="menu_show_all">Ukažte vše</string>
   <string name="row_header_channels">Kanály</string>
-  <string name="group_all">Vše</string>
+  <string name="all_title">Vše</string>
   <string name="group_videos">Videa</string>
   <string name="recgroup_title">Nahrávací skupina</string>
   <string name="error_cannot_play">Chyba: Nelze přehrávat video.</string>
