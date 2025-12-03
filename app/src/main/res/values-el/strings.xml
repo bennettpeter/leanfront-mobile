@@ -6,6 +6,7 @@
   <string name="menu_refresh">Φρεσκάρω</string>
   <string name="menu_upcoming">Ανερχόμενος</string>
   <string name="menu_settings">Ρυθμίσεις</string>
+  <string name="menu_guide">Οδηγός</string>
   <string name="menu_show_all">Δείχνουν όλα</string>
   <string name="row_header_channels">Κανάλια</string>
   <string name="all_title">Ολοι</string>
@@ -35,6 +36,9 @@
   <string name="menu_comm_skip">Παραλείπω</string>
   <string name="menu_comm_notskip">Μην παραλείπετε</string>
   <string name="title_select_audiosync">Ρυθμίστε τον συγχρονισμό ήχου</string>
+  <string name="guide_channel">Κανάλι</string>
+  <string name="title_chan_group">Ομάδα καναλιών:</string>
+  <string name="note_program_continuation">(συνέχεια)</string>
   <string name="sort_exclude_1"> </string>
   <string name="sort_exclude_2"> </string>
   <string name="sort_exclude_3"> </string>

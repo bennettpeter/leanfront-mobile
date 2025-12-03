@@ -6,6 +6,7 @@
   <string name="menu_refresh">Rafraîchir</string>
   <string name="menu_upcoming">Prochain</string>
   <string name="menu_settings">Paramètres</string>
+  <string name="menu_guide">Guide</string>
   <string name="menu_show_all">Tout montrer</string>
   <string name="row_header_channels">Canaux</string>
   <string name="all_title">Tous</string>
@@ -35,6 +36,9 @@
   <string name="menu_comm_skip">Sauter</string>
   <string name="menu_comm_notskip">Ne sautez pas</string>
   <string name="title_select_audiosync">Ajuster la synchronisation audio</string>
+  <string name="guide_channel">Canal</string>
+  <string name="title_chan_group">Groupe de chaînes :</string>
+  <string name="note_program_continuation">(suite)</string>
   <string name="sort_exclude_1">SE</string>
   <string name="sort_exclude_2">ERÄS</string>
   <string name="sort_exclude_3">YKSI</string>

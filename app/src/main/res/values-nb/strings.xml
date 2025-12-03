@@ -6,6 +6,7 @@
   <string name="menu_refresh">Forfriske</string>
   <string name="menu_upcoming">Kommende</string>
   <string name="menu_settings">Innstillinger</string>
+  <string name="menu_guide">Guide</string>
   <string name="menu_show_all">Vis alt</string>
   <string name="row_header_channels">Kanaler</string>
   <string name="all_title">Alle</string>
@@ -35,6 +36,9 @@
   <string name="menu_comm_skip">Hopp over</string>
   <string name="menu_comm_notskip">Ikke hopp over</string>
   <string name="title_select_audiosync">Juster lydsynkronisering</string>
+  <string name="guide_channel">Kanal</string>
+  <string name="title_chan_group">Kanalgruppe:</string>
+  <string name="note_program_continuation">(forts.)</string>
   <string name="sort_exclude_1">DE</string>
   <string name="sort_exclude_2">EN</string>
   <string name="sort_exclude_3"> </string>

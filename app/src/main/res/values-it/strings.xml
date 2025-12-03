@@ -6,6 +6,7 @@
   <string name="menu_refresh">Rinfrescare</string>
   <string name="menu_upcoming">Imminente</string>
   <string name="menu_settings">Impostazioni</string>
+  <string name="menu_guide">Guida</string>
   <string name="menu_show_all">Mostra tutto</string>
   <string name="row_header_channels">Canali</string>
   <string name="all_title">Tutto</string>
@@ -35,6 +36,9 @@
   <string name="menu_comm_skip">Saltare</string>
   <string name="menu_comm_notskip">Non saltare</string>
   <string name="title_select_audiosync">Regola la sincronizzazione audio</string>
+  <string name="guide_channel">Canale</string>
+  <string name="title_chan_group">Gruppo di canali:</string>
+  <string name="note_program_continuation">(continua)</string>
   <string name="sort_exclude_1">IL</string>
   <string name="sort_exclude_2">UN</string>
   <string name="sort_exclude_3"> </string>

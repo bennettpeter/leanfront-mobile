@@ -6,6 +6,7 @@
   <string name="menu_refresh">Atualizar</string>
   <string name="menu_upcoming">Por vir</string>
   <string name="menu_settings">Configurações</string>
+  <string name="menu_guide">Guia</string>
   <string name="menu_show_all">Mostre tudo</string>
   <string name="row_header_channels">Canais</string>
   <string name="all_title">Todos</string>
@@ -35,6 +36,9 @@
   <string name="menu_comm_skip">Pular</string>
   <string name="menu_comm_notskip">Não pule</string>
   <string name="title_select_audiosync">Ajuste a sincronização de áudio</string>
+  <string name="guide_channel">Canal</string>
+  <string name="title_chan_group">Grupo de canais:</string>
+  <string name="note_program_continuation">(cont.)</string>
   <string name="sort_exclude_1">O</string>
   <string name="sort_exclude_2">UM</string>
   <string name="sort_exclude_3"> </string>
