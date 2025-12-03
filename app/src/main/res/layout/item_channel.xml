@@ -2,32 +2,30 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="64dp">
+    android:layout_height="68dp">
 
     <ImageView
         android:id="@+id/channel_image"
         android:layout_width="98dp"
         android:layout_height="48dp"
+        android:padding="4dp"
         android:scaleType="centerInside"
-        android:padding="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/channel_text"
         android:layout_width="98dp"
-        android:layout_height="16dp"
+        android:layout_height="20dp"
         android:ellipsize="end"
         android:gravity="center"
+        android:textSize="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/channel_image" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

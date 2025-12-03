@@ -6,47 +6,27 @@ import android.content.Context;
 import org.mythtv.lfmobile.R;
 
 import java.text.DateFormat;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
 public class ProgSlot extends RowSlot {
-    public int chanId = -1;
-    public int chanNum = -1;
-    public String callSign;
-    public String chanDetails;
-    public String chanGroup;
+    public static final int POS_LEFT = 1;
+    public static final int POS_MIDDLE = 2;
+    public static final int POS_RIGHT = 3;
+    private static DateFormat timeFormatter;
+    private static DateFormat dateFormatter;
+    private static DateFormat dayFormatter;
     public Date timeSlot;       // Time of this grid position
     public Program program;
     public Program program2;    // In case of 15 minute programs
     // position in grid.
     public int position = 0;
-    public static final int POS_LEFT = 1;
-    public static final int POS_MIDDLE = 2;
-    public static final int POS_RIGHT = 3;
 
-    private static DateFormat timeFormatter;
-    private static DateFormat dateFormatter;
-    private static DateFormat dayFormatter;
-
-    public ProgSlot(int cellType) {
-        super(cellType);
-    }
-
-    public ProgSlot(int cellType, int position, Date timeSlot)
-    {
+    public ProgSlot(int cellType, int position, Date timeSlot) {
         super(cellType);
         this.position = position;
         this.timeSlot = timeSlot;
-    }
-
-    public ProgSlot(int chanId, int chanNum, String callSign, String chanDetails) {
-        super(CELL_CHANNEL);
-        this.chanId = chanId;
-        this.chanNum = chanNum;
-        this.callSign = callSign;
-        this.chanDetails = chanDetails;
     }
 
     public String getGuideText(Context context) {
@@ -58,24 +38,10 @@ public class ProgSlot extends RowSlot {
         StringBuilder build = new StringBuilder();
         try {
             boolean titleDone = false;
-            if (chanDetails != null
-                    && (cellType == CELL_CHANNEL || cellType == CELL_SEARCHRESULT))
-                build.append(chanDetails).append("\n");
-            if (timeSlot != null && cellType == CELL_TIMESLOT) {
-                Date endTime = new Date(timeSlot.getTime() + GuideViewModel.TIMESLOT_SIZE *60000);
-                build.append(timeFormatter.format(timeSlot)).append(" - ").append(timeFormatter.format(endTime));
-            }
             if (timeSlot != null && cellType == CELL_SEARCHRESULT)
                 build.append(dayFormatter.format(timeSlot))
                         .append(dateFormatter.format(timeSlot)).append(' ')
                         .append(timeFormatter.format(timeSlot)).append('\n');
-            if (timeSlot != null && cellType == CELL_TIMESELECTOR) {
-                build.append(context.getString(R.string.title_chan_group))
-                        .append(" ").append(chanGroup).append('\n')
-                        .append(dayFormatter.format(timeSlot))
-                        .append(dateFormatter.format(timeSlot)).append(' ')
-                        .append(timeFormatter.format(timeSlot)).append('\n');
-            }
             if (cellType == CELL_PROGRAM || cellType == CELL_SEARCHRESULT) {
                 if (program != null) {
                     if (program2 != null)

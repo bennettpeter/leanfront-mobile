@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId "org.mythtv.leanfront"
-        minSdk 21
+        minSdk 23
         targetSdk 35
         versionCode gitinfo.ext.version
         versionName gitinfo.ext.versionName

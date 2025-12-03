@@ -20,42 +20,25 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class GuideViewModel extends ViewModel {
-    //    public static final int TIMESLOTS = 8;
-//    public static final int COLUMNS = TIMESLOTS+2;
     public static final int TIMESLOT_SIZE = 30; //minutes
-    //    public static final int TIME_ROW_INTERVAL = 8;
+    // 8 time slots = 4 hours of guide data at a time
     public static final int TIMESLOTS = 8;
-//    public static final int TIMESLOTS = 60 * 24 / TIMESLOT_SIZE * DATE_RANGE;
-
-//    MutableLiveData<ArrayList<GuideSlot>> mutableLiveData;
-//    private final ArrayList<GuideSlot> guideSlots = new ArrayList<>();
-
+    private static DateFormat mTimeFormatter;
+    private static DateFormat mDateFormatter;
+    private static DateFormat mDayFormatter;
     // time of first entry
     Date guideStartTime;
-//    Date displayStartTime;
-//    int displayStartPos;
     int chanGroupIx;
     int chanGroupId;
     ArrayList<String> chanGroupNames;
     ArrayList<Integer> chanGroupIDs;
-
-    // An arraylist for each time slot
-    // Each entry of timeSlots is an arraylist of all channels for that slot
-    private ArrayList<ArrayList<ProgSlot>> progList = new ArrayList<>();
-    MutableLiveData<ArrayList<ArrayList<ProgSlot>>> progLiveData = new MutableLiveData<>();
     ArrayList<ChannelSlot> chanList = new ArrayList<>();
     MutableLiveData<ArrayList<ChannelSlot>> chanLiveData = new MutableLiveData<>();
     ArrayList<String> timeslotList = new ArrayList<>();
     MutableLiveData<ArrayList<String>> dateLiveData = new MutableLiveData<>();
+    ArrayList<ProgSlot> progList = new ArrayList<>();
+    MutableLiveData<ArrayList<ProgSlot>> progLiveData = new MutableLiveData<>();
     String allTitle = "";
-    private static DateFormat mTimeFormatter;
-    private static DateFormat mDateFormatter;
-    private static DateFormat mDayFormatter;
-
-    // Program slot data
-    // One day's data - 48 entries for each channel
-//    private ArrayList<GuideSlot> guiddeList = new ArrayList<>();
-
 
     public GuideViewModel() {
         Context context = MyApplication.getAppContext();
@@ -64,39 +47,34 @@ public class GuideViewModel extends ViewModel {
         loadDefaultGroup();
     }
 
-    void refresh() {
-        loadTimeslots();
+    void refresh(boolean resetTimeslots) {
+        loadTimeslots(resetTimeslots);
         loadChanGroups();
     }
 
-    synchronized void loadTimeslots() {
+    synchronized void loadTimeslots(boolean resetTimeslots) {
         GregorianCalendar now = new GregorianCalendar();
+        if (guideStartTime != null && !resetTimeslots) {
+            now.setTime(guideStartTime);
+        }
         int minute = now.get(Calendar.MINUTE);
-        if (minute < TIMESLOT_SIZE)
-            minute = 0;
-        else
-            minute = TIMESLOT_SIZE;
+        if (minute < TIMESLOT_SIZE) minute = 0;
+        else minute = TIMESLOT_SIZE;
         now.set(Calendar.SECOND, 0);
         now.set(Calendar.MILLISECOND, 0);
         now.set(Calendar.MINUTE, minute);
         guideStartTime = new Date(now.getTimeInMillis());
-//        now.set(Calendar.HOUR_OF_DAY, 0);
-//        now.set(Calendar.MINUTE, 0);
-//        guideStartTime = new Date(now.getTimeInMillis());
         if (mTimeFormatter == null) {
             Context context = MyApplication.getAppContext();
             mTimeFormatter = android.text.format.DateFormat.getTimeFormat(context);
             mDateFormatter = android.text.format.DateFormat.getDateFormat(context);
             mDayFormatter = new SimpleDateFormat("EEE ");
         }
-        Date time = guideStartTime;
+        Date time = new Date(guideStartTime.getTime());
         timeslotList.clear();
         for (int ix = 0; ix < TIMESLOTS; ix++) {
-            timeslotList.add(mDayFormatter.format(time) + mDateFormatter.format(time)
-                    + " " + mTimeFormatter.format(time));
-//            if (time.equals(displayStartTime))
-//                displayStartPos = timeslotList.size() - 2;
-            time.setTime(time.getTime() + TIMESLOT_SIZE*60*1000);
+            timeslotList.add(mDayFormatter.format(time) + mDateFormatter.format(time) + " " + mTimeFormatter.format(time));
+            time.setTime(time.getTime() + TIMESLOT_SIZE * 60 * 1000);
         }
         dateLiveData.postValue(timeslotList);
     }
@@ -104,27 +82,24 @@ public class GuideViewModel extends ViewModel {
     synchronized void loadChanGroups() {
         AsyncBackendCall call = new AsyncBackendCall((caller) -> {
             XmlNode result = caller.getXmlResult();
-            if (result == null)
-                return;
+            if (result == null) return;
             loadDefaultGroup();
             XmlNode groupNode = null;
             for (; ; ) {
                 if (groupNode == null)
                     groupNode = result.getNode("ChannelGroups").getNode("ChannelGroup");
-                else
-                    groupNode = groupNode.getNextSibling();
-                if (groupNode == null)
-                    break;
-                chanGroupIDs.add(groupNode.getInt("GroupId",0));
+                else groupNode = groupNode.getNextSibling();
+                if (groupNode == null) break;
+                chanGroupIDs.add(groupNode.getInt("GroupId", 0));
                 chanGroupNames.add(groupNode.getString("Name"));
             }
             String defGroupName = Settings.getString("chan_group");
             chanGroupIx = chanGroupNames.indexOf(defGroupName);
-            if (chanGroupIx < 0)
-                chanGroupIx = 0;
+            if (chanGroupIx < 0) chanGroupIx = 0;
             chanGroupId = chanGroupIDs.get(chanGroupIx);
-            loadChannels();
+            loadGuide();
         });
+        call.mainThread = false;
         call.execute(Action.CHAN_GROUPS);
     }
 
@@ -135,51 +110,93 @@ public class GuideViewModel extends ViewModel {
         chanGroupNames.add(MyApplication.getAppContext().getString(R.string.all_title) + "\t");
     }
 
-    Date getSlotDate(int slot) {
-        if (slot >= timeslotList.size())
-            slot = timeslotList.size() - 1;
-        if (slot < 0)
-            slot = 0;
-        long time = guideStartTime.getTime() + slot * (TIMESLOT_SIZE*60*1000);
-        return new Date(time);
-    }
-
-    int getDateSlot(Date date) {
-        long slot = ( date.getTime() - guideStartTime.getTime() ) / (TIMESLOT_SIZE*60*1000);
-        if (slot >= timeslotList.size())
-            slot = timeslotList.size() - 1;
-        if (slot < 0)
-            slot = 0;
-        return (int) slot;
-    }
-
-    synchronized private void loadChannels() {
+    synchronized private void loadGuide() {
         AsyncBackendCall call = new AsyncBackendCall((caller) -> {
-            XmlNode node = caller.getXmlResult();
-            if (node == null)
-                return;
-            chanList.clear();
-            node = node.getNode(new String [] {"Channels","ChannelInfo"},0);
-            while (node != null) {
-                ChannelSlot entry = new ChannelSlot();
-                entry.chanId = node.getInt("ChanId",-1);
-                entry.chanNum = node.getString("ChanNum");
-                entry.callSign = node.getString("CallSign");
-                entry.iconURL = node.getString("IconURL");
-                chanList.add(entry);
-                node = node.getNextSibling();
-            }
-//            ChannelSlot entry = new ChannelSlot();
-//            entry.chanId = 0;
-//            entry.chanNum = "";
-//            entry.callSign = "";
-//            chanList.add(entry);
+            XmlNode result = caller.getXmlResult();
+            if (result == null) return;
+            loadGuideData(result, 0);
             chanLiveData.postValue(chanList);
+            progLiveData.postValue(progList);
         });
-        // Dates here are 1 and 2 minute past midnight in 1970
-        // This to get a channel list without any guide data
-        call.params = new Object[] {new Integer(chanGroupId), new Date(60000L), new Date(120000L)};
+        Date guideEndTime = new Date(guideStartTime.getTime() + TIMESLOT_SIZE * TIMESLOTS * 60000);
+        call.params = new Object[]{Integer.valueOf(chanGroupId), guideStartTime, guideEndTime};
+        call.mainThread = false;
         call.execute(Action.GUIDE);
+    }
+
+    void loadGuideData(XmlNode result, int start) {
+        // If the user has changed time period or channel group,
+        // throw away furhter use of the old group or time slot
+        if (result == null)
+            return;
+        chanList.clear();
+        progList.clear();
+        XmlNode chanNode = null;
+        for (; ; ) {
+            if (chanNode == null)
+                chanNode = result.getNode("Channels").getNode("ChannelInfo", start);
+            else chanNode = chanNode.getNextSibling();
+            if (chanNode == null) break;
+
+            ChannelSlot entry = new ChannelSlot();
+            entry.chanId = chanNode.getInt("ChanId", -1);
+            entry.chanNum = chanNode.getString("ChanNum");
+            entry.callSign = chanNode.getString("CallSign");
+            entry.iconURL = chanNode.getString("IconURL");
+            chanList.add(entry);
+            int adapterPos = progList.size();
+            // Add an empty row to the progList
+            Date timeSlot = new Date(guideStartTime.getTime());
+            for (int count = 0; count < TIMESLOTS; count++) {
+                int pos;
+                if (count == 0)
+                    pos = ProgSlot.POS_LEFT;
+                else if (count == TIMESLOTS - 1)
+                    pos = ProgSlot.POS_RIGHT;
+                else
+                    pos = ProgSlot.POS_MIDDLE;
+                progList.add(new ProgSlot(ProgSlot.CELL_PROGRAM,pos,new Date(timeSlot.getTime())));
+                timeSlot.setTime(timeSlot.getTime()+30*60000);
+            }
+
+            XmlNode programNode = null;
+            for (; ; ) {
+                if (programNode == null)
+                    programNode = chanNode.getNode("Programs").getNode("Program");
+                else programNode = programNode.getNextSibling();
+                if (programNode == null) break;
+                Program program = new Program(programNode, chanNode);
+                if (program.startTime == null || program.endTime == null) continue;
+                long lPos = (program.startTime.getTime() - guideStartTime.getTime()) / (TIMESLOT_SIZE * 60);
+                float fPos = (float) lPos / 1000.0f;
+                // Start position is the slot wherein the show starts.
+                int startPos = (int) (fPos);
+                if (startPos >= TIMESLOTS) continue;
+                if (startPos < 0) startPos = 0;
+
+                lPos = (program.endTime.getTime() - guideStartTime.getTime()) / (TIMESLOT_SIZE * 60);
+                fPos = (float) lPos / 1000.0f;
+                // End position is the slot before the one where the show ends
+                // unless it ends in the same slot as it starts.
+                int endPos = (int) (fPos);
+                if (endPos <= 0) continue;
+                if (endPos >= TIMESLOTS) endPos = TIMESLOTS;
+                if (endPos == startPos) ++endPos;
+
+                for (int ix = adapterPos + startPos; ix < adapterPos + endPos; ix++) {
+                    ProgSlot slot = progList.get(ix);
+                    if (slot.program == null) slot.program = program;
+                    else if (slot.program2 == null) {
+                        if (program.startTime.after(slot.program.startTime))
+                            slot.program2 = program;
+                        else {
+                            slot.program2 = slot.program;
+                            slot.program = program;
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

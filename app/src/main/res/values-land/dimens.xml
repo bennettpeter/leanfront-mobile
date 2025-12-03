@@ -3,4 +3,6 @@
     <dimen name="fab_margin">48dp</dimen>
     <dimen name="item_transform_image_length">142dp</dimen>
     <dimen name="item_transform_image_height">80dp</dimen>
+    <dimen name="guide_chans">12</dimen>
+    <dimen name="guide_progs">88</dimen>
 </resources>

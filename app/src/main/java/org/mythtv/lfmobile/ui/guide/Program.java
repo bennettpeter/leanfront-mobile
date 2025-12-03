@@ -8,6 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Program {
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
+    private static final String TAG = "lfe";
+    private static final String CLASS = "Program";
     public int chanId;
     public Date startTime;      // Start time of show
     public Date endTime;        // End time of show
@@ -17,9 +20,6 @@ public class Program {
     public int episode;
     public String recordingStatus;
     public int recType;
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
-    private static final String TAG = "lfe";
-    private static final String CLASS = "Program";
 
     public Program(XmlNode programNode, XmlNode chanNode) {
         try {

@@ -2,20 +2,18 @@ package org.mythtv.lfmobile.ui.guide;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,7 +45,9 @@ import org.mythtv.lfmobile.databinding.FragmentGuideBinding;
 import org.mythtv.lfmobile.databinding.ItemChannelBinding;
 import org.mythtv.lfmobile.databinding.ItemProgBinding;
 import org.mythtv.lfmobile.databinding.ItemTimeslotBinding;
-import org.mythtv.lfmobile.ui.videolist.VideoListModel;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class GuideFragment extends MainActivity.MyFragment {
     private static final String TAG = "lfm";
@@ -56,77 +57,49 @@ public class GuideFragment extends MainActivity.MyFragment {
     private boolean internalScroll;
     private MenuProvider menuProvider;
 
-
-
-//    public static GuideFragment newInstance() {
-//        return new GuideFragment();
-//    }
-
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         model = new ViewModelProvider(this).get(GuideViewModel.class);
         binding = FragmentGuideBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        DividerItemDecoration dec1 = new DividerItemDecoration(binding.datelist.getContext(),
-                DividerItemDecoration.HORIZONTAL);
+        DividerItemDecoration dec1 = new DividerItemDecoration(binding.datelist.getContext(), DividerItemDecoration.HORIZONTAL);
         dec1.setDrawable(binding.datelist.getContext().getDrawable(R.drawable.vert_divider));
-        DividerItemDecoration dec2 = new DividerItemDecoration(binding.datelist.getContext(),
-                DividerItemDecoration.VERTICAL);
+        DividerItemDecoration dec2 = new DividerItemDecoration(binding.datelist.getContext(), DividerItemDecoration.VERTICAL);
         dec2.setDrawable(binding.datelist.getContext().getDrawable(R.drawable.horz_divider));
 
         // Setup Date / Time lost along the top
         final RecyclerView.Adapter dateAdapter = new TimeslotListAdapter(this);
         binding.datelist.setAdapter(dateAdapter);
         model.dateLiveData.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized(model) {
+            synchronized (model) {
                 dateAdapter.notifyDataSetChanged();
             }
         });
         binding.datelist.addItemDecoration(dec1);
         binding.datelist.addItemDecoration(dec2);
-        GridLayoutManager mgr1 = new GridLayoutManager(getContext(),model.TIMESLOTS);
+        GridLayoutManager mgr1 = new GridLayoutManager(getContext(), model.TIMESLOTS);
         binding.datelist.setLayoutManager(mgr1);
 
-//        binding.datelist.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                if (!internalScroll) {
-//                    internalScroll = true;
-//                    binding.scrollView.scrollBy(dx, dy);
-//                    internalScroll = false;
-//                }
-//            }
-//        });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            binding.dateScrollView.setOnScrollChangeListener( (View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
-                {
-                    //                super.onScrolled(recyclerView, dx, dy);
-                    if (!internalScroll) {
-                        internalScroll = true;
-//                        binding.chanlist.scrollBy(scrollX-oldScrollX, scrollY-oldScrollY);
-//                        binding.scrollView.smoothScrollBy(scrollX-oldScrollX, 0);
-                        binding.scrollView.smoothScrollTo(scrollX, 0);
-                        internalScroll = false;
-                    }
+        binding.dateScrollView.setOnScrollChangeListener((View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
+            {
+                if (!internalScroll) {
+                    internalScroll = true;
+                    binding.scrollView.smoothScrollTo(scrollX, 0);
+                    internalScroll = false;
                 }
-            });
-        }
-
-
+            }
+        });
 
 
         // Set up Channel list  along the left
         final RecyclerView.Adapter chanAdapter = new ChannelListAdapter(this);
         binding.chanlist.setAdapter(chanAdapter);
         model.chanLiveData.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized(model) {
+            synchronized (model) {
                 chanAdapter.notifyDataSetChanged();
                 binding.proglist.getAdapter().notifyDataSetChanged();
-           }
+            }
         });
         binding.chanlist.addItemDecoration(dec1);
         binding.chanlist.addItemDecoration(dec2);
@@ -143,18 +116,18 @@ public class GuideFragment extends MainActivity.MyFragment {
             }
         });
 
-
         // Set up Program list grid at center
         final RecyclerView.Adapter progAdapter = new ProgListAdapter(this);
         binding.proglist.setAdapter(progAdapter);
         model.progLiveData.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized(model) {
+            synchronized (model) {
                 progAdapter.notifyDataSetChanged();
+                binding.progressBar.setVisibility(View.GONE);
             }
         });
         binding.proglist.addItemDecoration(dec1);
         binding.proglist.addItemDecoration(dec2);
-        GridLayoutManager mgr = new GridLayoutManager(getContext(),model.TIMESLOTS);
+        GridLayoutManager mgr = new GridLayoutManager(getContext(), model.TIMESLOTS);
         binding.proglist.setLayoutManager(mgr);
 
         binding.proglist.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -164,27 +137,20 @@ public class GuideFragment extends MainActivity.MyFragment {
                 if (!internalScroll) {
                     internalScroll = true;
                     binding.chanlist.scrollBy(dx, dy);
-//                    binding.datelist.scrollBy(dx, dy);
                     internalScroll = false;
                 }
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            binding.scrollView.setOnScrollChangeListener( (View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
-           {
-    //                super.onScrolled(recyclerView, dx, dy);
-                    if (!internalScroll) {
-                        internalScroll = true;
-//                        binding.chanlist.scrollBy(scrollX-oldScrollX, scrollY-oldScrollY);
-//                        binding.datelist.scrollBy(scrollX-oldScrollX, 0);
-//                        binding.dateScrollView.smoothScrollBy(scrollX-oldScrollX, 0);
-                        binding.dateScrollView.smoothScrollTo(scrollX, 0);
-                        internalScroll = false;
-                    }
+        binding.scrollView.setOnScrollChangeListener((View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
+            {
+                if (!internalScroll) {
+                    internalScroll = true;
+                    binding.dateScrollView.smoothScrollTo(scrollX, 0);
+                    internalScroll = false;
                 }
-            });
-        }
+            }
+        });
 
         return root;
     }
@@ -192,8 +158,6 @@ public class GuideFragment extends MainActivity.MyFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        MenuHost menuHost = getActivity();
-//        menuHost.addMenuProvider(menuProvider = new MenuProvider() {
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -217,37 +181,55 @@ public class GuideFragment extends MainActivity.MyFragment {
                     SharedPreferences.Editor editor = Settings.getEditor();
                     Settings.putString(editor, "chan_group", model.chanGroupNames.get(model.chanGroupIx));
                     editor.commit();
-                    refresh();
+                    refresh(true);
                     return true;
                 }
                 return false;
             }
         };
-//        },getViewLifecycleOwner());
-
+        binding.dateSelect.setOnClickListener((v) -> {
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(model.guideStartTime);
+            DatePickerDialog dlgDate = new DatePickerDialog(getContext(), (dpView, yy, mm, dd) -> {
+                cal.set(Calendar.YEAR, yy);
+                cal.set(Calendar.MONTH, mm);
+                cal.set(Calendar.DAY_OF_MONTH, dd);
+                TimePickerDialog dlgTime = new TimePickerDialog(getContext(), (tpView, hh, min) -> {
+                    cal.set(Calendar.HOUR_OF_DAY, hh);
+                    cal.set(Calendar.MINUTE, min);
+                    model.guideStartTime.setTime(cal.getTimeInMillis());
+                    refresh(false);
+                }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
+                dlgTime.show();
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            DatePicker picker = dlgDate.getDatePicker();
+            picker.setMinDate(System.currentTimeMillis() - 28l * 24 * 60 * 60000);
+            picker.setMaxDate(System.currentTimeMillis() + 28l * 24 * 60 * 60000);
+            dlgDate.show();
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).myFragment = this;
+        ((MainActivity) getActivity()).myFragment = this;
         if (menuProvider != null) {
-            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+            getActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
         }
         ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        String group  = Settings.getString("chan_group");
+        String group = Settings.getString("chan_group");
         if (group.isEmpty())
             group = MyApplication.getAppContext().getString(R.string.all_title) + "\t";
         bar.setSubtitle(group);
         // We will refresh everything here
         if (model.timeslotList.isEmpty()) {
-            refresh();
+            refresh(true);
         }
     }
 
     @Override
     public void onPause() {
-        ((MainActivity)getActivity()).myFragment = null;
+        ((MainActivity) getActivity()).myFragment = null;
         if (menuProvider != null) {
             getActivity().removeMenuProvider(menuProvider);
             getActivity().invalidateMenu();
@@ -255,35 +237,26 @@ public class GuideFragment extends MainActivity.MyFragment {
         super.onPause();
     }
 
-    void refresh() {
+    void refresh(boolean resetTimeslots) {
+        binding.progressBar.setVisibility(View.VISIBLE);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-//        if (activity == null)
-//            return;
         ActionBar bar = activity.getSupportActionBar();
-        String group  = Settings.getString("chan_group");
+        String group = Settings.getString("chan_group");
         if (group.isEmpty())
             group = MyApplication.getAppContext().getString(R.string.all_title) + "\t";
         bar.setSubtitle(group);
-//        binding.dateScrollView.scrollTo(0,0);
         binding.dateScrollView.fullScroll(View.FOCUS_LEFT);
-
-//        bar.setSubtitle(model.chanGroupNames.get(model.chanGroupIx));
-//        bar.setDisplayHomeAsUpEnabled(false);
-//            Handler handler = new Handler(Looper.getMainLooper());
-//            handler.postDelayed( () -> {
-//                binding.dateScrollView.scrollTo(model.displayStartPos * 256, 0);
-//            }, 5000);
-        model.refresh();
+        model.refresh(resetTimeslots);
     }
 
     @Override
     public void startFetch() {
-        refresh();
+        refresh(true);
     }
 
-    private static class TimeslotListAdapter extends RecyclerView.Adapter
-            <TimeslotViewHolder> {
+    private static class TimeslotListAdapter extends RecyclerView.Adapter<TimeslotViewHolder> {
         private GuideFragment fragment;
+
         protected TimeslotListAdapter(GuideFragment fragment) {
             this.fragment = fragment;
         }
@@ -292,8 +265,7 @@ public class GuideFragment extends MainActivity.MyFragment {
         @NonNull
         @Override
         public TimeslotViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ItemTimeslotBinding binding
-                    = ItemTimeslotBinding.inflate(LayoutInflater.from(parent.getContext()));
+            ItemTimeslotBinding binding = ItemTimeslotBinding.inflate(LayoutInflater.from(parent.getContext()));
             return new TimeslotViewHolder(binding, fragment);
         }
 
@@ -302,10 +274,27 @@ public class GuideFragment extends MainActivity.MyFragment {
             if (position < fragment.model.timeslotList.size()) {
                 String item = fragment.model.timeslotList.get(position);
                 holder.timeText.setText(item);
-            }
-            else
-                holder.timeText.setText("");
-
+                if (position == 0) {
+                    holder.leftText.setText("<<");
+                    holder.leftText.setOnClickListener((v) -> {
+                        Handler h = new Handler(Looper.getMainLooper());
+                        h.postDelayed(() -> {
+                            fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() - GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
+                            fragment.refresh(false);
+                        }, 100);
+                    });
+                } else holder.leftText.setText(null);
+                if (position == fragment.model.timeslotList.size() - 1) {
+                    holder.rightText.setText(">>");
+                    holder.rightText.setOnClickListener((v) -> {
+                        Handler h = new Handler(Looper.getMainLooper());
+                        h.postDelayed(() -> {
+                            fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() + GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
+                            fragment.refresh(false);
+                        }, 100);
+                    });
+                } else holder.rightText.setText(null);
+            } else holder.timeText.setText("");
         }
 
         @Override
@@ -316,16 +305,20 @@ public class GuideFragment extends MainActivity.MyFragment {
 
     private static class TimeslotViewHolder extends RecyclerView.ViewHolder {
         private final TextView timeText;
+        private final TextView leftText;
+        private final TextView rightText;
 
         public TimeslotViewHolder(ItemTimeslotBinding binding, GuideFragment fragment) {
             super(binding.getRoot());
             timeText = binding.timeText;
+            leftText = binding.leftText;
+            rightText = binding.rightText;
         }
     }
 
-    private static class ChannelListAdapter extends RecyclerView.Adapter
-            <ChannelViewHolder> {
+    private static class ChannelListAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
         private GuideFragment fragment;
+
         protected ChannelListAdapter(GuideFragment fragment) {
             this.fragment = fragment;
         }
@@ -334,34 +327,26 @@ public class GuideFragment extends MainActivity.MyFragment {
         @NonNull
         @Override
         public ChannelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ItemChannelBinding binding
-                    = ItemChannelBinding.inflate(LayoutInflater.from(parent.getContext()));
+            ItemChannelBinding binding = ItemChannelBinding.inflate(LayoutInflater.from(parent.getContext()));
             return new ChannelViewHolder(binding, fragment);
-
         }
 
         @Override
         public void onBindViewHolder(@NonNull ChannelViewHolder holder, int position) {
             ChannelSlot slot = fragment.model.chanList.get(position);
-
             if (slot.iconURL == null) {
                 holder.channelImage.setImageDrawable(null);
-            }
-            else {
+            } else {
                 try {
                     String imageUrl = XmlNode.mythApiUrl(null, slot.iconURL);
                     RequestOptions options = new RequestOptions();
                     options.timeout(5000);
                     String auth = BackendCache.getInstance().authorization;
                     LazyHeaders.Builder lzhb = new LazyHeaders.Builder();
-                    if (auth != null && auth.length() > 0)
-                        lzhb.addHeader("Authorization", auth);
+                    if (auth != null && auth.length() > 0) lzhb.addHeader("Authorization", auth);
                     GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
 
-                    Glide.with(fragment.getContext())
-                            .load(url)
-                            .apply(options)
-                            .into(holder.channelImage);
+                    Glide.with(fragment.getContext()).load(url).apply(options).into(holder.channelImage);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     holder.channelImage.setImageDrawable(null);
@@ -387,32 +372,36 @@ public class GuideFragment extends MainActivity.MyFragment {
         }
     }
 
-    private static class ProgListAdapter extends RecyclerView.Adapter
-            <ProgViewHolder> {
+    private static class ProgListAdapter extends RecyclerView.Adapter<ProgViewHolder> {
         private GuideFragment fragment;
+
         protected ProgListAdapter(GuideFragment fragment) {
             this.fragment = fragment;
         }
 
-
         @NonNull
         @Override
         public ProgViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ItemProgBinding binding
-                    = ItemProgBinding.inflate(LayoutInflater.from(parent.getContext()));
+            ItemProgBinding binding = ItemProgBinding.inflate(LayoutInflater.from(parent.getContext()));
             return new ProgViewHolder(binding, fragment);
-
         }
 
         @Override
         public void onBindViewHolder(@NonNull ProgViewHolder holder, int position) {
-            holder.progText.setText("TEST");
-            holder.progStatus.setText("STATUS");
+            if (fragment.model.progList != null && fragment.model.progList.size() > position) {
+                ProgSlot card = fragment.model.progList.get(position);
+                holder.progText.setText(card.getGuideText(fragment.getContext()));
+                String status = null;
+                if (card.program != null && card.program.recordingStatus != null)
+                    status = card.program.recordingStatus;
+                if (card.program2 != null && card.program2.recordingStatus != null)
+                    status = (status == null ? "(2)" : status + '/') + card.program2.recordingStatus;
+                holder.progStatus.setText(status);
+            }
         }
 
         @Override
         public int getItemCount() {
-//            return 2 * fragment.model.TIMESLOTS;
             return fragment.model.chanList.size() * fragment.model.TIMESLOTS;
         }
     }
@@ -427,8 +416,5 @@ public class GuideFragment extends MainActivity.MyFragment {
             progText = binding.progText;
         }
     }
-
-
-
 
 }

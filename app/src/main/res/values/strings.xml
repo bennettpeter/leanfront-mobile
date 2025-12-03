@@ -41,6 +41,7 @@
     <string name="title_select_audiosync">Adjust Audio Sync</string>
 
     <string name="guide_channel">Channel</string>
+    <string name="guide_select" translatable="false">📅🕒</string>
     <string name="title_chan_group">Channel Group:</string>
     <string name="note_program_continuation">(cont)</string>
 
@@ -79,12 +80,12 @@
     <string name="pref_ff_title">Audio Decode</string>
     <string name="pref_ff_video_title">Video Decode</string>
     <string name="pref_decode_auto">Auto select</string>
-<!--    <string name="pref_audio_auto_desc">Use Mediacodec where possible, otherwise use FFmpeg.</string>-->
+    <!--    <string name="pref_audio_auto_desc">Use Mediacodec where possible, otherwise use FFmpeg.</string>-->
     <string name="pref_decode_mediacodec">Mediacodec</string>
-<!--    <string name="pref_audio_mediacodec_desc">Many types of audio, plays surround sound if set up in-->
-<!--        Android settings.</string>-->
+    <!--    <string name="pref_audio_mediacodec_desc">Many types of audio, plays surround sound if set up in-->
+    <!--        Android settings.</string>-->
     <string name="pref_decode_ffmpeg">FFmpeg</string>
-<!--    <string name="pref_audio_ffmpeg_desc">Most types of audio, surround sound plays as stereo.</string>-->
+    <!--    <string name="pref_audio_ffmpeg_desc">Most types of audio, surround sound plays as stereo.</string>-->
     <string name="pref_title_skip_fwd">Skip Forward Seconds</string>
     <string name="pref_title_skip_back">Skip Back Seconds</string>
     <string name="pref_poss_empty">Ignore Extra Track</string>
@@ -132,7 +133,7 @@
     <string name="sdef_jump" translatable="false">5</string>
     <!-- values jump or skipcom  -->
     <string name="sdef_prevnext" translatable="false">jump</string>
-<!--    Values airdate or starttime-->
+    <!--    Values airdate or starttime-->
     <string name="sdef_seq" translatable="false">starttime</string>
     <string name="sdef_seq_ascdesc" translatable="false">asc</string>
 

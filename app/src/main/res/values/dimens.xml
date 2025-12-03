@@ -8,4 +8,6 @@
     <dimen name="reflow_text_title_size">22sp</dimen>
     <dimen name="reflow_text_description_size">13sp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="guide_chans">25</dimen>
+    <dimen name="guide_progs">75</dimen>
 </resources>

@@ -33,6 +33,8 @@ public class AsyncBackendCall implements Runnable {
     // Class of params and response are dependent on the call
     public Object params;
     public Object response;
+    // Specifies whether the return must be on the main thread.
+    public boolean mainThread = true;
     private ArrayList<XmlNode> xmlResults = new ArrayList<>();
     private Integer[] inTasks;
     private int[] tasks;
@@ -87,8 +89,12 @@ public class AsyncBackendCall implements Runnable {
             e.printStackTrace();
         } finally {
             if (listener != null) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(() -> listener.onPostExecute(this));
+                if (mainThread) {
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> listener.onPostExecute(this));
+                }
+                else
+                    listener.onPostExecute(this);
             }
         }
     }

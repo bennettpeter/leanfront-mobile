@@ -52,6 +52,7 @@ public class UpcomingListModel extends ViewModel {
             refresh();
         });
         call.params = new Boolean(showAll);
+        call.mainThread = false;
         call.execute(Action.GETUPCOMINGLIST);
     }
 
