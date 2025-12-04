@@ -77,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
             viewModel.navigate.setValue(0);
         });
         mainActivity = this;
-
+        binding.appBarMain.toolbar.setTitleTextAppearance(this,R.style.ToolbarTitleText);
+        binding.appBarMain.toolbar.setSubtitleTextAppearance(this,R.style.ToolbarSubtitleText);
     }
 
     @Override

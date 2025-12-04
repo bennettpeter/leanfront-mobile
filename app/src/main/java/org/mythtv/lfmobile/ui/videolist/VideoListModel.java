@@ -115,12 +115,12 @@ public class VideoListModel extends ViewModel {
 
 
     void setRecGroup(String recGroup) {
+        this.recGroup = recGroup;
         if (videosTitle.equals(recGroup)) {
             setVideos("");
             return;
         }
         pageType = TYPE_RECGROUP;
-        this.recGroup = recGroup;
         this.title = recGroup;
     }
     private void loadRecGroup(String recGroup) {

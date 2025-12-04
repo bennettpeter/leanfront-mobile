@@ -139,8 +139,12 @@ public class VideoListFragment extends MainActivity.MyFragment {
             public void onPrepareMenu(@NonNull Menu menu) {
                 menu.removeGroup(R.id.recgroup_group);
                 if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
-                    for (int ix = 0; ix < videoListModel.recGroups.size(); ix++)
-                        menu.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
+                    for (int ix = 0; ix < videoListModel.recGroups.size(); ix++) {
+                        MenuItem item = menu.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
+                        item.setCheckable(true);
+                        if (videoListModel.recGroups.get(ix).equals(videoListModel.recGroup))
+                            item.setChecked(true);
+                    }
                 }
                 MenuProvider.super.onPrepareMenu(menu);
             }

@@ -167,8 +167,12 @@ public class GuideFragment extends MainActivity.MyFragment {
             public void onPrepareMenu(@NonNull Menu menu) {
                 menu.removeGroup(R.id.changroup_group);
                 if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && model.chanGroupNames != null) {
-                    for (int ix = 0; ix < model.chanGroupNames.size(); ix++)
-                        menu.add(R.id.changroup_group, ix, ix, model.chanGroupNames.get(ix));
+                    for (int ix = 0; ix < model.chanGroupNames.size(); ix++) {
+                        MenuItem item = menu.add(R.id.changroup_group, ix, ix, model.chanGroupNames.get(ix));
+                        item.setCheckable(true);
+                        if (ix == model.chanGroupIx)
+                            item.setChecked(true);
+                    }
                 }
                 MenuProvider.super.onPrepareMenu(menu);
             }
