@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-    if (item.getItemId() == R.id.menu_refresh && myFragment != null) {
+        if (item.getItemId() == R.id.menu_refresh && myFragment != null) {
             myFragment.startFetch();
             return true;
         }

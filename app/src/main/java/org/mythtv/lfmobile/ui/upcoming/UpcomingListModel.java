@@ -3,7 +3,6 @@ package org.mythtv.lfmobile.ui.upcoming;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.Action;
 import org.mythtv.lfmobile.data.AsyncBackendCall;
 import org.mythtv.lfmobile.data.XmlNode;
@@ -12,14 +11,16 @@ import java.util.ArrayList;
 
 public class UpcomingListModel extends ViewModel {
 
-    MutableLiveData<ArrayList<UpcomingItem>> upcomings;
+    MutableLiveData<ArrayList<UpcomingItem>> upcomings= new MutableLiveData<>();
     private final ArrayList<UpcomingItem> upcomingList = new ArrayList<>();
     boolean showAll;
+    public static final int TYPE_UPCOMING = 1;
+    public static final int TYPE_GUIDE_SEARCH = 2;
+    public int type = TYPE_UPCOMING;
+    String search;
+    volatile int callId;
 
     public UpcomingListModel() {
-        upcomings = new MutableLiveData<>();
-//        refresh();
-        startFetch();
     }
 
     public void startFetch() {
@@ -30,6 +31,8 @@ public class UpcomingListModel extends ViewModel {
                 return;
             node = node.getNode(new String [] {"Programs","Program"},0);
             while (node != null) {
+                if (callId > caller.id)
+                    return;
                 UpcomingItem item = new UpcomingItem();
                 item.startTime = node.getString("StartTime");
                 item.endTime = node.getString("EndTime");
@@ -49,14 +52,21 @@ public class UpcomingListModel extends ViewModel {
                 upcomingList.add(item);
                 node = node.getNextSibling();
             }
-            refresh();
+            refreshScreen();
         });
-        call.params = new Boolean(showAll);
         call.mainThread = false;
-        call.execute(Action.GETUPCOMINGLIST);
+        call.id = ++callId;
+        if (type == TYPE_UPCOMING) {
+            call.params = new Boolean(showAll);
+            call.execute(Action.GETUPCOMINGLIST);
+        }
+        else if (type == TYPE_GUIDE_SEARCH) {
+            call.params = search;
+            call.execute(Action.SEARCHGUIDE_TITLE);
+        }
     }
 
-    void refresh() {
+    void refreshScreen() {
         synchronized(this) {
             upcomings.postValue(upcomingList);
         }

@@ -128,8 +128,6 @@ public class VideoListFragment extends MainActivity.MyFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MenuHost menuHost = requireActivity();
-//        menuHost.addMenuProvider(menuProvider = new MenuProvider() {
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {

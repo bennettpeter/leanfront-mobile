@@ -10,19 +10,23 @@
             android:icon="@drawable/ic_refresh_24px"
             android:title="@string/menu_refresh"
             app:showAsAction="ifRoom"/>
+        <item android:id="@+id/search"
+            android:title="@string/menu_search"
+            android:icon="@drawable/ic_search_24px"
+            android:visible="false"
+            app:actionViewClass="androidx.appcompat.widget.SearchView"
+            app:showAsAction="collapseActionView|ifRoom" />
     </group>
     <group
         android:id="@+id/recgroup_group"
-        android:checkableBehavior="none">
+        android:checkableBehavior="all">
     </group>
     <group
         android:id="@+id/changroup_group"
-        android:checkableBehavior="none">
+        android:checkableBehavior="all">
     </group>
     <group
         android:id="@+id/upcoming_group"
         android:checkableBehavior="all">
     </group>
-
-
 </menu>

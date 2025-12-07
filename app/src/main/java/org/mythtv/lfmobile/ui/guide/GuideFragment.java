@@ -9,11 +9,12 @@ import androidx.lifecycle.ViewModelProvider;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +46,7 @@ import org.mythtv.lfmobile.databinding.FragmentGuideBinding;
 import org.mythtv.lfmobile.databinding.ItemChannelBinding;
 import org.mythtv.lfmobile.databinding.ItemProgBinding;
 import org.mythtv.lfmobile.databinding.ItemTimeslotBinding;
+import org.mythtv.lfmobile.ui.upcoming.UpcomingListModel;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -161,6 +163,9 @@ public class GuideFragment extends MainActivity.MyFragment {
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                MenuItem searchItem = menu.findItem(R.id.search);
+                if (searchItem != null)
+                    searchItem.setVisible(true);
             }
 
             @Override
@@ -187,6 +192,14 @@ public class GuideFragment extends MainActivity.MyFragment {
                     editor.commit();
                     refresh(true);
                     return true;
+                }
+                if (menuItem.getItemId() == R.id.search) {
+                    NavHostFragment navHostFragment =
+                        (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+                    NavController navController = navHostFragment.getNavController();
+                    Bundle args = new Bundle();
+                    args.putInt("type", UpcomingListModel.TYPE_GUIDE_SEARCH);
+                    navController.navigate(R.id.nav_search, args);
                 }
                 return false;
             }

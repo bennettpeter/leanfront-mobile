@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile.ui.upcoming;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,18 +13,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuHost;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
-import org.mythtv.lfmobile.data.XmlNode;
 import org.mythtv.lfmobile.databinding.FragmentUpcomingBinding;
 import org.mythtv.lfmobile.databinding.ItemUpcomingBinding;
 
@@ -50,6 +53,7 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
     public static final int COLOR_WILLRECORD = 0xff00C000;
     public static final int COLOR_WONTRECORD = 0xffC00000;
     private MenuProvider menuProvider;
+    private int orientation;
 
 
     @Override
@@ -60,13 +64,12 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-
-        model =
-                new ViewModelProvider(this).get(UpcomingListModel.class);
-
+        model = new ViewModelProvider(this).get(UpcomingListModel.class);
+        Bundle args = getArguments();
+        if (args != null)
+            model.type = args.getInt("type");
         binding = FragmentUpcomingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
         RecyclerView recyclerView = binding.recyclerviewUpcominglist;
         UpcomingListAdapter adapter = new UpcomingListAdapter(this);
         recyclerView.setAdapter(adapter);
@@ -88,14 +91,64 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        MenuHost menuHost = requireActivity();
-//        menuHost.addMenuProvider(menuProvider = new MenuProvider() {
+        orientation = requireActivity().getResources().getConfiguration().orientation;
+        int spanCount = 1;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            spanCount = 2;
+        ((GridLayoutManager)binding.recyclerviewUpcominglist.getLayoutManager()).setSpanCount(spanCount);
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                MenuItem item = menu.add(R.id.upcoming_group, R.id.id_show_all, Menu.NONE, R.string.menu_show_all);
-                item.setCheckable(true);
-                item.setChecked(model.showAll);
+                if (model.type == UpcomingListModel.TYPE_GUIDE_SEARCH) {
+                    MenuItem searchItem = menu.findItem(R.id.search);
+                    if (searchItem != null) {
+                        searchItem.setVisible(true);
+                        searchItem.expandActionView();
+                        SearchView searchView = (SearchView) searchItem.getActionView();
+                        searchView.setQueryHint(getString(R.string.hint_guide_search));
+                        searchView.setIconifiedByDefault(false);
+                        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                model.search = query;
+                                refresh();
+                                return true;
+                            }
+                            @Override
+                            public boolean onQueryTextChange(String newText) {
+                                if (newText.trim().length() > 2) {
+                                    model.search = newText;
+                                    refresh();
+                                    return true;
+                                }
+                                return false;
+                            }
+                        });
+                        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                            @Override
+                            public boolean onMenuItemActionExpand(@NonNull MenuItem item) {
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onMenuItemActionCollapse(@NonNull MenuItem item) {
+                                NavHostFragment navHostFragment =
+                                        (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+                                NavController navController = navHostFragment.getNavController();
+                                navController.navigateUp();
+                                return false;
+                            }
+                        });
+                    }
+                    MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+                    if (refreshItem != null)
+                        refreshItem.setVisible(false);
+                }
+                if (model.type == UpcomingListModel.TYPE_UPCOMING) {
+                    MenuItem item = menu.add(R.id.upcoming_group, R.id.id_show_all, Menu.NONE, R.string.menu_show_all);
+                    item.setCheckable(true);
+                    item.setChecked(model.showAll);
+                }
             }
             @Override
             public void onPrepareMenu(@NonNull Menu menu) {
@@ -118,7 +171,7 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
 
 
     void refresh() {
-        model.refresh();
+        model.startFetch();
     }
 
 

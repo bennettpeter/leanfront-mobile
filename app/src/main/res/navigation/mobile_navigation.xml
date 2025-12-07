@@ -9,22 +9,29 @@
         android:id="@+id/nav_videolist"
         android:name="org.mythtv.lfmobile.ui.videolist.VideoListFragment"
         android:label="@string/menu_videolist"
-        tools:layout="@layout/fragment_videolist">
-    </fragment>
+        tools:layout="@layout/fragment_videolist"/>
 
     <fragment
         android:id="@+id/nav_settings"
         android:name="org.mythtv.lfmobile.ui.settings.SettingsFragment"
-        android:label="@string/menu_settings"/>
+        android:label="@string/menu_settings" />
 
     <fragment
         android:id="@+id/nav_guide"
         android:name="org.mythtv.lfmobile.ui.guide.GuideFragment"
-        android:label="@string/menu_guide"/>
+        android:label="@string/menu_guide" />
 
-        <fragment
+    <fragment
         android:id="@+id/nav_upcoming"
         android:name="org.mythtv.lfmobile.ui.upcoming.UpcomingListFragment"
-        android:label="@string/menu_upcoming"/>
+        android:label="@string/menu_upcoming" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="org.mythtv.lfmobile.ui.upcoming.UpcomingListFragment"
+        android:label="@string/menu_search" >
+    </fragment>
+
 
 </navigation>

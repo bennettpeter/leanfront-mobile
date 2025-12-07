@@ -35,6 +35,7 @@ public class AsyncBackendCall implements Runnable {
     public Object response;
     // Specifies whether the return must be on the main thread.
     public boolean mainThread = true;
+    public int id;
     private ArrayList<XmlNode> xmlResults = new ArrayList<>();
     private Integer[] inTasks;
     private int[] tasks;
@@ -529,6 +530,18 @@ public class AsyncBackendCall implements Runnable {
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Getting Channel Groups.", e);
+                    }
+                    break;
+                }
+
+                case Action.SEARCHGUIDE_TITLE: {
+                    try {
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Guide/GetProgramList?Sort=starttime&count=100&Details=true&TitleFilter="
+                                        + URLEncoder.encode((String)params, "UTF-8"));
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Getting Guide.", e);
                     }
                     break;
                 }
