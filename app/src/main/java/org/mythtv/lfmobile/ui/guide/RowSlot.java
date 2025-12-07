@@ -9,7 +9,7 @@ public class RowSlot {
     public static final int CELL_LEFTARROW = 5;
     public static final int CELL_RIGHTARROW = 6;
     public static final int CELL_SEARCHRESULT = 7;
-    // For use with UpcomingFragment
+    // For use with ProgramListFragment
     public static final int CELL_RULE = 8;
     public static final int CELL_PENCIL = 9;
     public static final int CELL_PAPERCLIP = 10;

@@ -1,4 +1,4 @@
-package org.mythtv.lfmobile.ui.upcoming;
+package org.mythtv.lfmobile.ui.proglist;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,10 +9,10 @@ import org.mythtv.lfmobile.data.XmlNode;
 
 import java.util.ArrayList;
 
-public class UpcomingListModel extends ViewModel {
+public class ProgramListModel extends ViewModel {
 
-    MutableLiveData<ArrayList<UpcomingItem>> upcomings= new MutableLiveData<>();
-    private final ArrayList<UpcomingItem> upcomingList = new ArrayList<>();
+    MutableLiveData<ArrayList<ProgramItem>> programs = new MutableLiveData<>();
+    private final ArrayList<ProgramItem> programList = new ArrayList<>();
     boolean showAll;
     public static final int TYPE_UPCOMING = 1;
     public static final int TYPE_GUIDE_SEARCH = 2;
@@ -20,12 +20,12 @@ public class UpcomingListModel extends ViewModel {
     String search;
     volatile int callId;
 
-    public UpcomingListModel() {
+    public ProgramListModel() {
     }
 
     public void startFetch() {
         AsyncBackendCall call = new AsyncBackendCall((caller) -> {
-            upcomingList.clear();
+            programList.clear();
             XmlNode node = caller.getXmlResult();
             if (node == null)
                 return;
@@ -33,7 +33,7 @@ public class UpcomingListModel extends ViewModel {
             while (node != null) {
                 if (callId > caller.id)
                     return;
-                UpcomingItem item = new UpcomingItem();
+                ProgramItem item = new ProgramItem();
                 item.startTime = node.getString("StartTime");
                 item.endTime = node.getString("EndTime");
                 XmlNode chanNode = node.getNode("Channel");
@@ -49,7 +49,7 @@ public class UpcomingListModel extends ViewModel {
                 item.season = node.getInt("Season",0);
                 item.episode = node.getInt("Episode",0);
                 item.description = node.getString("Description");
-                upcomingList.add(item);
+                programList.add(item);
                 node = node.getNextSibling();
             }
             refreshScreen();
@@ -68,11 +68,11 @@ public class UpcomingListModel extends ViewModel {
 
     void refreshScreen() {
         synchronized(this) {
-            upcomings.postValue(upcomingList);
+            programs.postValue(programList);
         }
     }
 
-    static class UpcomingItem {
+    static class ProgramItem {
         public String startTime;
         public String endTime;
         public int chanId;

@@ -44,9 +44,9 @@ import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.data.XmlNode;
 import org.mythtv.lfmobile.databinding.FragmentGuideBinding;
 import org.mythtv.lfmobile.databinding.ItemChannelBinding;
-import org.mythtv.lfmobile.databinding.ItemProgBinding;
+import org.mythtv.lfmobile.databinding.ItemGuideBinding;
 import org.mythtv.lfmobile.databinding.ItemTimeslotBinding;
-import org.mythtv.lfmobile.ui.upcoming.UpcomingListModel;
+import org.mythtv.lfmobile.ui.proglist.ProgramListModel;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -198,7 +198,7 @@ public class GuideFragment extends MainActivity.MyFragment {
                         (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
                     NavController navController = navHostFragment.getNavController();
                     Bundle args = new Bundle();
-                    args.putInt("type", UpcomingListModel.TYPE_GUIDE_SEARCH);
+                    args.putInt("type", ProgramListModel.TYPE_GUIDE_SEARCH);
                     navController.navigate(R.id.nav_search, args);
                 }
                 return false;
@@ -399,7 +399,7 @@ public class GuideFragment extends MainActivity.MyFragment {
         @NonNull
         @Override
         public ProgViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ItemProgBinding binding = ItemProgBinding.inflate(LayoutInflater.from(parent.getContext()));
+            ItemGuideBinding binding = ItemGuideBinding.inflate(LayoutInflater.from(parent.getContext()));
             return new ProgViewHolder(binding, fragment);
         }
 
@@ -427,7 +427,7 @@ public class GuideFragment extends MainActivity.MyFragment {
         private final TextView progStatus;
         private final TextView progText;
 
-        public ProgViewHolder(ItemProgBinding binding, GuideFragment fragment) {
+        public ProgViewHolder(ItemGuideBinding binding, GuideFragment fragment) {
             super(binding.getRoot());
             progStatus = binding.progStatus;
             progText = binding.progText;

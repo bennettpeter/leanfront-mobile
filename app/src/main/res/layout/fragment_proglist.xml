@@ -8,11 +8,11 @@
     <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/recyclerview_upcominglist"
+        android:id="@+id/recyclerview_programlist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="GridLayoutManager"
         android:layout_margin="1px"
-        tools:context=".ui.upcoming.UpcomingFragment" />
+        tools:context=".ui.proglist.ProgramListFragment" />
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -1,4 +1,4 @@
-package org.mythtv.lfmobile.ui.upcoming;
+package org.mythtv.lfmobile.ui.proglist;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -27,8 +27,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
-import org.mythtv.lfmobile.databinding.FragmentUpcomingBinding;
-import org.mythtv.lfmobile.databinding.ItemUpcomingBinding;
+import org.mythtv.lfmobile.databinding.FragmentProglistBinding;
+import org.mythtv.lfmobile.databinding.ItemProgramBinding;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -39,17 +39,13 @@ import java.util.Objects;
 
 /**
 /**
- * Fragment that demonstrates a responsive layout pattern where the format of the content
- * transforms depending on the size of the screen. Specifically this Fragment shows items in
- * the [RecyclerView] using LinearLayoutManager in a small screen
- * and shows items using GridLayoutManager in a large screen.
+ * Program List fragment that is used by upcoming list and guide search results
  */
-public class UpcomingListFragment extends MainActivity.MyFragment {
+public class ProgramListFragment extends MainActivity.MyFragment {
     private static final String TAG = "lfm";
-    private static final String CLASS = "UpcomingListFragment";
-    private FragmentUpcomingBinding binding;
-    private UpcomingListModel model;
-    private ArrayList<UpcomingListModel.UpcomingItem> upcomingList;
+    private static final String CLASS = "ProgramListFragment";
+    private FragmentProglistBinding binding;
+    private ProgramListModel model;
     public static final int COLOR_WILLRECORD = 0xff00C000;
     public static final int COLOR_WONTRECORD = 0xffC00000;
     private MenuProvider menuProvider;
@@ -64,18 +60,18 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        model = new ViewModelProvider(this).get(UpcomingListModel.class);
+        model = new ViewModelProvider(this).get(ProgramListModel.class);
         Bundle args = getArguments();
         if (args != null)
             model.type = args.getInt("type");
-        binding = FragmentUpcomingBinding.inflate(inflater, container, false);
+        binding = FragmentProglistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        RecyclerView recyclerView = binding.recyclerviewUpcominglist;
-        UpcomingListAdapter adapter = new UpcomingListAdapter(this);
+        RecyclerView recyclerView = binding.recyclerviewProgramlist;
+        ProgramListAdapter adapter = new ProgramListAdapter(this);
         recyclerView.setAdapter(adapter);
-        model.upcomings.observe(getViewLifecycleOwner(), (list) -> {
+        model.programs.observe(getViewLifecycleOwner(), (list) -> {
             synchronized(model) {
-                adapter.submitList(upcomingList = new ArrayList<>(list));
+                adapter.submitList(new ArrayList<>(list));
             }
             binding.swiperefresh.setRefreshing(false);
         });
@@ -95,11 +91,11 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
         int spanCount = 1;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             spanCount = 2;
-        ((GridLayoutManager)binding.recyclerviewUpcominglist.getLayoutManager()).setSpanCount(spanCount);
+        ((GridLayoutManager)binding.recyclerviewProgramlist.getLayoutManager()).setSpanCount(spanCount);
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                if (model.type == UpcomingListModel.TYPE_GUIDE_SEARCH) {
+                if (model.type == ProgramListModel.TYPE_GUIDE_SEARCH) {
                     MenuItem searchItem = menu.findItem(R.id.search);
                     if (searchItem != null) {
                         searchItem.setVisible(true);
@@ -144,7 +140,7 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
                     if (refreshItem != null)
                         refreshItem.setVisible(false);
                 }
-                if (model.type == UpcomingListModel.TYPE_UPCOMING) {
+                if (model.type == ProgramListModel.TYPE_UPCOMING) {
                     MenuItem item = menu.add(R.id.upcoming_group, R.id.id_show_all, Menu.NONE, R.string.menu_show_all);
                     item.setCheckable(true);
                     item.setChecked(model.showAll);
@@ -210,23 +206,23 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
         }
     }
 
-    private static class UpcomingListAdapter extends ListAdapter
-            <UpcomingListModel.UpcomingItem, UpcomingListViewHolder> {
+    private static class ProgramListAdapter extends ListAdapter
+            <ProgramListModel.ProgramItem, ProgramListViewHolder> {
 
-        private UpcomingListFragment fragment;
+        private ProgramListFragment fragment;
         private float defaultTextSize = 15.0f;
         private float largeTextSize = 20.0f;
 
-        protected UpcomingListAdapter(UpcomingListFragment fragment) {
-            super(new DiffUtil.ItemCallback<UpcomingListModel.UpcomingItem>() {
+        protected ProgramListAdapter(ProgramListFragment fragment) {
+            super(new DiffUtil.ItemCallback<ProgramListModel.ProgramItem>() {
                 @Override
-                public boolean areItemsTheSame(@NonNull UpcomingListModel.UpcomingItem oldItem, @NonNull UpcomingListModel.UpcomingItem newItem) {
+                public boolean areItemsTheSame(@NonNull ProgramListModel.ProgramItem oldItem, @NonNull ProgramListModel.ProgramItem newItem) {
                     return (Objects.equals(oldItem.startTime,newItem.startTime)
                         && Objects.equals(oldItem.title,newItem.title)
                         && oldItem.chanId == newItem.chanId);
                }
                 @Override
-                public boolean areContentsTheSame(@NonNull UpcomingListModel.UpcomingItem oldItem, @NonNull UpcomingListModel.UpcomingItem newItem) {
+                public boolean areContentsTheSame(@NonNull ProgramListModel.ProgramItem oldItem, @NonNull ProgramListModel.ProgramItem newItem) {
                     return Objects.equals(oldItem.statusName,newItem.statusName);
                 }
             });
@@ -235,15 +231,15 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
 
         @NonNull
         @Override
-        public UpcomingListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ItemUpcomingBinding binding
-                    = ItemUpcomingBinding.inflate(LayoutInflater.from(parent.getContext()));
-            return new UpcomingListViewHolder(binding, fragment);
+        public ProgramListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            ItemProgramBinding binding
+                    = ItemProgramBinding.inflate(LayoutInflater.from(parent.getContext()));
+            return new ProgramListViewHolder(binding, fragment);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull UpcomingListViewHolder holder, int position) {
-            UpcomingListModel.UpcomingItem item = getItem(position);
+        public void onBindViewHolder(@NonNull ProgramListViewHolder holder, int position) {
+            ProgramListModel.ProgramItem item = getItem(position);
             holder.itemDateView.setText(null);
             StringBuilder dateStr = new StringBuilder();
             if (item.startTime!= null) {
@@ -292,13 +288,13 @@ public class UpcomingListFragment extends MainActivity.MyFragment {
         }
     }
 
-    private static class UpcomingListViewHolder extends RecyclerView.ViewHolder {
+    private static class ProgramListViewHolder extends RecyclerView.ViewHolder {
         private final TextView itemDateView;
         private final TextView itemStatusView;
         private final TextView itemTitleView;
         private final TextView itemDescView;
 
-        public UpcomingListViewHolder(ItemUpcomingBinding binding, UpcomingListFragment fragment) {
+        public ProgramListViewHolder(ItemProgramBinding binding, ProgramListFragment fragment) {
             super(binding.getRoot());
             itemTitleView = binding.itemTitle;
             itemDateView = binding.itemDate;
