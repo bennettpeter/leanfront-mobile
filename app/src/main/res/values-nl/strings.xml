@@ -4,10 +4,12 @@
   <string name="nav_header_desc">Navigatiekop</string>
   <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Opfrissen</string>
+  <string name="menu_search">Zoekopdracht</string>
   <string name="menu_upcoming">Aankomend</string>
   <string name="menu_settings">Instellingen</string>
   <string name="menu_guide">Gids</string>
   <string name="menu_show_all">Toon alles</string>
+  <string name="hint_guide_search">Zoekgids…</string>
   <string name="row_header_channels">Kanalen</string>
   <string name="all_title">Alle</string>
   <string name="group_videos">Video\'s</string>

@@ -4,10 +4,12 @@
   <string name="nav_header_desc">Nagłówek nawigacyjny</string>
   <string name="menu_videolist">Głoska bezdźwięczna</string>
   <string name="menu_refresh">Odświeżać</string>
+  <string name="menu_search">Szukaj</string>
   <string name="menu_upcoming">Nadchodzące</string>
   <string name="menu_settings">Ustawienia</string>
   <string name="menu_guide">Przewodnik</string>
   <string name="menu_show_all">Pokaż wszystko</string>
+  <string name="hint_guide_search">Przewodnik wyszukiwania…</string>
   <string name="row_header_channels">Kanały</string>
   <string name="all_title">Wszystko</string>
   <string name="group_videos">Filmy</string>

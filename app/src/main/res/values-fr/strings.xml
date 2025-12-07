@@ -4,10 +4,12 @@
   <string name="nav_header_desc">En-tête de navigation</string>
   <string name="menu_videolist">Médias</string>
   <string name="menu_refresh">Rafraîchir</string>
+  <string name="menu_search">Recherche</string>
   <string name="menu_upcoming">Prochain</string>
   <string name="menu_settings">Paramètres</string>
   <string name="menu_guide">Guide</string>
   <string name="menu_show_all">Tout montrer</string>
+  <string name="hint_guide_search">Guide de recherche…</string>
   <string name="row_header_channels">Canaux</string>
   <string name="all_title">Tous</string>
   <string name="group_videos">Vidéos</string>

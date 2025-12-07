@@ -4,10 +4,12 @@
   <string name="nav_header_desc">Navigasjonsoverskrift</string>
   <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Forfriske</string>
+  <string name="menu_search">Søk</string>
   <string name="menu_upcoming">Kommende</string>
   <string name="menu_settings">Innstillinger</string>
   <string name="menu_guide">Guide</string>
   <string name="menu_show_all">Vis alt</string>
+  <string name="hint_guide_search">Søkeguide …</string>
   <string name="row_header_channels">Kanaler</string>
   <string name="all_title">Alle</string>
   <string name="group_videos">Videoer</string>

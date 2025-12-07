@@ -4,10 +4,12 @@
   <string name="nav_header_desc">Navigointioppi</string>
   <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Virkistää</string>
+  <string name="menu_search">Haku</string>
   <string name="menu_upcoming">Tuleva</string>
   <string name="menu_settings">Asetukset</string>
   <string name="menu_guide">Opas</string>
   <string name="menu_show_all">Näyttää kaikki</string>
+  <string name="hint_guide_search">Hakuopas…</string>
   <string name="row_header_channels">Kanavat</string>
   <string name="all_title">Kaikki</string>
   <string name="group_videos">Video</string>

@@ -4,10 +4,12 @@
   <string name="nav_header_desc">Navigasiekop</string>
   <string name="menu_videolist">Media</string>
   <string name="menu_refresh">Vervris</string>
+  <string name="menu_search">Soek</string>
   <string name="menu_upcoming">Komende</string>
   <string name="menu_settings">Instellings</string>
   <string name="menu_guide">Gids</string>
   <string name="menu_show_all">Wys alles</string>
+  <string name="hint_guide_search">Soekgids …</string>
   <string name="row_header_channels">Kanale</string>
   <string name="all_title">Alle</string>
   <string name="group_videos">Video\'s</string>
