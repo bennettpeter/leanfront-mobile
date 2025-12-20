@@ -57,11 +57,13 @@ public class ProgramListModel extends ViewModel {
         call.mainThread = false;
         call.id = ++callId;
         if (type == TYPE_UPCOMING) {
-            call.params = new Boolean(showAll);
+//            call.params = new Boolean(showAll);
+            call.args.put("SHOWALL",showAll);
             call.execute(Action.GETUPCOMINGLIST);
         }
         else if (type == TYPE_GUIDE_SEARCH) {
-            call.params = search;
+//            call.params = search;
+            call.args.put("TITLEFILTER",search);
             call.execute(Action.SEARCHGUIDE_TITLE);
         }
     }

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.schedule.ScheduleFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+<!--Call Sign-->
+        <TextView
+            android:id="@+id/call_sign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="6sp"
+            android:textSize="15sp"/>
+<!--Time-->
+        <TextView
+            android:id="@+id/date_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="6sp"
+            android:textSize="15sp"/>
+<!--Template-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_use_template"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/template"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Search Type-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_search_type"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/search_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Title-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_title"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="false"
+            android:maxLines="1"
+            android:inputType="text"/>
+<!--Subtitle-->
+        <TextView
+            android:id="@+id/subtitle_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_subtitle"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="false"
+            android:inputType="text"/>
+<!--Season & Episode-->
+        <TextView
+            android:id="@+id/season_episode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:paddingBottom="6sp"
+            android:textSize="15sp"/>
+<!--Description-->
+        <TextView
+            android:id="@+id/description_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_description"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="false"
+            android:maxLines="10"
+            android:inputType="textMultiLine"/>
+<!--Schedule Type-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="Schedule Type"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/schedule_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Recording Group-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_rec_group"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/recording_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Active-->
+        <CheckBox
+            android:id="@+id/active"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12sp"
+            android:textSize="15sp"
+            android:text="@string/sched_active_msg"/>
+<!--Playback Group-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_play_group"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/playback_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Start Offset-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_start_offset"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/start_offset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="true"
+            android:maxLines="1"
+            android:inputType="text|numberSigned"
+            android:text="0"/>
+<!--End Offset-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6sp"
+            android:paddingTop="12sp"
+            android:text="@string/sched_end_offset"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/end_offset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="true"
+            android:maxLines="1"
+            android:inputType="text|numberSigned"
+            android:text="0"/>
+<!--New Episodes Only-->
+        <CheckBox
+            android:id="@+id/new_epis_only"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12sp"
+            android:textSize="15sp"
+            android:text="@string/sched_new_only"/>
+<!--Priority-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_priority"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/rec_priority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="true"
+            android:maxLines="1"
+            android:inputType="text|numberSigned"
+            android:text="0"/>
+<!--Preferred Input-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_input"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/preferred_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Dup Method-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_dupmethod"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/dup_method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Dup Scope-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_dupscope"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/dup_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Auto Extend-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_autoextend"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/auto_extend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Filters-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_filters"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <org.mythtv.lfmobile.ui.MultiSpinner
+            android:id="@+id/selected_filters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Recording Profile-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_rec_profile"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/rec_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Storage Group-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_storage_grp"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Spinner
+            android:id="@+id/storage_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Max Episodes-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_max_to_keep"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/max_episodes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="true"
+            android:maxLines="1"
+            android:inputType="text|number"
+            android:text="0"/>
+<!--Deletion on max (max newest)-->
+        <CheckBox
+            android:id="@+id/max_newest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12sp"
+            android:textSize="15sp"
+            android:text="@string/sched_max_newest"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6sp"
+            android:paddingBottom="12sp"
+            android:text="@string/sched_max_newest_note"
+            android:textSize="12sp" />
+<!--Auto Expire-->
+        <CheckBox
+            android:id="@+id/auto_expire"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12sp"
+            android:textSize="15sp"
+            android:text="@string/sched_auto_expire"/>
+<!--Post Processing-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_pp_title"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <org.mythtv.lfmobile.ui.MultiSpinner
+            android:id="@+id/post_proc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp" />
+<!--Metadata Lookup Id-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12sp"
+            android:paddingLeft="6sp"
+            android:text="@string/sched_metadata_id"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/inetref"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:padding="6sp"
+            android:textSize="15sp"
+            android:focusable="true"
+            android:maxLines="1"
+            android:inputType="text"/>
+<!--Buttons-->
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6sp"
+            android:text="@string/close" />
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6sp"
+            android:text="@string/save"/>
+    </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

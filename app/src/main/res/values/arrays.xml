@@ -89,5 +89,10 @@
         <item>200</item>
     </integer-array>
 
+    <string-array name="prompt_save_changes">
+        <item>@string/menu_save_changes</item>
+        <item>@string/menu_continue_editing</item>
+        <item>@string/menu_exit_nosave</item>
+    </string-array>
 
 </resources>

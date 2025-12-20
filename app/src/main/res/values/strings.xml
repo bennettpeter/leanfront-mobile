@@ -9,7 +9,8 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_guide">Guide</string>
     <string name="menu_show_all">Show All</string>
-    <string name="hint_guide_search">Search Guide …</string>
+    <string name="menu_schedule">Schedule Recording</string>
+    <string name="hint_guide_search">Search the Guide …</string>
 
     <string name="row_header_channels">Channels</string>
     <string name="all_title">All</string>
@@ -148,6 +149,101 @@
     <string name="menu_remove_lastplaypos">Remove Last Play Position</string>
     <string name="menu_delete_rerecord">Delete and Allow Rerecord</string>
     <string name="menu_rerecord">Allow Rerecord</string>
+
+    <string name="sched_use_template">Use Template</string>
+    <string name="sched_search_type">Search Type</string>
+    <string name="sched_title">Title</string>
+    <string name="sched_subtitle">Subtitle</string>
+    <string name="sched_description">Description</string>
+    <string name="sched_type">Schedule Type</string>
+    <string name="sched_rec_group">Recording Group</string>
+    <string name="sched_active_msg">Recording Rule is Active</string>
+    <string name="sched_play_group">Playback Group</string>
+    <string name="sched_start_offset">Number of Extra Minutes Record at Start</string>
+    <string name="sched_end_offset">Number of Extra Minutes Record at End</string>
+    <string name="sched_new_only">Record New Episodes Only</string>
+    <string name="sched_priority">Priority</string>
+    <string name="sched_input">Preferred Input</string>
+    <string name="sched_dupmethod">Duplicate Match Method</string>
+    <string name="sched_dupscope">Duplicate Search Scope</string>
+    <string name="sched_autoextend">Auto Extend</string>
+    <string name="sched_filters">Filter Options</string>
+    <string name="sched_rec_profile">Recording Profile</string>
+    <string name="sched_storage_grp">Storage Group</string>
+    <string name="sched_max_to_keep">Maximum Number of Episodes to Keep</string>
+    <string name="sched_max_newest">Deletion on Maximum Episodes</string>
+    <string name="sched_max_newest_note">If unchecked, stop recording when maximum episodes are reached.</string>
+    <string name="sched_auto_expire">Auto Expire</string>
+    <string name="sched_pp_title">Post Processing Options</string>
+    <string name="sched_metadata_id">Metadata Lookup Id (InetRef)</string>
+
+
+    <string name="sched_active">Active</string>
+    <string name="sched_inactive">Inactive</string>
+    <string name="msg_rec_rule_gone">Recording Rule no longer exists.</string>
+    <string name="sched_input_any">Any Input</string>
+
+    <string name="sched_srch_None">None</string>
+    <string name="sched_srch_PowerSearch">Power Search</string>
+    <string name="sched_srch_TitleSearch">Title Search</string>
+    <string name="sched_srch_KeywordSearch">Keyword Search</string>
+    <string name="sched_srch_PeopleSearch">People Search</string>
+    <string name="sched_srch_Manual_Search">Manual Search</string>
+
+
+    <string name="sched_type_not">Do Not Record This Program</string>
+    <string name="sched_type_this">Record Only This Showing</string>
+    <string name="sched_type_one">Record Only One Showing</string>
+    <string name="sched_type_all">Record All Showings</string>
+    <string name="sched_type_del_template">Delete this recording rule template</string>
+    <string name="sched_type_mod_template">Modify this recording rule template</string>
+    <string name="sched_type_del_override">Record this showing with normal options</string>
+    <string name="sched_type_rec_override">Record this showing with override options</string>
+    <string name="sched_type_dont_rec_override">Do not record this showing</string>
+    <string name="sched_type_never_rec_override">Never record this episode</string>
+    <string name="sched_type_forget_history">Forget history to allow recording this episode</string>
+    <string name="sched_type_weekly">Record one showing every week</string>
+    <string name="sched_type_daily">Record one showing every day</string>
+
+    <string name="sched_dup_none">Don\'t Match Duplicates</string>
+    <string name="sched_dup_s_and_d">Match Using Subtitle &amp; Description</string>
+    <string name="sched_dup_s_then_d">Match Using Subtitle Then Description</string>
+    <string name="sched_dup_s">Match Duplicates Using Subtitle</string>
+    <string name="sched_dup_d">Match Duplicates Using Description</string>
+
+    <string name="sched_dup_both">Current and Previous Recordings</string>
+    <string name="sched_dup_curr">Current Recordings Only</string>
+    <string name="sched_dup_prev">Previous Recordings Only</string>
+
+    <string name="sched_extend_none">None</string>
+    <string name="sched_extend_espn" translatable="false">ESPN</string>
+    <string name="sched_extend_mlb" translatable="false">MLB</string>
+
+    <string name="sched_recprof_default">Default</string>
+    <string name="sched_recprof_livetv">Live TV</string>
+    <string name="sched_recprof_highq">High Quality</string>
+    <string name="sched_recprof_lowq">Low Quality</string>
+
+    <string name="sched_pp_commflag">Automatically Commercial Flag Recordings</string>
+    <string name="sched_pp_metadata">Automatically Look up MetaData</string>
+    <string name="sched_pp_transcode">Automatically Transcode Recordings</string>
+    <string name="sched_pp_job1">Run User job 1</string>
+    <string name="sched_pp_job2">Run User job 2</string>
+    <string name="sched_pp_job3">Run User job 3</string>
+    <string name="sched_pp_job4">Run User job 4</string>
+
+    <string name="sched_failed">ERROR: Failed to Update Schedule.</string>
+    <string name="sched_updated">Record Schedule Successfully Updated</string>
+    <string name="sched_notupdated">Schedule was Already Saved - Not Updated</string>
+
+    <string name="menu_changes">Unsaved Changes</string>
+    <string name="menu_save_changes">Save Changes Before Exiting</string>
+    <string name="menu_continue_editing">Continue Editing</string>
+    <string name="menu_exit_nosave">Exit Without Saving</string>
+
+    <string name="close">Close</string>
+    <string name="save">Save</string>
+
 
 
 </resources>

@@ -47,6 +47,7 @@ import org.mythtv.lfmobile.databinding.ItemChannelBinding;
 import org.mythtv.lfmobile.databinding.ItemGuideBinding;
 import org.mythtv.lfmobile.databinding.ItemTimeslotBinding;
 import org.mythtv.lfmobile.ui.proglist.ProgramListModel;
+import org.mythtv.lfmobile.ui.schedule.ScheduleViewModel;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -406,13 +407,13 @@ public class GuideFragment extends MainActivity.MyFragment {
         @Override
         public void onBindViewHolder(@NonNull ProgViewHolder holder, int position) {
             if (fragment.model.progList != null && fragment.model.progList.size() > position) {
-                ProgSlot card = fragment.model.progList.get(position);
-                holder.progText.setText(card.getGuideText(fragment.getContext()));
+                holder.card = fragment.model.progList.get(position);
+                holder.progText.setText(holder.card.getGuideText(fragment.getContext()));
                 String status = null;
-                if (card.program != null && card.program.recordingStatus != null)
-                    status = card.program.recordingStatus;
-                if (card.program2 != null && card.program2.recordingStatus != null)
-                    status = (status == null ? "(2)" : status + '/') + card.program2.recordingStatus;
+                if (holder.card.program != null && holder.card.program.recordingStatus != null)
+                    status = holder.card.program.recordingStatus;
+                if (holder.card.program2 != null && holder.card.program2.recordingStatus != null)
+                    status = (status == null ? "(2)" : status + '/') + holder.card.program2.recordingStatus;
                 holder.progStatus.setText(status);
             }
         }
@@ -426,11 +427,23 @@ public class GuideFragment extends MainActivity.MyFragment {
     private static class ProgViewHolder extends RecyclerView.ViewHolder {
         private final TextView progStatus;
         private final TextView progText;
+        private ProgSlot card;
 
         public ProgViewHolder(ItemGuideBinding binding, GuideFragment fragment) {
             super(binding.getRoot());
             progStatus = binding.progStatus;
             progText = binding.progText;
+            binding.getRoot().setOnClickListener((v)->{
+                NavHostFragment navHostFragment =
+                        (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+                NavController navController = navHostFragment.getNavController();
+                Bundle args = new Bundle();
+                //TODO cater for two programs in one slot
+                args.putInt(ScheduleViewModel.CHANID, card.program.chanId);
+                args.putSerializable(ScheduleViewModel.STARTTIME, card.program.startTime);
+                args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+                navController.navigate(R.id.nav_schedule, args);
+            });
         }
     }
 

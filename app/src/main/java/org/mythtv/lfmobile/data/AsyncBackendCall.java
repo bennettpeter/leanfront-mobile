@@ -1,12 +1,14 @@
 package org.mythtv.lfmobile.data;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.os.Looper;
 import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import org.mythtv.lfmobile.ui.schedule.RecordRule;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -19,6 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +34,8 @@ public class AsyncBackendCall implements Runnable {
 
     public ArrayList<Video> videos = new ArrayList<>();
     // Class of params and response are dependent on the call
-    public Object params;
+//    public Object params;
+    public HashMap<String,Object> args = new HashMap<>();
     public Object response;
     // Specifies whether the return must be on the main thread.
     public boolean mainThread = true;
@@ -144,13 +148,14 @@ public class AsyncBackendCall implements Runnable {
                     break;
                 case Action.REMOVE_BOOKMARK:
                 case Action.REMOVE_LASTPLAYPOS:
-                    params = new long[] {0,0};
+                    args.put("BOOKMARK", 0L);
+                    args.put("POSBOOKMARK", 0L);
                 case Action.SET_BOOKMARK:
                 case Action.SET_LASTPLAYPOS:
-                    //params is long[2], bookmark and posbookmark
-                    //Result in xmlResult
+                    long bookmark = (Long)args.get("BOOKMARK");
+                    long posBookmark = (Long)args.get("POSBOOKMARK");
                     try {
-                        xmlResult = updateLastPlayPos(video, (long[]) params);
+                        xmlResult = updateLastPlayPos(video, bookmark, posBookmark);
                     } catch (IOException | XmlPullParserException e) {
                         e.printStackTrace();
                     }
@@ -257,7 +262,7 @@ public class AsyncBackendCall implements Runnable {
                     break;
                 case Action.COMMBREAK_LOAD: {
                     // params is commBreakTable
-                    CommBreakTable commBreakTable = (CommBreakTable) params;
+                    CommBreakTable commBreakTable = (CommBreakTable) args.get("COMMBREAKTABLE");
                     if (commBreakTable.entries.length > 0)
                         break;
                     String urlMethod;
@@ -303,7 +308,7 @@ public class AsyncBackendCall implements Runnable {
 
                 case Action.CUTLIST_LOAD: {
                     // params is commBreakTable
-                    CommBreakTable commBreakTable = (CommBreakTable) params;
+                    CommBreakTable commBreakTable = (CommBreakTable) args.get("COMMBREAKTABLE");;
 
                     if (commBreakTable.entries.length > 0)
                         break;
@@ -350,8 +355,9 @@ public class AsyncBackendCall implements Runnable {
                 case Action.GETUPCOMINGLIST:
                     try {
                         boolean showAll = false;
-                        if (params != null)
-                            showAll = ((Boolean)params).booleanValue();
+                        Boolean param = (Boolean) args.get("SHOWALL");
+                        if (param != null)
+                            showAll = param;
                         String urlString = XmlNode.mythApiUrl(null,
                                 "/Dvr/GetUpcomingList?ShowAll=" + showAll);
                         xmlResult = XmlNode.fetch(urlString, null);
@@ -439,11 +445,10 @@ public class AsyncBackendCall implements Runnable {
                 case Action.FILELENGTH: {
                     // params: -1 or null to bypass check for changing
                     //         0 or a value to check for changing
-                    // mValue is prior file length to be checked against
-                    // Try 5 times until file length increases.
                     long priorLength = -1;
-                    if (params != null)
-                        priorLength = (Long) params;
+                    Long param = (Long) args.get("PRIORLENG");
+                    if (param != null)
+                        priorLength = param;
                     String urlString = video.videoUrl;
                     long fileLength = -1;
                     for (int counter = 0; counter < 5; counter++) {
@@ -507,14 +512,17 @@ public class AsyncBackendCall implements Runnable {
                     // params[1]: Date startTime
                     // params[2]: Date endTime
                     try {
-                        Object parm[] = (Object[]) params;
+//                        Object parm[] = (Object[]) params;
+                        int groupId = (Integer)args.get("CHANGROUPID");
+                        Date startTime = (Date)args.get("STARTTIME");
+                        Date endTime = (Date)args.get("ENDTIME");
                         SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
                         sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
                         String urlString = XmlNode.mythApiUrl(null,
-                                "/Guide/GetProgramGuide?ChannelGroupId=" + parm[0]
+                                "/Guide/GetProgramGuide?ChannelGroupId=" + groupId
                                         + "&StartTime="
-                                        + URLEncoder.encode(sdfUTC.format((Date) parm[1]), "UTF-8")
-                                        + "&EndTime=" + URLEncoder.encode(sdfUTC.format((Date) parm[2]), "UTF-8")
+                                        + URLEncoder.encode(sdfUTC.format(startTime), "UTF-8")
+                                        + "&EndTime=" + URLEncoder.encode(sdfUTC.format(endTime), "UTF-8")
                                         + "&Details=true");
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {
@@ -536,9 +544,10 @@ public class AsyncBackendCall implements Runnable {
 
                 case Action.SEARCHGUIDE_TITLE: {
                     try {
+                        String titleFilter = (String)args.get("TITLEFILTER");
                         String urlString = XmlNode.mythApiUrl(null,
                                 "/Guide/GetProgramList?Sort=starttime&count=100&Details=true&TitleFilter="
-                                        + URLEncoder.encode((String)params, "UTF-8"));
+                                        + URLEncoder.encode(titleFilter, "UTF-8"));
                         xmlResult = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Getting Guide.", e);
@@ -546,10 +555,182 @@ public class AsyncBackendCall implements Runnable {
                     break;
                 }
 
+                case Action.GETPROGRAMDETAILS: {
+                    try {
+                        int chanId = (Integer) args.get("CHANID");
+                        Date startTime = (Date) args.get("STARTTIME");
+                        SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                        sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Guide/GetProgramDetails?ChanId=" + chanId
+                                        + "&StartTime=" + URLEncoder.encode(sdfUTC.format(startTime), "UTF-8"));
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Getting Program Details.", e);
+                    }
+                    break;
+                }
+
+                case Action.FORGETHISTORY:
+                    try {
+                        RecordRule  recordRule = (RecordRule) args.get("RECORDRULE");
+                        if (BackendCache.getInstance().canForgetHistory) {
+                            SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            StringBuilder urlBuilder = new StringBuilder
+                                    (XmlNode.mythApiUrl(null,
+                                            "/Dvr/AllowReRecord"))
+                                    .append("?ChanId=" + recordRule.chanId)
+                                    .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.startTime), "UTF-8"));
+                            xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                        }
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case Action.ADDDONTRECORDSCHEDULE:
+                    try {
+                        RecordRule  recordRule = (RecordRule) args.get("RECORDRULE");
+                        SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        StringBuilder urlBuilder = new StringBuilder
+                                (XmlNode.mythApiUrl(null,
+                                        "/Dvr/AddDontRecordSchedule"))
+                                .append("?ChanId=" + recordRule.chanId)
+                                .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.startTime), "UTF-8"))
+                                .append("&NeverRecord=").append(true);
+                        xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception in Add Dont Record Schedule.", e);
+                    }
+                    break;
+
+                case Action.DELETERECRULE:
+                    try {
+                        RecordRule  recordRule = (RecordRule) args.get("RECORDRULE");
+                        if (recordRule.recordId > 0) {
+                            String url = XmlNode.mythApiUrl(null,
+                                    "/Dvr/RemoveRecordSchedule?RecordId=" + recordRule.recordId);
+                            xmlResult = XmlNode.fetch(url, "POST");
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception removing Record Schedule.", e);
+                    }
+                    break;
+
+                case Action.ADD_OR_UPDATERECRULE:
+                    try {
+                        RecordRule  recordRule = (RecordRule) args.get("RECORDRULE");
+                        SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        String baseURL;
+                        if (recordRule.recordId == 0)
+                            baseURL = "/Dvr/AddRecordSchedule?";
+                        else
+                            baseURL = "/Dvr/UpdateRecordSchedule?RecordId="
+                                    + recordRule.recordId + "&";
+                        StringBuilder urlBuilder = new StringBuilder
+                                (XmlNode.mythApiUrl(null,
+                                        baseURL));
+                        urlBuilder.append(getString(recordRule));
+//                        urlBuilder.append("Title=").append(URLEncoder.encode(nvl(recordRule.title), "UTF-8"))
+//                                .append("&Subtitle=").append(URLEncoder.encode(nvl(recordRule.subtitle), "UTF-8"))
+//                                .append("&Description=").append(URLEncoder.encode(nvl(recordRule.description), "UTF-8"))
+//                                .append("&Category=").append(URLEncoder.encode(nvl(recordRule.category), "UTF-8"))
+//                                .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.startTime), "UTF-8"))
+//                                .append("&EndTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.endTime), "UTF-8"))
+//                                .append("&SeriesId=").append(nvl(recordRule.seriesId))
+//                                .append("&ProgramId=").append(nvl(recordRule.programId))
+//                                .append("&ChanId=").append(recordRule.chanId)
+//                                .append("&Station=").append(URLEncoder.encode(nvl(recordRule.station), "UTF-8"))
+//                                .append("&FindDay=").append(recordRule.findDay)
+//                                .append("&FindTime=").append(URLEncoder.encode(nvl(recordRule.findTime), "UTF-8"))
+//                                .append("&ParentId=").append(recordRule.parentId)
+//                                .append("&Inactive=").append(recordRule.inactive)
+//                                .append("&Season=").append(recordRule.season)
+//                                .append("&Episode=").append(recordRule.episode)
+//                                .append("&Inetref=").append(URLEncoder.encode(nvl(recordRule.inetref),"UTF-8"))
+//                                .append("&Type=").append(URLEncoder.encode(recordRule.type,"UTF-8"))
+//                                .append("&SearchType=").append(URLEncoder.encode(recordRule.searchType,"UTF-8"))
+//                                .append("&RecPriority=").append(recordRule.recPriority)
+//                                .append("&PreferredInput=").append(recordRule.preferredInput)
+//                                .append("&StartOffset=").append(recordRule.startOffset)
+//                                .append("&EndOffset=").append(recordRule.endOffset)
+//                                .append("&DupMethod=").append(URLEncoder.encode(nvl(recordRule.dupMethod),"UTF-8"))
+//                                .append("&DupIn=").append(URLEncoder.encode(nvl(recordRule.dupIn),"UTF-8"))
+//                                .append("&AutoExtend=").append(URLEncoder.encode(nvl(recordRule.autoExtend),"UTF-8"))
+//                                .append("&NewEpisOnly=").append(recordRule.newEpisOnly)
+//                                .append("&Filter=").append(recordRule.filter)
+//                                .append("&RecProfile=").append(URLEncoder.encode(recordRule.recProfile,"UTF-8"))
+//                                .append("&RecGroup=").append(URLEncoder.encode(recordRule.recGroup,"UTF-8"))
+//                                .append("&StorageGroup=").append(URLEncoder.encode(recordRule.storageGroup,"UTF-8"))
+//                                .append("&PlayGroup=").append(URLEncoder.encode(recordRule.playGroup,"UTF-8"))
+//                                .append("&AutoExpire=").append(recordRule.autoExpire)
+//                                .append("&MaxEpisodes=").append(recordRule.maxEpisodes)
+//                                .append("&MaxNewest=").append(recordRule.maxNewest)
+//                                .append("&AutoCommflag=").append(recordRule.autoCommflag)
+//                                .append("&AutoTranscode=").append(recordRule.autoTranscode)
+//                                .append("&AutoMetaLookup=").append(recordRule.autoMetaLookup)
+//                                .append("&AutoUserJob1=").append(recordRule.autoUserJob1)
+//                                .append("&AutoUserJob2=").append(recordRule.autoUserJob2)
+//                                .append("&AutoUserJob3=").append(recordRule.autoUserJob3)
+//                                .append("&AutoUserJob4=").append(recordRule.autoUserJob4)
+//                                .append("&Transcoder=").append(recordRule.transcoder);
+//                        if (recordRule.lastRecorded != null)
+//                            urlBuilder.append("&LastRecorded=").append(URLEncoder.encode(sdfUTC.format(recordRule.lastRecorded), "UTF-8"));
+                        xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                        String result = xmlResult.getString();
+                        if (recordRule.recordId == 0) { // if a new rule is being created
+                            Log.i(TAG, CLASS + " Recording scheduled, RecordId:" + result);
+                            recordRule.recordId = Integer.parseInt(result);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception Updating Record Schedule.", e);
+                    }
+                    // If this is a Live TV session it will be followed by Video.ACTION_WAIT_RECORDING
+                    // to wait for it to be ready for playing
+                    break;
+
+
+                case Action.DUMMY:
+                    break;
+
+                default:
+                    String method = null;
+                    switch (task) {
+                        case Action.GETPLAYGROUPLIST:
+                            method = "GetPlayGroupList";
+                            break;
+                        case Action.GETRECGROUPLIST:
+                            method = "GetRecGroupList";
+                            break;
+                        case Action.GETRECSTORAGEGROUPLIST:
+                            method = "GetRecStorageGroupList";
+                            break;
+                        case Action.GETINPUTLIST:
+                            method = "GetInputList";
+                            break;
+                        case Action.GETRECORDSCHEDULELIST:
+                            method = "GetRecordScheduleList";
+                            break;
+                        case Action.GETRECRULEFILTERLIST:
+                            method = "GetRecRuleFilterList";
+                            break;
+                    }
+                    if (method == null)
+                        break;
+                    try {
+                        String urlString = XmlNode.mythApiUrl(null,
+                                "/Dvr/" + method);
+                        xmlResult = XmlNode.fetch(urlString, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception In " + method, e);
+                    }
+                    break;
             }
             xmlResults.add(xmlResult);
         }
-
     }
 
     // method: GetSavedBookmark or GetLastPlayPos
@@ -612,10 +793,8 @@ public class AsyncBackendCall implements Runnable {
     // method: SetSavedBookmark or SetLastPlayPos
     // array has bookmark and posbookmark
     // Return object contains true if successful
-    private XmlNode updateLastPlayPos(Video video, long[] params)
+    private XmlNode updateLastPlayPos(Video video, long mark, long pos)
             throws XmlPullParserException, IOException {
-        long mark = params[0];
-        long pos = params[1];
         boolean isRecording = (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING);
         String urlString;
         XmlNode xmlResult = null;
@@ -649,6 +828,69 @@ public class AsyncBackendCall implements Runnable {
             xmlResult = XmlNode.safeFetch(urlString, "POST");
         }
         return xmlResult;
+    }
+
+    public static String nvl(String value) {
+        if (value == null)
+            return "";
+        return value;
+    }
+
+    public static String getString(RecordRule recordRule) {
+        StringBuilder urlBuilder = new StringBuilder();
+        SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            urlBuilder.append("Title=").append(URLEncoder.encode(nvl(recordRule.title), "UTF-8"))
+                    .append("&Subtitle=").append(URLEncoder.encode(nvl(recordRule.subtitle), "UTF-8"))
+                    .append("&Description=").append(URLEncoder.encode(nvl(recordRule.description), "UTF-8"))
+                    .append("&Category=").append(URLEncoder.encode(nvl(recordRule.category), "UTF-8"))
+                    .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.startTime), "UTF-8"))
+                    .append("&EndTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.endTime), "UTF-8"))
+                    .append("&SeriesId=").append(nvl(recordRule.seriesId))
+                    .append("&ProgramId=").append(nvl(recordRule.programId))
+                    .append("&ChanId=").append(recordRule.chanId)
+                    .append("&Station=").append(URLEncoder.encode(nvl(recordRule.station), "UTF-8"))
+                    .append("&FindDay=").append(recordRule.findDay)
+                    .append("&FindTime=").append(URLEncoder.encode(nvl(recordRule.findTime), "UTF-8"))
+                    .append("&ParentId=").append(recordRule.parentId)
+                    .append("&Inactive=").append(recordRule.inactive)
+                    .append("&Season=").append(recordRule.season)
+                    .append("&Episode=").append(recordRule.episode)
+                    .append("&Inetref=").append(URLEncoder.encode(nvl(recordRule.inetref), "UTF-8"))
+                    .append("&Type=").append(URLEncoder.encode(recordRule.type, "UTF-8"))
+                    .append("&SearchType=").append(URLEncoder.encode(recordRule.searchType, "UTF-8"))
+                    .append("&RecPriority=").append(recordRule.recPriority)
+                    .append("&PreferredInput=").append(recordRule.preferredInput)
+                    .append("&StartOffset=").append(recordRule.startOffset)
+                    .append("&EndOffset=").append(recordRule.endOffset)
+                    .append("&DupMethod=").append(URLEncoder.encode(nvl(recordRule.dupMethod), "UTF-8"))
+                    .append("&DupIn=").append(URLEncoder.encode(nvl(recordRule.dupIn), "UTF-8"))
+                    .append("&AutoExtend=").append(URLEncoder.encode(nvl(recordRule.autoExtend), "UTF-8"))
+                    .append("&NewEpisOnly=").append(recordRule.newEpisOnly)
+                    .append("&Filter=").append(recordRule.filter)
+                    .append("&RecProfile=").append(URLEncoder.encode(recordRule.recProfile, "UTF-8"))
+                    .append("&RecGroup=").append(URLEncoder.encode(recordRule.recGroup, "UTF-8"))
+                    .append("&StorageGroup=").append(URLEncoder.encode(recordRule.storageGroup, "UTF-8"))
+                    .append("&PlayGroup=").append(URLEncoder.encode(recordRule.playGroup, "UTF-8"))
+                    .append("&AutoExpire=").append(recordRule.autoExpire)
+                    .append("&MaxEpisodes=").append(recordRule.maxEpisodes)
+                    .append("&MaxNewest=").append(recordRule.maxNewest)
+                    .append("&AutoCommflag=").append(recordRule.autoCommflag)
+                    .append("&AutoTranscode=").append(recordRule.autoTranscode)
+                    .append("&AutoMetaLookup=").append(recordRule.autoMetaLookup)
+                    .append("&AutoUserJob1=").append(recordRule.autoUserJob1)
+                    .append("&AutoUserJob2=").append(recordRule.autoUserJob2)
+                    .append("&AutoUserJob3=").append(recordRule.autoUserJob3)
+                    .append("&AutoUserJob4=").append(recordRule.autoUserJob4)
+                    .append("&Transcoder=").append(recordRule.transcoder);
+            if (recordRule.lastRecorded != null)
+                urlBuilder.append("&LastRecorded=").append(URLEncoder.encode(sdfUTC.format(recordRule.lastRecorded), "UTF-8"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
+        return urlBuilder.toString();
     }
 
 }

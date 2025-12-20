@@ -113,15 +113,17 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         return vs;
     }
 
-    void fillTables(Activity activity) {
+    void fillTables() {
         AsyncBackendCall call = new AsyncBackendCall((caller) -> {
             if (commBreakTable.frameratex1000 > 1)
                 frameRate = (float) (commBreakTable.frameratex1000 / 1000.);
             if (commBreakTable.entries.length > 0)
                 setNextCommBreak(-1);
         });
+        call.mainThread = false;
         call.videos.add(video);
-        call.params = commBreakTable;
+//        call.params = commBreakTable;
+        call.args.put("COMMBREAKTABLE",commBreakTable);
         call.execute(Action.CUTLIST_LOAD, Action.COMMBREAK_LOAD);
     }
 
@@ -213,8 +215,10 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             if (isIncreasing)
                 startStatusMonitor();
         });
+        call.mainThread = false;
         call.videos.add(video);
-        call.params = priorFileLeng;
+//        call.params = priorFileLeng;
+        call.args.put("PRIORLENG", priorFileLeng);
         call.execute(Action.FILELENGTH);
     }
 

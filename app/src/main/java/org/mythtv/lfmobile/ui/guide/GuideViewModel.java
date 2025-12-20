@@ -119,7 +119,10 @@ public class GuideViewModel extends ViewModel {
             progLiveData.postValue(progList);
         });
         Date guideEndTime = new Date(guideStartTime.getTime() + TIMESLOT_SIZE * TIMESLOTS * 60000);
-        call.params = new Object[]{Integer.valueOf(chanGroupId), guideStartTime, guideEndTime};
+//        call.params = new Object[]{Integer.valueOf(chanGroupId), guideStartTime, guideEndTime};
+        call.args.put("CHANGROUPID", chanGroupId);
+        call.args.put("STARTTIME", guideStartTime);
+        call.args.put("ENDTIME", guideEndTime);
         call.mainThread = false;
         call.execute(Action.GUIDE);
     }

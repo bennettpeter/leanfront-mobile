@@ -338,7 +338,7 @@ public class PlaybackFragment extends Fragment {
         viewModel.player.addListener(viewModel.playerEventListener);
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
-        viewModel.fillTables(getActivity());
+        viewModel.fillTables();
         String userAgent = Util.getUserAgent(getActivity(), "PlaybackViewModel");
         DataSource.Factory dsFactory = new MythHttpDataSource.Factory(userAgent);
 
@@ -420,19 +420,21 @@ public class PlaybackFragment extends Fragment {
             viewModel.bookmark = 0;
             action2 = Action.SET_WATCHED;
         }
-        long params[] = new long[2];
-        params[0] = viewModel.bookmark;
-        params[1] =  (long) (viewModel.frameRate * 100.0f) * params[0] / 100000;
+//        long params[] = new long[2];
+//        params[0] = viewModel.bookmark;
+//        params[1] =  (long) (viewModel.frameRate * 100.0f) * params[0] / 100000;
         AsyncBackendCall call = new AsyncBackendCall(null);
         call.videos.add(viewModel.video);
-        call.params = params;
+//        call.params = params;
+        call.args.put("BOOKMARK", viewModel.bookmark);
+        call.args.put("POSBOOKMARK", (long) (viewModel.frameRate * 100.0f) * viewModel.bookmark / 100000);
         call.execute(Action.SET_BOOKMARK, action2);
     }
 
     public void markWatched(boolean watched) {
         AsyncBackendCall call = new AsyncBackendCall(null);
         call.videos.add(viewModel.video);
-        call.params = new Boolean(watched);
+//        call.params = new Boolean(watched);
         call.execute(Action.SET_WATCHED);
     }
 

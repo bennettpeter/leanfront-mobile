@@ -159,7 +159,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
             viewModel.restartMythTask();
     }
 
-    private static String validateNumber(Object action, int min, int max, int defValue) {
+    public static String validateNumber(Object action, int min, int max, int defValue) {
         String s;
         int i;
         s = action.toString();

@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         if (myFragment != null)
-            myFragment.navigateUp();
+            if (myFragment.navigateUp())
+                return true;
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
@@ -117,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
         viewModel.startMythTask();
     }
 
-    public static abstract class MyFragment extends Fragment {
-        public abstract void startFetch();
+    public static class MyFragment extends Fragment {
+        public void startFetch() {}
         public boolean navigateUp(){
             return false;
         }
