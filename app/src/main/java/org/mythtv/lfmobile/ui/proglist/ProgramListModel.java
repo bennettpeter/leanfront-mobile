@@ -63,8 +63,10 @@ public class ProgramListModel extends ViewModel {
         }
         else if (type == TYPE_GUIDE_SEARCH) {
 //            call.params = search;
-            call.args.put("TITLEFILTER",search);
-            call.execute(Action.SEARCHGUIDE_TITLE);
+            if (search != null && ! search.isEmpty()) {
+                call.args.put("TITLEFILTER", search);
+                call.execute(Action.SEARCHGUIDE_TITLE);
+            }
         }
     }
 

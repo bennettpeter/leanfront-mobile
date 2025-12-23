@@ -43,10 +43,15 @@
     <string name="menu_comm_notskip">Do not Skip</string>
     <string name="title_select_audiosync">Adjust Audio Sync</string>
 
+    <string name="title_program_guide">Program Guide</string>
     <string name="guide_channel">Channel</string>
     <string name="guide_select" translatable="false">📅🕒</string>
+    <string name="guide_noprog">There is no listing in that slot.</string>
     <string name="title_chan_group">Channel Group:</string>
     <string name="note_program_continuation">(cont)</string>
+    <string name="msg_edit_schedule">Edit Schedule for %1$s</string>
+    <string name="msg_edit_schedule2">Edit Schedule for %1$s (2)</string>
+
 
     <!-- Words to exclude from the start titles when sorting.
     Must be in UPPER CASE-->

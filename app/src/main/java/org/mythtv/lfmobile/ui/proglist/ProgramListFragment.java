@@ -2,6 +2,7 @@ package org.mythtv.lfmobile.ui.proglist;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,9 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
@@ -29,6 +32,8 @@ import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.databinding.FragmentProglistBinding;
 import org.mythtv.lfmobile.databinding.ItemProgramBinding;
+import org.mythtv.lfmobile.ui.guide.GuideFragment;
+import org.mythtv.lfmobile.ui.schedule.ScheduleViewModel;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -44,17 +49,24 @@ import java.util.Objects;
 public class ProgramListFragment extends MainActivity.MyFragment {
     private static final String TAG = "lfm";
     private static final String CLASS = "ProgramListFragment";
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
     private FragmentProglistBinding binding;
     private ProgramListModel model;
     public static final int COLOR_WILLRECORD = 0xff00C000;
     public static final int COLOR_WONTRECORD = 0xffC00000;
     private MenuProvider menuProvider;
     private int orientation;
-
+    private boolean hideNav = false;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
+        if (hideNav) {
+            View v = ((MainActivity) getActivity()).mainView;
+            View nav = v.findViewById(R.id.bottom_nav_view);
+            nav.setVisibility(View.VISIBLE);
+        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -81,6 +93,16 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         DividerItemDecoration dec = new DividerItemDecoration(recyclerView.getContext(),
                DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dec);
+        if (model.type == ProgramListModel.TYPE_GUIDE_SEARCH) {
+            View v = ((MainActivity) getActivity()).mainView;
+            View nav = v.findViewById(R.id.bottom_nav_view);
+            if (nav != null) {
+                if (nav.getVisibility() == View.VISIBLE) {
+                    hideNav = true;
+                    nav.setVisibility(View.GONE);
+                }
+            }
+        }
         return root;
     }
 
@@ -193,12 +215,6 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         super.onPause();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
     public void startFetch() {
         if (binding != null && binding.swiperefresh != null) {
             binding.swiperefresh.setRefreshing(true);
@@ -239,52 +255,52 @@ public class ProgramListFragment extends MainActivity.MyFragment {
 
         @Override
         public void onBindViewHolder(@NonNull ProgramListViewHolder holder, int position) {
-            ProgramListModel.ProgramItem item = getItem(position);
+            holder.item = getItem(position);
             holder.itemDateView.setText(null);
             StringBuilder dateStr = new StringBuilder();
-            if (item.startTime!= null) {
+            if (holder.item.startTime!= null) {
                 try {
                     final SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
                     final SimpleDateFormat weekDay = new SimpleDateFormat("E");
                     final SimpleDateFormat timeOfDay = new SimpleDateFormat("HH:mm");
                     final DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
                             (MyApplication.getAppContext());
-                    Date date = dbFormat.parse(item.startTime + "+0000");
+                    Date date = dbFormat.parse(holder.item.startTime + "+0000");
                     dateStr.append(weekDay.format(date)).append(" ")
                             .append(outFormat.format(date)).append(" ")
                             .append(timeOfDay.format(date)).append(" ")
-                            .append(item.callSign).append(" ")
-                            .append(item.chanNum);
+                            .append(holder.item.callSign).append(" ")
+                            .append(holder.item.chanNum);
                     holder.itemDateView.setText(dateStr);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
-            holder.itemStatusView.setText(item.statusName);
+            holder.itemStatusView.setText(holder.item.statusName);
             int color;
             // Recorded = -3, Recording = -2, WillRecord = -1,
-            if (item.status == -3
-                    || item.status == -2
-                    || item.status == -1)
+            if (holder.item.status == -3
+                    || holder.item.status == -2
+                    || holder.item.status == -1)
                 color = COLOR_WILLRECORD;
             else
                 color = COLOR_WONTRECORD;
             holder.itemStatusView.setTextColor(color);
 
             StringBuilder titleStr = new StringBuilder();
-            titleStr.append(item.title);
-            boolean haveEpisode = item.episode > 0;
-            boolean haveSubtitle = item.subTitle != null && item.subTitle.trim().length() > 0;
+            titleStr.append(holder.item.title);
+            boolean haveEpisode = holder.item.episode > 0;
+            boolean haveSubtitle = holder.item.subTitle != null && holder.item.subTitle.trim().length() > 0;
             if (haveEpisode || haveSubtitle)
                 titleStr.append(": ");
             if (haveEpisode) {
-                titleStr.append('S').append(item.season).append('E').append(item.episode)
+                titleStr.append('S').append(holder.item.season).append('E').append(holder.item.episode)
                         .append(' ');
             }
             if (haveSubtitle)
-                titleStr.append(item.subTitle);
+                titleStr.append(holder.item.subTitle);
             holder.itemTitleView.setText(titleStr);
-            holder.itemDescView.setText(item.description);
+            holder.itemDescView.setText(holder.item.description);
         }
     }
 
@@ -293,6 +309,7 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         private final TextView itemStatusView;
         private final TextView itemTitleView;
         private final TextView itemDescView;
+        private ProgramListModel.ProgramItem item;
 
         public ProgramListViewHolder(ItemProgramBinding binding, ProgramListFragment fragment) {
             super(binding.getRoot());
@@ -300,6 +317,32 @@ public class ProgramListFragment extends MainActivity.MyFragment {
             itemDateView = binding.itemDate;
             itemDescView = binding.itemDesc;
             itemStatusView = binding.itemStatus;
+            binding.getRoot().setOnClickListener((v)-> {
+                if (item == null) {
+                    Toast.makeText(fragment.getContext(),
+                            R.string.guide_noprog, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                actionRequest(fragment, 1);
+            });
+
         }
+        private void actionRequest(ProgramListFragment fragment, int action) {
+            try {
+                Bundle args = new Bundle();
+                args.putInt(ScheduleViewModel.CHANID, item.chanId);
+                Date startTime = dateFormat.parse(item.startTime + "+0000");
+                args.putSerializable(ScheduleViewModel.STARTTIME, startTime);
+                args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+                NavHostFragment navHostFragment =
+                        (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+                NavController navController = navHostFragment.getNavController();
+                navController.navigate(R.id.nav_schedule, args);
+            } catch (Exception e) {
+                Log.e(TAG, CLASS + " Exception setting up schedule edit.", e);
+                e.printStackTrace();
+            }
+        }
+
     }
 }

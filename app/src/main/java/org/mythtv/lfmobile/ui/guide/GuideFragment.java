@@ -1,6 +1,7 @@
 package org.mythtv.lfmobile.ui.guide;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.Lifecycle;
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -30,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
@@ -191,7 +194,7 @@ public class GuideFragment extends MainActivity.MyFragment {
                     SharedPreferences.Editor editor = Settings.getEditor();
                     Settings.putString(editor, "chan_group", model.chanGroupNames.get(model.chanGroupIx));
                     editor.commit();
-                    refresh(true);
+                    refresh(true, true, 'L');
                     return true;
                 }
                 if (menuItem.getItemId() == R.id.search) {
@@ -216,7 +219,7 @@ public class GuideFragment extends MainActivity.MyFragment {
                     cal.set(Calendar.HOUR_OF_DAY, hh);
                     cal.set(Calendar.MINUTE, min);
                     model.guideStartTime.setTime(cal.getTimeInMillis());
-                    refresh(false);
+                    refresh(false, true, 'L');
                 }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
                 dlgTime.show();
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
@@ -241,8 +244,11 @@ public class GuideFragment extends MainActivity.MyFragment {
         bar.setSubtitle(group);
         // We will refresh everything here
         if (model.timeslotList.isEmpty()) {
-            refresh(true);
+            refresh(true, true, 'L');
         }
+        else
+            refresh(false, false, ' ');
+
     }
 
     @Override
@@ -255,21 +261,30 @@ public class GuideFragment extends MainActivity.MyFragment {
         super.onPause();
     }
 
-    void refresh(boolean resetTimeslots) {
-        binding.progressBar.setVisibility(View.VISIBLE);
+    // scrollDir: R, L, or blank
+    void refresh(boolean resetTimeslots, boolean progressbar, char scrollDir) {
+        if (progressbar)
+            binding.progressBar.setVisibility(View.VISIBLE);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar bar = activity.getSupportActionBar();
         String group = Settings.getString("chan_group");
         if (group.isEmpty())
             group = MyApplication.getAppContext().getString(R.string.all_title) + "\t";
         bar.setSubtitle(group);
-        binding.dateScrollView.fullScroll(View.FOCUS_LEFT);
+        switch (scrollDir) {
+            case 'L':
+                binding.dateScrollView.fullScroll(View.FOCUS_LEFT);
+                break;
+            case 'R':
+                binding.dateScrollView.fullScroll(View.FOCUS_RIGHT);
+                break;
+        }
         model.refresh(resetTimeslots);
     }
 
     @Override
     public void startFetch() {
-        refresh(true);
+        refresh(false, true, ' ');
     }
 
     private static class TimeslotListAdapter extends RecyclerView.Adapter<TimeslotViewHolder> {
@@ -298,7 +313,7 @@ public class GuideFragment extends MainActivity.MyFragment {
                         Handler h = new Handler(Looper.getMainLooper());
                         h.postDelayed(() -> {
                             fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() - GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
-                            fragment.refresh(false);
+                            fragment.refresh(false, true, 'R');
                         }, 100);
                     });
                 } else holder.leftText.setText(null);
@@ -308,7 +323,7 @@ public class GuideFragment extends MainActivity.MyFragment {
                         Handler h = new Handler(Looper.getMainLooper());
                         h.postDelayed(() -> {
                             fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() + GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
-                            fragment.refresh(false);
+                            fragment.refresh(false, true, 'L');
                         }, 100);
                     });
                 } else holder.rightText.setText(null);
@@ -434,17 +449,67 @@ public class GuideFragment extends MainActivity.MyFragment {
             progStatus = binding.progStatus;
             progText = binding.progText;
             binding.getRoot().setOnClickListener((v)->{
-                NavHostFragment navHostFragment =
-                        (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-                NavController navController = navHostFragment.getNavController();
-                Bundle args = new Bundle();
-                //TODO cater for two programs in one slot
-                args.putInt(ScheduleViewModel.CHANID, card.program.chanId);
-                args.putSerializable(ScheduleViewModel.STARTTIME, card.program.startTime);
-                args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
-                navController.navigate(R.id.nav_schedule, args);
+                if (card.program == null) {
+                    Toast.makeText(fragment.getContext(),
+                            R.string.guide_noprog, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                String[] prompts = new String[2];
+                int counter = 0;
+                if (card.program != null) {
+                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule, card.program.title);
+                    ++counter;
+                }
+                if (card.program2 != null) {
+                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule2, card.program2.title);
+                    ++counter;
+                }
+
+                if (counter == 1) {
+                    actionRequest(fragment,1);
+                } else if (counter > 1) {
+                    final String[] finalPrompts = new String[counter];
+                    for (int i = 0; i < counter; i++) {
+                        finalPrompts[i] = prompts[i];
+                    }
+                    String alertTitle = fragment.getContext().getString(R.string.title_program_guide);
+                    // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
+                    AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getActivity());
+                    builder .setTitle(alertTitle)
+                            .setItems(finalPrompts,
+                                    (dialog, which) -> {
+                                        // The 'which' argument contains the index position
+                                        // of the selected item
+                                        if (which < finalPrompts.length) {
+                                            actionRequest(fragment,which+1);
+                                        }
+                                    });
+                    builder.show();
+                }
             });
         }
+        private void actionRequest(GuideFragment fragment, int action) {
+            Bundle args = new Bundle();
+            switch (action) {
+                case 1:
+                    args.putInt(ScheduleViewModel.CHANID, card.program.chanId);
+                    args.putSerializable(ScheduleViewModel.STARTTIME, card.program.startTime);
+                    break;
+                case 2:
+                    args.putInt(ScheduleViewModel.CHANID, card.program2.chanId);
+                    args.putSerializable(ScheduleViewModel.STARTTIME, card.program2.startTime);
+                    break;
+                default:
+                    return;
+            }
+            args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+            NavHostFragment navHostFragment =
+                    (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+            NavController navController = navHostFragment.getNavController();
+            navController.navigate(R.id.nav_schedule, args);
+        }
+
     }
 
 }

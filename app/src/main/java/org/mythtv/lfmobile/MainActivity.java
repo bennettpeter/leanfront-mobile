@@ -3,6 +3,7 @@ package org.mythtv.lfmobile;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private NavController navController;
     public MyFragment myFragment;
     public static MainActivity mainActivity;
+    public View mainView;
     private static final String TAG = "lfm";
     static final String CLASS = "MainActivity";
     @Override
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MainActivityModel.class);
         MainActivityModel.instance = viewModel;
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(mainView = binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
         assert navHostFragment != null;

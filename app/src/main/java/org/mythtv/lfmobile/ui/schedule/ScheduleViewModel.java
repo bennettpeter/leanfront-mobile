@@ -353,8 +353,14 @@ public class ScheduleViewModel extends ViewModel {
                 else
                     recordRule.recordId = Integer.parseInt(result);
                 int resp = INIT_SAVED;
-                if (close)
+                if (close) {
+                    try {
+                        // pause to allow change and reschedule before returning
+                        Thread.sleep(1500);
+                    } catch (InterruptedException ignored) {
+                    }
                     resp = INIT_CLOSE;
+                }
                 // enable save or close
                 initDoneLiveData.postValue(resp);
             }

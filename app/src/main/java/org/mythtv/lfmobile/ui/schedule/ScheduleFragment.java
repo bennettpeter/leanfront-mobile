@@ -2,6 +2,8 @@ package org.mythtv.lfmobile.ui.schedule;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
@@ -11,10 +13,15 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,6 +38,7 @@ import org.mythtv.lfmobile.data.AsyncBackendCall;
 import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.databinding.FragmentScheduleBinding;
 import org.mythtv.lfmobile.ui.MultiSpinner;
+import org.mythtv.lfmobile.ui.proglist.ProgramListModel;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
 import java.text.DateFormat;
@@ -51,6 +59,7 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     ArrayList<String> typeOptions = new ArrayList<>();
     ArrayList<String> inputPrompts = new ArrayList<>();
     ArrayList<Integer> inputValues = new ArrayList<>();
+    private boolean hideNav = false;
 
     static final int[] searchPrompts = {
             R.string.sched_srch_None,
@@ -104,6 +113,7 @@ public class ScheduleFragment extends MainActivity.MyFragment {
             R.string.sched_pp_job3, R.string.sched_pp_job4};
 
     static final NumericFocus numericFocus= new NumericFocus();
+    private MenuProvider menuProvider;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,6 +132,16 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (hideNav) {
+            View v = ((MainActivity) getActivity()).mainView;
+            View nav = v.findViewById(R.id.bottom_nav_view);
+            nav.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void startFetch() {
 
     }
@@ -137,12 +157,34 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         model = new ViewModelProvider(this).get(ScheduleViewModel.class);
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        View v = ((MainActivity)getActivity()).mainView;
+        View nav = v.findViewById(R.id.bottom_nav_view);
+        if (nav != null) {
+            if (nav.getVisibility() == View.VISIBLE) {
+                hideNav = true;
+                nav.setVisibility(View.GONE);
+            }
+        }
         return root;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        menuProvider = new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+                    if (refreshItem != null)
+                        refreshItem.setVisible(false);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                return false;
+            }
+        };
+
     }
 
     @Override
@@ -178,11 +220,17 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).myFragment = this;
+        if (menuProvider != null)
+            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
     }
 
     @Override
     public void onPause() {
         ((MainActivity) getActivity()).myFragment = null;
+        if (menuProvider != null) {
+            getActivity().removeMenuProvider(menuProvider);
+            getActivity().invalidateMenu();
+        }
         super.onPause();
     }
 
@@ -622,9 +670,9 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         model.recordRule.inetref = binding.inetref.getText().toString();
     }
 
-    private void save(boolean exit) {
+    private void save(boolean close) {
         updateFromView();
-        model.save(exit);
+        model.save(close);
     }
 
     private boolean canClose() {
@@ -666,7 +714,6 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     // Save is disabled for deleteing a non-existent record
     // It is not disabled for updating a record without any changes
     // because that would mean checking all fields after every
-    // keystroke
     // keystroke
     private void enableSave() {
         boolean enabled = true;
