@@ -3,8 +3,6 @@ package org.mythtv.lfmobile.ui.schedule;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,14 +13,11 @@ import org.mythtv.lfmobile.data.Action;
 import org.mythtv.lfmobile.data.AsyncBackendCall;
 import org.mythtv.lfmobile.data.XmlNode;
 
-import java.io.ObjectOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class ScheduleViewModel extends ViewModel {
+    public static final String REQID = "REQID";
     public static final String CHANID = "CHANID";
     public static final String STARTTIME = "STARTTIME";
     public static final String RECORDID = "RECORDID";
@@ -67,16 +62,15 @@ public class ScheduleViewModel extends ViewModel {
     int chanId;
     Date startTime;
     int savedHashCode;
+    long reqId;
     private static final String TAG = "lfm";
     final String CLASS = "ScheduleViewModel";
 
     void init(Bundle args) {
-        if (initDone)
-            // don't need to reinitialize views again
-//            initDoneLiveData.postValue(initDone)
-                    ;
-
+        if (initDone && reqId == args.getLong(REQID))
+            ;
         else {
+            reqId = args.getLong(REQID);
             chanId = args.getInt(CHANID, 0);
             startTime = (Date) args.getSerializable(STARTTIME);
             recordId = args.getInt(RECORDID,0);
@@ -88,7 +82,6 @@ public class ScheduleViewModel extends ViewModel {
                 initDone = true;
                 initDoneLiveData.postValue(INIT_READY);
             });
-            call.mainThread = false;
             int firstCall;
             if (chanId != 0 && startTime != null) {
                 // Creating from program schedule
@@ -350,8 +343,13 @@ public class ScheduleViewModel extends ViewModel {
                 Log.i(TAG, CLASS + " Recording scheduled, Response:" + result);
                 if (caller.getTasks()[0] == Action.DELETERECRULE)
                     recordRule.recordId = 0;
-                else
-                    recordRule.recordId = Integer.parseInt(result);
+                else if (recordRule.recordId == 0) {
+                    try {
+                        recordRule.recordId = Integer.parseInt(result);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 int resp = INIT_SAVED;
                 if (close) {
                     try {
@@ -367,19 +365,15 @@ public class ScheduleViewModel extends ViewModel {
         });
         call.mainThread = false;
         call.args.put("RECORDRULE", recordRule);
-//        call.setRecordRule(mRecordRule);
         if ("Forget History".equals(recordRule.type)) {
             call.execute(Action.FORGETHISTORY);
         }
         else if ("Never Record".equals(recordRule.type)) {
-//            call.setNeverRecord(true);
             call.execute(Action.ADDDONTRECORDSCHEDULE);
         }
         else if ("Not Recording". equals(recordRule.type)) {
             if (recordRule.recordId > 0)
                 call.execute(Action.DELETERECRULE);
-//            else
-//                finish();
         }
         else {
             String recordRuleStr = AsyncBackendCall.getString(recordRule);

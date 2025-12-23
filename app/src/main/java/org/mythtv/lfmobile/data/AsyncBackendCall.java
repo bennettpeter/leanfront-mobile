@@ -1,7 +1,6 @@
 package org.mythtv.lfmobile.data;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 import android.os.Looper;
 import android.os.Handler;
 import android.util.Log;
@@ -33,8 +32,6 @@ public class AsyncBackendCall implements Runnable {
     }
 
     public ArrayList<Video> videos = new ArrayList<>();
-    // Class of params and response are dependent on the call
-//    public Object params;
     public HashMap<String,Object> args = new HashMap<>();
     public Object response;
     // Specifies whether the return must be on the main thread.
@@ -507,12 +504,7 @@ public class AsyncBackendCall implements Runnable {
                     break;
                 }
                 case Action.GUIDE: {
-                    // params is array of objects
-                    // params[0]: Integer channel group id
-                    // params[1]: Date startTime
-                    // params[2]: Date endTime
                     try {
-//                        Object parm[] = (Object[]) params;
                         int groupId = (Integer)args.get("CHANGROUPID");
                         Date startTime = (Date)args.get("STARTTIME");
                         Date endTime = (Date)args.get("ENDTIME");
@@ -634,51 +626,6 @@ public class AsyncBackendCall implements Runnable {
                                 (XmlNode.mythApiUrl(null,
                                         baseURL));
                         urlBuilder.append(getString(recordRule));
-//                        urlBuilder.append("Title=").append(URLEncoder.encode(nvl(recordRule.title), "UTF-8"))
-//                                .append("&Subtitle=").append(URLEncoder.encode(nvl(recordRule.subtitle), "UTF-8"))
-//                                .append("&Description=").append(URLEncoder.encode(nvl(recordRule.description), "UTF-8"))
-//                                .append("&Category=").append(URLEncoder.encode(nvl(recordRule.category), "UTF-8"))
-//                                .append("&StartTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.startTime), "UTF-8"))
-//                                .append("&EndTime=").append(URLEncoder.encode(sdfUTC.format(recordRule.endTime), "UTF-8"))
-//                                .append("&SeriesId=").append(nvl(recordRule.seriesId))
-//                                .append("&ProgramId=").append(nvl(recordRule.programId))
-//                                .append("&ChanId=").append(recordRule.chanId)
-//                                .append("&Station=").append(URLEncoder.encode(nvl(recordRule.station), "UTF-8"))
-//                                .append("&FindDay=").append(recordRule.findDay)
-//                                .append("&FindTime=").append(URLEncoder.encode(nvl(recordRule.findTime), "UTF-8"))
-//                                .append("&ParentId=").append(recordRule.parentId)
-//                                .append("&Inactive=").append(recordRule.inactive)
-//                                .append("&Season=").append(recordRule.season)
-//                                .append("&Episode=").append(recordRule.episode)
-//                                .append("&Inetref=").append(URLEncoder.encode(nvl(recordRule.inetref),"UTF-8"))
-//                                .append("&Type=").append(URLEncoder.encode(recordRule.type,"UTF-8"))
-//                                .append("&SearchType=").append(URLEncoder.encode(recordRule.searchType,"UTF-8"))
-//                                .append("&RecPriority=").append(recordRule.recPriority)
-//                                .append("&PreferredInput=").append(recordRule.preferredInput)
-//                                .append("&StartOffset=").append(recordRule.startOffset)
-//                                .append("&EndOffset=").append(recordRule.endOffset)
-//                                .append("&DupMethod=").append(URLEncoder.encode(nvl(recordRule.dupMethod),"UTF-8"))
-//                                .append("&DupIn=").append(URLEncoder.encode(nvl(recordRule.dupIn),"UTF-8"))
-//                                .append("&AutoExtend=").append(URLEncoder.encode(nvl(recordRule.autoExtend),"UTF-8"))
-//                                .append("&NewEpisOnly=").append(recordRule.newEpisOnly)
-//                                .append("&Filter=").append(recordRule.filter)
-//                                .append("&RecProfile=").append(URLEncoder.encode(recordRule.recProfile,"UTF-8"))
-//                                .append("&RecGroup=").append(URLEncoder.encode(recordRule.recGroup,"UTF-8"))
-//                                .append("&StorageGroup=").append(URLEncoder.encode(recordRule.storageGroup,"UTF-8"))
-//                                .append("&PlayGroup=").append(URLEncoder.encode(recordRule.playGroup,"UTF-8"))
-//                                .append("&AutoExpire=").append(recordRule.autoExpire)
-//                                .append("&MaxEpisodes=").append(recordRule.maxEpisodes)
-//                                .append("&MaxNewest=").append(recordRule.maxNewest)
-//                                .append("&AutoCommflag=").append(recordRule.autoCommflag)
-//                                .append("&AutoTranscode=").append(recordRule.autoTranscode)
-//                                .append("&AutoMetaLookup=").append(recordRule.autoMetaLookup)
-//                                .append("&AutoUserJob1=").append(recordRule.autoUserJob1)
-//                                .append("&AutoUserJob2=").append(recordRule.autoUserJob2)
-//                                .append("&AutoUserJob3=").append(recordRule.autoUserJob3)
-//                                .append("&AutoUserJob4=").append(recordRule.autoUserJob4)
-//                                .append("&Transcoder=").append(recordRule.transcoder);
-//                        if (recordRule.lastRecorded != null)
-//                            urlBuilder.append("&LastRecorded=").append(URLEncoder.encode(sdfUTC.format(recordRule.lastRecorded), "UTF-8"));
                         xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
                         String result = xmlResult.getString();
                         if (recordRule.recordId == 0) { // if a new rule is being created

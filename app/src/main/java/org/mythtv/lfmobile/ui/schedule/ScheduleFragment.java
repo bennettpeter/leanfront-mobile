@@ -2,19 +2,14 @@ package org.mythtv.lfmobile.ui.schedule;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,8 +33,6 @@ import org.mythtv.lfmobile.data.AsyncBackendCall;
 import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.databinding.FragmentScheduleBinding;
 import org.mythtv.lfmobile.ui.MultiSpinner;
-import org.mythtv.lfmobile.ui.proglist.ProgramListModel;
-import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -246,7 +239,6 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         // Start Time
         initText(binding.dateTime, model.recordRule.startTime);
         // Template
-//        setupSpinner(binding.template, model.templateNames);
         initSpinner(binding.template, null,
                 model.templateNames.toArray(new String[]{}), templateName);
         binding.template.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -264,7 +256,6 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                     }
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -308,34 +299,11 @@ public class ScheduleFragment extends MainActivity.MyFragment {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-//        binding.scheduleType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                model.recordRule.type = typeOptions.get(position);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
         // Recording Group
         initSpinner(binding.recordingGroup, null,
                 model.mRecGroupList.toArray(new String[]{}), model.recordRule.recGroup);
-//        binding.recordingGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                model.recordRule.recGroup = model.mRecGroupList.get(position);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
         // Active
         binding.active.setChecked(!model.recordRule.inactive);
-//        binding.active.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
-//            model.recordRule.inactive = !isChecked;
-//        });
         // Playback Group
         initSpinner(binding.playbackGroup, null,
                 model.mPlayGroupList.toArray(new String[]{}), model.recordRule.playGroup);
@@ -704,14 +672,13 @@ public class ScheduleFragment extends MainActivity.MyFragment {
             builder.show();
             return false;
         }
-//        getActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
     private void close() {
         getActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
-    // Save is disabled for deleteing a non-existent record
+    // Save is disabled for deleting a non-existent record
     // It is not disabled for updating a record without any changes
     // because that would mean checking all fields after every
     // keystroke
@@ -721,12 +688,6 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                 || (model.recordRule.recordId == 0
                 && "Not Recording". equals(model.recordRule.type)))
             enabled = false;
-//        else {
-//            String recordRuleStr = AsyncBackendCall.getString(model.recordRule);
-//            int newHashCode = recordRuleStr.hashCode();
-//            if (newHashCode == model.savedHashCode)
-//                enabled = false;
-//        }
         binding.saveButton.setEnabled(enabled);
     }
 

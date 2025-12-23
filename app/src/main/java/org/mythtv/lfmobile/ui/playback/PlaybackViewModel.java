@@ -120,9 +120,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             if (commBreakTable.entries.length > 0)
                 setNextCommBreak(-1);
         });
-        call.mainThread = false;
         call.videos.add(video);
-//        call.params = commBreakTable;
         call.args.put("COMMBREAKTABLE",commBreakTable);
         call.execute(Action.CUTLIST_LOAD, Action.COMMBREAK_LOAD);
     }

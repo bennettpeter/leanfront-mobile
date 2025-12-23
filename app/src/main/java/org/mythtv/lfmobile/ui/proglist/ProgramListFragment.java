@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
@@ -32,7 +31,6 @@ import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.databinding.FragmentProglistBinding;
 import org.mythtv.lfmobile.databinding.ItemProgramBinding;
-import org.mythtv.lfmobile.ui.guide.GuideFragment;
 import org.mythtv.lfmobile.ui.schedule.ScheduleViewModel;
 
 import java.text.DateFormat;
@@ -330,6 +328,7 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         private void actionRequest(ProgramListFragment fragment, int action) {
             try {
                 Bundle args = new Bundle();
+                args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
                 args.putInt(ScheduleViewModel.CHANID, item.chanId);
                 Date startTime = dateFormat.parse(item.startTime + "+0000");
                 args.putSerializable(ScheduleViewModel.STARTTIME, startTime);

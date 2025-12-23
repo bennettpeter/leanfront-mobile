@@ -491,6 +491,7 @@ public class GuideFragment extends MainActivity.MyFragment {
         }
         private void actionRequest(GuideFragment fragment, int action) {
             Bundle args = new Bundle();
+            args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
             switch (action) {
                 case 1:
                     args.putInt(ScheduleViewModel.CHANID, card.program.chanId);

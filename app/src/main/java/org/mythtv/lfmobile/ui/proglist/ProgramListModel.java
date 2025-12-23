@@ -20,9 +20,6 @@ public class ProgramListModel extends ViewModel {
     String search;
     volatile int callId;
 
-    public ProgramListModel() {
-    }
-
     public void startFetch() {
         AsyncBackendCall call = new AsyncBackendCall((caller) -> {
             programList.clear();
@@ -54,15 +51,12 @@ public class ProgramListModel extends ViewModel {
             }
             refreshScreen();
         });
-        call.mainThread = false;
         call.id = ++callId;
         if (type == TYPE_UPCOMING) {
-//            call.params = new Boolean(showAll);
             call.args.put("SHOWALL",showAll);
             call.execute(Action.GETUPCOMINGLIST);
         }
         else if (type == TYPE_GUIDE_SEARCH) {
-//            call.params = search;
             if (search != null && ! search.isEmpty()) {
                 call.args.put("TITLEFILTER", search);
                 call.execute(Action.SEARCHGUIDE_TITLE);

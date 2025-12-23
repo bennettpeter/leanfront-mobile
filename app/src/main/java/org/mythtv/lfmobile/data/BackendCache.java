@@ -50,7 +50,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
 
     public void getWsdl() {
         AsyncBackendCall call = new AsyncBackendCall( this);
-        call.mainThread = false;
         call.execute(Action.DVR_WSDL, Action.BACKEND_INFO, Action.GET_HOSTNAME);
         wsdlDone = true;
     }

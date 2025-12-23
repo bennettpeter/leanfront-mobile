@@ -99,7 +99,6 @@ public class GuideViewModel extends ViewModel {
             chanGroupId = chanGroupIDs.get(chanGroupIx);
             loadGuide();
         });
-        call.mainThread = false;
         call.execute(Action.CHAN_GROUPS);
     }
 
@@ -123,7 +122,6 @@ public class GuideViewModel extends ViewModel {
         call.args.put("CHANGROUPID", chanGroupId);
         call.args.put("STARTTIME", guideStartTime);
         call.args.put("ENDTIME", guideEndTime);
-        call.mainThread = false;
         call.execute(Action.GUIDE);
     }
 
