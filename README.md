@@ -14,6 +14,10 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 - [Videos Screen](#videos-screen)
 - [Playback Screen](#playback-screen)
 - [Settings](#settings)
+- [Guide Screen](#guide-screen)
+- [Guide Search Screen](#guide-search-screen)
+- [Schedule Screen](#schedule-screen)
+- [Upcoming Screen](#upcoming-screen)
 - [Installing leanfront](#installing-leanfront)
 - [Leanfront Features](#leanfront-features)
 - [Release Notes](#release-notes)
@@ -77,11 +81,6 @@ Videos from the Videos part of MythTV are shown here, organized by directory. Yo
 - Commercial skip is supported if the recording or video has been flagged in MythTV. Skipping with back and next keys is supported. Set the option to use those keys for commercial skip in [settings](#settings).
 - For more information see [Playback](#playback).
 
-## Upcoming screen
-![](ScreenShots/upcoming.png)
-
-This displays upcoming recordings on the MythTV backend. You can use the menu icon at the top right hand side to select "Show All" to show the full list including shows excluded and the reason for excluding them.
-
 ## Settings
 
 ![](ScreenShots/Settings.png)
@@ -111,6 +110,36 @@ The advanced section of settings includes a value that may need to be changed to
 - **TS Search Packets.** Increase this if when playing a recording or other TS file, the recording length does not show in the OSD, and you cannot use skips or bookmarks. The default value supplied with exoplayer is 600. I have set a default value of 2600 in leanfront. The value is limited to a range of 600 - 100,000. Increasing the value will cause the start of playback to take longer and use more memory. Also skips forwards and back will take longer. Thus it is best to make this the smallest value that works for you.
 
 </details>
+
+## Guide Screen
+![](ScreenShots/Guide.png)
+![](ScreenShots/Guide_horz.png)
+
+This is the program guide from the MythTV listings service.
+
+- Select the channel group from the menu by clicking the three dots at the top right hand of the screen.
+- Select the date and time by scrolling right or tap the calendar/clock icon at the top right of the grid.
+- Schedule a recording or change an existing recording by tapping on an entry in the grid.
+- Search the guide using the magnifying glass icon.
+
+## Guide Search Screen
+![](ScreenShots/Guide_search.png)
+
+From the results of the guide search you can tap any entry to schedule a recording.
+
+## Schedule Screen
+![](ScreenShots/Schedule.png)
+
+This is shown as a result of tapping and entry in the guide, guide search or upcoming screens.
+
+The schedule screen includes all of the normal options for scheduling a recording. Scroll down for further options and to see the Save button at the end.
+
+## Upcoming Screen
+![](ScreenShots/upcoming.png)
+
+This displays upcoming recordings on the MythTV backend. You can use the menu icon at the top right hand side to select "Show All" to show the full list including shows excluded and the reason for excluding them.
+
+Tap an entry to edit the record rule. See [Schedule Screen](#schedule-screen).
 
 ## Installing leanfront
 You need an Android phone or tablet. For TV devices see [leanfront](https://github.com/bennettpeter/leanfront).
