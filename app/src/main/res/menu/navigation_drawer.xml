@@ -17,11 +17,15 @@
             app:showAsAction="ifRoom"/>
         <item
             android:id="@+id/nav_guide"
-            android:icon="@drawable/ic_guide"
+            android:icon="@drawable/ic_guide_24px"
             android:title="@string/menu_guide" />
+<!--        <item-->
+<!--            android:id="@+id/nav_recrules"-->
+<!--            android:icon="@drawable/ic_rules_24px"-->
+<!--            android:title="Rules" />-->
         <item
             android:id="@+id/nav_upcoming"
-            android:icon="@drawable/ic_data_table_24px"
+            android:icon="@drawable/ic_upcoming_24px"
             android:title="@string/menu_upcoming"
             app:showAsAction="ifRoom"/>
 
