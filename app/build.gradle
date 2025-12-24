@@ -4,7 +4,7 @@ plugins {
 
 task gitinfo {
     ext.describe = 'git describe --dirty'.execute().text.trim()
-    ext.describe2 = 'git -C ../leanfront describe --dirty'.execute().text.trim()
+    ext.describe2 = 'git -C ../leanfront describe origin/master'.execute().text.trim()
     def split = ext.describe.split("-")
     def split2 = ext.describe2.split("-")
     ext.version = Integer.parseInt(split[1])

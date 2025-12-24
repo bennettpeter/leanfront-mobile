@@ -29,8 +29,6 @@ if [[ ! -d leanfront ]] ; then
     git clone git@github.com:bennettpeter/leanfront.git
 fi
 git -C leanfront fetch
-git -C leanfront checkout master 2>&1
-git -C leanfront pull 2>&1
 
 if [[ ! -d libyuv ]] ; then
     git clone git@github.com:bennettpeter/libyuv.git
