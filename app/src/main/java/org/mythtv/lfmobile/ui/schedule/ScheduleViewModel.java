@@ -199,9 +199,9 @@ public class ScheduleViewModel extends ViewModel {
 //            }
         }
         if (progDetails != null) {
-            if ("None".equals(recordRule.searchType))
-                recordRule.mergeProgram(progDetails);
-            else if ("Manual Search".equals(recordRule.searchType)) {
+//            if ("None".equals(recordRule.searchType))
+            recordRule.mergeProgram(progDetails);
+            if ("Manual Search".equals(recordRule.searchType)) {
                 // startTime is correct for this showing but endTime
                 // is the original end time from the rule. Convert
                 // end time to the same date as start time.

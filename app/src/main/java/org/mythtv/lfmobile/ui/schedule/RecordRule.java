@@ -195,10 +195,14 @@ public class RecordRule {
     }
 
     public RecordRule mergeProgram(RecordRule program) {
+        // In searches, these fields contain search and additional tables
+        // so do not fill in the subtitle and description
         if (program != null) {
-            title = program.title;
-            subtitle = program.subtitle;
-            description = program.description;
+            if ("None".equals(searchType)) {
+                title = program.title;
+                subtitle = program.subtitle;
+                description = program.description;
+            }
             category = program.category;
             startTime = program.startTime;
             endTime = program.endTime;
