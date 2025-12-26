@@ -46,6 +46,9 @@ public class ProgramListModel extends ViewModel {
                 item.season = node.getInt("Season",0);
                 item.episode = node.getInt("Episode",0);
                 item.description = node.getString("Description");
+                XmlNode recording = node.getNode("Recording");
+                if (recording != null)
+                    item.recordId = recording.getInt("RecordId",0);
                 programList.add(item);
                 node = node.getNextSibling();
             }
@@ -84,6 +87,7 @@ public class ProgramListModel extends ViewModel {
         public int season;
         public int episode;
         public String description;
+        public int recordId;
 
     }
 }

@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -254,7 +253,7 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         @Override
         public void onBindViewHolder(@NonNull ProgramListViewHolder holder, int position) {
             holder.item = getItem(position);
-            holder.itemDateView.setText(null);
+            holder.binding.itemDate.setText(null);
             StringBuilder dateStr = new StringBuilder();
             if (holder.item.startTime!= null) {
                 try {
@@ -269,12 +268,12 @@ public class ProgramListFragment extends MainActivity.MyFragment {
                             .append(timeOfDay.format(date)).append(" ")
                             .append(holder.item.callSign).append(" ")
                             .append(holder.item.chanNum);
-                    holder.itemDateView.setText(dateStr);
+                    holder.binding.itemDate.setText(dateStr);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
-            holder.itemStatusView.setText(holder.item.statusName);
+            holder.binding.itemStatus.setText(holder.item.statusName);
             int color;
             // Recorded = -3, Recording = -2, WillRecord = -1,
             if (holder.item.status == -3
@@ -283,7 +282,7 @@ public class ProgramListFragment extends MainActivity.MyFragment {
                 color = COLOR_WILLRECORD;
             else
                 color = COLOR_WONTRECORD;
-            holder.itemStatusView.setTextColor(color);
+            holder.binding.itemStatus.setTextColor(color);
 
             StringBuilder titleStr = new StringBuilder();
             titleStr.append(holder.item.title);
@@ -297,41 +296,44 @@ public class ProgramListFragment extends MainActivity.MyFragment {
             }
             if (haveSubtitle)
                 titleStr.append(holder.item.subTitle);
-            holder.itemTitleView.setText(titleStr);
-            holder.itemDescView.setText(holder.item.description);
+            holder.binding.itemTitle.setText(titleStr);
+            holder.binding.itemDesc.setText(holder.item.description);
+            if (holder.item.recordId == 0) {
+                holder.binding.itemPaperclip.setVisibility(View.GONE);
+            } else {
+                holder.binding.itemPaperclip.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     private static class ProgramListViewHolder extends RecyclerView.ViewHolder {
-        private final TextView itemDateView;
-        private final TextView itemStatusView;
-        private final TextView itemTitleView;
-        private final TextView itemDescView;
+        private final ItemProgramBinding binding;
         private ProgramListModel.ProgramItem item;
 
         public ProgramListViewHolder(ItemProgramBinding binding, ProgramListFragment fragment) {
             super(binding.getRoot());
-            itemTitleView = binding.itemTitle;
-            itemDateView = binding.itemDate;
-            itemDescView = binding.itemDesc;
-            itemStatusView = binding.itemStatus;
-            binding.getRoot().setOnClickListener((v)-> {
+            this.binding = binding;
+            View.OnClickListener listener  = v -> {
                 if (item == null) {
                     Toast.makeText(fragment.getContext(),
                             R.string.guide_noprog, Toast.LENGTH_LONG).show();
                     return;
                 }
-                actionRequest(fragment, 1);
-            });
+                actionRequest(fragment, v);
 
+            };
+            binding.getRoot().setOnClickListener(listener);
+            binding.itemPaperclip.setOnClickListener(listener);
         }
-        private void actionRequest(ProgramListFragment fragment, int action) {
+        private void actionRequest(ProgramListFragment fragment, View v) {
             try {
                 Bundle args = new Bundle();
                 args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
                 args.putInt(ScheduleViewModel.CHANID, item.chanId);
                 Date startTime = dateFormat.parse(item.startTime + "+0000");
                 args.putSerializable(ScheduleViewModel.STARTTIME, startTime);
+                if (v == binding.itemPaperclip)
+                    args.putBoolean(ScheduleViewModel.ISOVERRIDE, true);
                 args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
                 NavHostFragment navHostFragment =
                         (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);

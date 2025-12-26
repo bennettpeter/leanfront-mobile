@@ -1,7 +1,9 @@
 package org.mythtv.lfmobile.ui.schedule;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -33,6 +35,7 @@ import org.mythtv.lfmobile.data.AsyncBackendCall;
 import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.databinding.FragmentScheduleBinding;
 import org.mythtv.lfmobile.ui.MultiSpinner;
+import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -195,6 +198,12 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         model.initDoneLiveData.observe(getViewLifecycleOwner(), (done) -> {
             switch (done) {
                 case ScheduleViewModel.INIT_READY:
+                    ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                    if (model.isOverride)
+                        bar.setTitle(R.string.menu_override);
+                    else
+                        bar.setTitle(R.string.menu_schedule);
+                    bar.setSubtitle(null);
                     setupViews();
                     break;
                 case ScheduleViewModel.INIT_SAVED:

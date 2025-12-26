@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -422,14 +421,20 @@ public class GuideFragment extends MainActivity.MyFragment {
         @Override
         public void onBindViewHolder(@NonNull ProgViewHolder holder, int position) {
             if (fragment.model.progList != null && fragment.model.progList.size() > position) {
-                holder.card = fragment.model.progList.get(position);
-                holder.progText.setText(holder.card.getGuideText(fragment.getContext()));
+                holder.item = fragment.model.progList.get(position);
+                holder.binding.progText.setText(holder.item.getGuideText(fragment.getContext()));
                 String status = null;
-                if (holder.card.program != null && holder.card.program.recordingStatus != null)
-                    status = holder.card.program.recordingStatus;
-                if (holder.card.program2 != null && holder.card.program2.recordingStatus != null)
-                    status = (status == null ? "(2)" : status + '/') + holder.card.program2.recordingStatus;
-                holder.progStatus.setText(status);
+                if (holder.item.program != null && holder.item.program.recordingStatus != null)
+                    status = holder.item.program.recordingStatus;
+                if (holder.item.program2 != null && holder.item.program2.recordingStatus != null)
+                    status = (status == null ? "(2)" : status + '/') + holder.item.program2.recordingStatus;
+                holder.binding.progStatus.setText(status);
+            }
+
+            if (holder.item.program == null || holder.item.program.recordingStatus == null) {
+                holder.binding.itemPaperclip.setVisibility(View.GONE);
+            } else {
+                holder.binding.itemPaperclip.setVisibility(View.VISIBLE);
             }
         }
 
@@ -440,34 +445,30 @@ public class GuideFragment extends MainActivity.MyFragment {
     }
 
     private static class ProgViewHolder extends RecyclerView.ViewHolder {
-        private final TextView progStatus;
-        private final TextView progText;
-        private ProgSlot card;
+        private final ItemGuideBinding binding;
+        private ProgSlot item;
 
         public ProgViewHolder(ItemGuideBinding binding, GuideFragment fragment) {
             super(binding.getRoot());
-            progStatus = binding.progStatus;
-            progText = binding.progText;
-            binding.getRoot().setOnClickListener((v)->{
-                if (card.program == null) {
+            this.binding = binding;
+            View.OnClickListener listener  =  v ->{
+                if (item.program == null) {
                     Toast.makeText(fragment.getContext(),
                             R.string.guide_noprog, Toast.LENGTH_LONG).show();
                     return;
                 }
-
                 String[] prompts = new String[2];
                 int counter = 0;
-                if (card.program != null) {
-                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule, card.program.title);
+                if (item.program != null) {
+                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule, item.program.title);
                     ++counter;
                 }
-                if (card.program2 != null) {
-                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule2, card.program2.title);
+                if (item.program2 != null) {
+                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule2, item.program2.title);
                     ++counter;
                 }
-
                 if (counter == 1) {
-                    actionRequest(fragment,1);
+                    actionRequest(fragment,1, v);
                 } else if (counter > 1) {
                     final String[] finalPrompts = new String[counter];
                     for (int i = 0; i < counter; i++) {
@@ -482,28 +483,32 @@ public class GuideFragment extends MainActivity.MyFragment {
                                         // The 'which' argument contains the index position
                                         // of the selected item
                                         if (which < finalPrompts.length) {
-                                            actionRequest(fragment,which+1);
+                                            actionRequest(fragment,which+1, v);
                                         }
                                     });
                     builder.show();
                 }
-            });
+            };
+            binding.getRoot().setOnClickListener(listener);
+            binding.itemPaperclip.setOnClickListener(listener);
         }
-        private void actionRequest(GuideFragment fragment, int action) {
+        private void actionRequest(GuideFragment fragment, int action, View v) {
             Bundle args = new Bundle();
             args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
             switch (action) {
                 case 1:
-                    args.putInt(ScheduleViewModel.CHANID, card.program.chanId);
-                    args.putSerializable(ScheduleViewModel.STARTTIME, card.program.startTime);
+                    args.putInt(ScheduleViewModel.CHANID, item.program.chanId);
+                    args.putSerializable(ScheduleViewModel.STARTTIME, item.program.startTime);
                     break;
                 case 2:
-                    args.putInt(ScheduleViewModel.CHANID, card.program2.chanId);
-                    args.putSerializable(ScheduleViewModel.STARTTIME, card.program2.startTime);
+                    args.putInt(ScheduleViewModel.CHANID, item.program2.chanId);
+                    args.putSerializable(ScheduleViewModel.STARTTIME, item.program2.startTime);
                     break;
                 default:
                     return;
             }
+            if (v == binding.itemPaperclip)
+                args.putBoolean(ScheduleViewModel.ISOVERRIDE, true);
             args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
             NavHostFragment navHostFragment =
                     (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);

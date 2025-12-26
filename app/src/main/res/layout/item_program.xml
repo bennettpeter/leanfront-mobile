@@ -14,7 +14,7 @@
         android:paddingRight="100dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/item_status"
@@ -26,11 +26,11 @@
         android:paddingRight="4dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/item_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
@@ -38,20 +38,33 @@
         android:paddingRight="4dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/item_date"/>
+        app:layout_constraintTop_toBottomOf="@id/item_date"
+        app:layout_constraintWidth_percent="0.9" />
 
     <TextView
         android:id="@+id/item_desc"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
-        android:maxLines="6"
         android:ellipsize="end"
+        android:gravity="top"
+        android:maxLines="6"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textStyle="normal"
-        android:gravity="top"
+        app:layout_constraintEnd_toStartOf="@+id/item_paperclip"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/item_title" />
+
+    <ImageView
+        android:id="@+id/item_paperclip"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/paperclip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_date"
+        app:layout_constraintWidth_percent="0.12" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

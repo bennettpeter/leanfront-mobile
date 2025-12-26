@@ -10,6 +10,7 @@
     <string name="menu_guide">Guide</string>
     <string name="menu_show_all">Show All</string>
     <string name="menu_schedule">Schedule Recording</string>
+    <string name="menu_override">Override Recording</string>
     <string name="hint_guide_search">Search the Guide …</string>
 
     <string name="row_header_channels">Channels</string>

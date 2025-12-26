@@ -123,12 +123,15 @@ public class ScheduleViewModel extends ViewModel {
             if (programNode != null) {
                 progDetails = new RecordRule().fromProgram(programNode);
                 recordId = progDetails.recordId;
+                if (recordId == 0)
+                    isOverride = false;
                 String recordingStatus = programNode.getNode("Recording").getString("StatusName");
                 int recType = programNode.getNode("Recording").getInt("RecType", 0);
                 if (recordingStatus == null)
                     recordingStatus = programNode.getNode("Recording").getString("Status");
                 if (recType == 7 || recType == 8) {
                     // editing an override
+                    isOverride = true;
                 } else if ("NeverRecord".equals(recordingStatus)) {
                     // Special override
                     neverRecord = true;
@@ -199,7 +202,6 @@ public class ScheduleViewModel extends ViewModel {
 //            }
         }
         if (progDetails != null) {
-//            if ("None".equals(recordRule.searchType))
             recordRule.mergeProgram(progDetails);
             if ("Manual Search".equals(recordRule.searchType)) {
                 // startTime is correct for this showing but endTime

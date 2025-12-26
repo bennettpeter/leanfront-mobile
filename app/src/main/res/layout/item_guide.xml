@@ -10,14 +10,25 @@
 
         <TextView
             android:id="@+id/prog_text"
-            android:layout_width="256dp"
+            android:layout_width="0dp"
             android:layout_height="68dp"
             android:ellipsize="end"
             android:textSize="14dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/item_paperclip"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/item_paperclip"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/paperclip"
+            app:layout_constraintBottom_toTopOf="@id/prog_status"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.15" />
 
         <TextView
             android:id="@+id/prog_status"
