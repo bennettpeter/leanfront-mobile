@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -130,12 +132,8 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (hideNav) {
-            View v = ((MainActivity) getActivity()).mainView;
-            View nav = v.findViewById(R.id.bottom_nav_view);
-            nav.setVisibility(View.VISIBLE);
-        }
     }
+
 
     @Override
     public void startFetch() {
@@ -153,14 +151,6 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         model = new ViewModelProvider(this).get(ScheduleViewModel.class);
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        View v = ((MainActivity)getActivity()).mainView;
-        View nav = v.findViewById(R.id.bottom_nav_view);
-        if (nav != null) {
-            if (nav.getVisibility() == View.VISIBLE) {
-                hideNav = true;
-                nav.setVisibility(View.GONE);
-            }
-        }
         return root;
     }
 
@@ -224,6 +214,22 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         ((MainActivity) getActivity()).myFragment = this;
         if (menuProvider != null)
             getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+        View v = ((MainActivity)getActivity()).mainView;
+        View nav = v.findViewById(R.id.bottom_nav_view);
+        if (nav != null) {
+            if (nav.getVisibility() == View.VISIBLE) {
+                hideNav = true;
+                nav.setVisibility(View.GONE);
+            }
+        }
+        DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
+        if (drawer != null) {
+            if (drawer.getDrawerLockMode(Gravity.LEFT) == DrawerLayout.LOCK_MODE_UNLOCKED) {
+                hideNav = true;
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }
+        }
+
     }
 
     @Override
@@ -232,6 +238,15 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         if (menuProvider != null) {
             getActivity().removeMenuProvider(menuProvider);
             getActivity().invalidateMenu();
+        }
+        if (hideNav) {
+            View v = ((MainActivity) getActivity()).mainView;
+            View nav = v.findViewById(R.id.bottom_nav_view);
+            if (nav != null)
+                nav.setVisibility(View.VISIBLE);
+            DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
+            if (drawer != null)
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
         super.onPause();
     }

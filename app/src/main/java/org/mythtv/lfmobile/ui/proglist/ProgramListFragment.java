@@ -3,6 +3,7 @@ package org.mythtv.lfmobile.ui.proglist;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -59,11 +61,6 @@ public class ProgramListFragment extends MainActivity.MyFragment {
     public void onDestroy() {
         super.onDestroy();
         binding = null;
-        if (hideNav) {
-            View v = ((MainActivity) getActivity()).mainView;
-            View nav = v.findViewById(R.id.bottom_nav_view);
-            nav.setVisibility(View.VISIBLE);
-        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -90,16 +87,6 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         DividerItemDecoration dec = new DividerItemDecoration(recyclerView.getContext(),
                DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dec);
-        if (model.type == ProgramListModel.TYPE_GUIDE_SEARCH) {
-            View v = ((MainActivity) getActivity()).mainView;
-            View nav = v.findViewById(R.id.bottom_nav_view);
-            if (nav != null) {
-                if (nav.getVisibility() == View.VISIBLE) {
-                    hideNav = true;
-                    nav.setVisibility(View.GONE);
-                }
-            }
-        }
         return root;
     }
 
@@ -199,6 +186,23 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         }
         ((MainActivity)getActivity()).myFragment = this;
         ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
+        if (model.type == ProgramListModel.TYPE_GUIDE_SEARCH) {
+            View v = ((MainActivity) getActivity()).mainView;
+            View nav = v.findViewById(R.id.bottom_nav_view);
+            if (nav != null) {
+                if (nav.getVisibility() == View.VISIBLE) {
+                    hideNav = true;
+                    nav.setVisibility(View.GONE);
+                }
+            }
+            DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
+            if (drawer != null) {
+                if (drawer.getDrawerLockMode(Gravity.LEFT) == DrawerLayout.LOCK_MODE_UNLOCKED) {
+                    hideNav = true;
+                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                }
+            }
+        }
         model.startFetch();
     }
 
@@ -208,6 +212,15 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         if (menuProvider != null) {
             getActivity().removeMenuProvider(menuProvider);
             getActivity().invalidateMenu();
+        }
+        if (hideNav) {
+            View v = ((MainActivity) getActivity()).mainView;
+            View nav = v.findViewById(R.id.bottom_nav_view);
+            if (nav != null)
+                nav.setVisibility(View.VISIBLE);
+            DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
+            if (drawer != null)
+                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
         super.onPause();
     }
