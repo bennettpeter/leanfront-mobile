@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -222,6 +223,14 @@ public class GuideFragment extends MainActivity.MyFragment {
                 }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
                 dlgTime.show();
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            dlgDate.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.button_reset),
+                    (dialog, which) ->
+                {
+                    if (which == DialogInterface.BUTTON_NEUTRAL) {
+                        model.guideStartTime.setTime(System.currentTimeMillis());
+                        refresh(false, true, 'L');
+                    }
+                });
             DatePicker picker = dlgDate.getDatePicker();
             picker.setMinDate(System.currentTimeMillis() - 28l * 24 * 60 * 60000);
             picker.setMaxDate(System.currentTimeMillis() + 28l * 24 * 60 * 60000);
