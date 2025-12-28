@@ -17,6 +17,7 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 - [Guide Screen](#guide-screen)
 - [Guide Search Screen](#guide-search-screen)
 - [Schedule Screen](#schedule-screen)
+- [Override Recordiung](#override-recording)
 - [Upcoming Screen](#upcoming-screen)
 - [Installing leanfront](#installing-leanfront)
 - [Leanfront Features](#leanfront-features)
@@ -122,10 +123,14 @@ This is the program guide from the MythTV listings service.
 - Schedule a recording or change an existing recording by tapping on an entry in the grid.
 - Search the guide using the magnifying glass icon.
 
+Entries which are in the record schedule display the recording status and a paperclip. Tap on the paperclip to create a recording override. Tap anywhere else in the entry to update the recording schedule.
+
 ## Guide Search Screen
 ![](ScreenShots/Guide_search.png)
 
 From the results of the guide search you can tap any entry to schedule a recording.
+
+Entries which are in the record schedule display the recording status and a paperclip. Tap on the paperclip to create a recording override. Tap anywhere else in the entry to update the recording schedule.
 
 ## Schedule Screen
 ![](ScreenShots/Schedule.png)
@@ -134,12 +139,20 @@ This is shown as a result of tapping and entry in the guide, guide search or upc
 
 The schedule screen includes all of the normal options for scheduling a recording. Scroll down for further options and to see the Save button at the end.
 
+## Override Recording
+![](ScreenShots/Override.png)
+
+From the paperclip icon you can get to this screen where you can select override options for an individual episode.
+
 ## Upcoming Screen
 ![](ScreenShots/upcoming.png)
 
 This displays upcoming recordings on the MythTV backend. You can use the menu icon at the top right hand side to select "Show All" to show the full list including shows excluded and the reason for excluding them.
 
 Tap an entry to edit the record rule. See [Schedule Screen](#schedule-screen).
+
+Entries which are in the record schedule display the recording status and a paperclip. Tap on the paperclip to create a recording override. Tap anywhere else in the entry to update the recording schedule.
+
 
 ## Installing leanfront
 You need an Android phone or tablet. For TV devices see [leanfront](https://github.com/bennettpeter/leanfront).
@@ -176,6 +189,7 @@ The first time you run the app it will prompt you for the MythTV Backend setting
 - The *Master Backend Override* MythTV setting is supported. Playback will be from the master backend even for recordings made on a slave. However the Preview image still uses the slave backend, so it will not show if the slave is down.
 - Note that some phones do not support MPEG-2 playback. In this case MPEG-2 recordings are decoded via software.
 - Supports MythTV commercial breaks and cut list.
+- Shows the program guide with searcjhj capabilities and supports scheduling recordings and changing schedules 
 
 ## Release Notes
 
