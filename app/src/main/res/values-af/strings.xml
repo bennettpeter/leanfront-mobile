@@ -10,6 +10,7 @@
   <string name="menu_guide">Gids</string>
   <string name="menu_show_all">Wys alles</string>
   <string name="menu_schedule">Skedule opname</string>
+  <string name="menu_override">Ignoreer opname</string>
   <string name="hint_guide_search">Soekgids …</string>
   <string name="row_header_channels">Kanale</string>
   <string name="all_title">Alle</string>

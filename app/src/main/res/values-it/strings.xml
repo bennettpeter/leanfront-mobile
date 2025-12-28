@@ -10,6 +10,7 @@
   <string name="menu_guide">Guida</string>
   <string name="menu_show_all">Mostra tutto</string>
   <string name="menu_schedule">Pianifica la registrazione</string>
+  <string name="menu_override">Ignora registrazione</string>
   <string name="hint_guide_search">Guida alla ricerca...</string>
   <string name="row_header_channels">Canali</string>
   <string name="all_title">Tutto</string>

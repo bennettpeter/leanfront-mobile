@@ -10,6 +10,7 @@
   <string name="menu_guide">Guia</string>
   <string name="menu_show_all">Mostre tudo</string>
   <string name="menu_schedule">Agendar Gravação</string>
+  <string name="menu_override">Substituir gravação</string>
   <string name="hint_guide_search">Guia de pesquisa…</string>
   <string name="row_header_channels">Canais</string>
   <string name="all_title">Todos</string>
