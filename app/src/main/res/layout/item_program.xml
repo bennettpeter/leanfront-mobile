@@ -37,9 +37,9 @@
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/item_paperclip"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/item_date"
-        app:layout_constraintWidth_percent="0.9" />
+        app:layout_constraintTop_toBottomOf="@id/item_date" />
 
     <TextView
         android:id="@+id/item_desc"
