@@ -12,7 +12,6 @@
     <string name="menu_schedule">Schedule Recording</string>
     <string name="menu_override">Override Recording</string>
     <string name="hint_guide_search">Search the Guide …</string>
-    <string name="button_reset">Reset</string>
 
     <string name="row_header_channels">Channels</string>
     <string name="all_title">All</string>

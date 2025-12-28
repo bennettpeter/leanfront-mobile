@@ -29,7 +29,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -210,7 +212,10 @@ public class GuideFragment extends MainActivity.MyFragment {
         };
         binding.dateSelect.setOnClickListener((v) -> {
             GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(model.guideStartTime);
+            // This would set calendar to the date previously selected.
+            // We prefer to use the current date every time, to make it
+            // easier to get back to the default view.
+//            cal.setTime(model.guideStartTime);
             DatePickerDialog dlgDate = new DatePickerDialog(getContext(), (dpView, yy, mm, dd) -> {
                 cal.set(Calendar.YEAR, yy);
                 cal.set(Calendar.MONTH, mm);
@@ -223,14 +228,16 @@ public class GuideFragment extends MainActivity.MyFragment {
                 }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
                 dlgTime.show();
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            dlgDate.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.button_reset),
-                    (dialog, which) ->
-                {
-                    if (which == DialogInterface.BUTTON_NEUTRAL) {
-                        model.guideStartTime.setTime(System.currentTimeMillis());
-                        refresh(false, true, 'L');
-                    }
-                });
+            // This would add a reset butto to select current date. However it displays
+            // funny on some phones
+//            dlgDate.setButton(DialogInterface.BUTTON_NEUTRAL,getString(R.string.button_reset) ,
+//                    (dialog, which) ->
+//                {
+//                    if (which == DialogInterface.BUTTON_NEUTRAL) {
+//                        model.guideStartTime.setTime(System.currentTimeMillis());
+//                        refresh(false, true, 'L');
+//                    }
+//                });
             DatePicker picker = dlgDate.getDatePicker();
             picker.setMinDate(System.currentTimeMillis() - 28l * 24 * 60 * 60000);
             picker.setMaxDate(System.currentTimeMillis() + 28l * 24 * 60 * 60000);
