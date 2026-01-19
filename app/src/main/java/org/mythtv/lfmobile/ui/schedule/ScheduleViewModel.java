@@ -32,7 +32,9 @@ public class ScheduleViewModel extends ViewModel {
 
     int recordId;
     int schedType;
-    public static int SCHED_GUIDE = 1;
+    public final static int SCHED_GUIDE = 1;
+    public final static int SCHED_RULELIST = 2;
+    public final static int SCHED_UPCOMING = 3;
 
     boolean isOverride;
     boolean newOverride;
@@ -52,7 +54,6 @@ public class ScheduleViewModel extends ViewModel {
     ArrayList<XmlNode> detailsList;
     RecordRule recordRule;
     boolean isDirty;
-    RecordRule progDetails;
     ArrayList<String> mPlayGroupList;
     ArrayList<String> mRecGroupList;
     ArrayList<String> mRecStorageGroupList;
@@ -112,11 +113,11 @@ public class ScheduleViewModel extends ViewModel {
         // - Update existing recording (recordId found in list of rec rules)
         isDirty = false;
         RecordRule defaultTemplate = null;
+        RecordRule progDetails = null;
         // New manual recording
-        if (schedType != SCHED_GUIDE) {
-            progDetails = new RecordRule();
-//            setManualParms(progDetails);
-        }
+//        if (schedType == ???) {
+//            progDetails = new RecordRule();
+//        }
         // Recording from program guide or upcoming list create overrode
         if (detailsList.get(0) != null) {
             XmlNode programNode = detailsList.get(0); // ACTION_GETPROGRAMDETAILS

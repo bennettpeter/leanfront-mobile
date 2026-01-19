@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="id_show_all" type="id"></item>
+    <item name="id_new_rule" type="id"></item>
 </resources>

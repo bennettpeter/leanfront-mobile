@@ -5,6 +5,7 @@
     <string name="menu_videolist">Media</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_search">Search</string>
+    <string name="menu_recrules">Rec Rules</string>
     <string name="menu_upcoming">Upcoming</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_guide">Guide</string>
@@ -52,6 +53,30 @@
     <string name="note_program_continuation">(cont)</string>
     <string name="msg_edit_schedule">Edit Schedule for %1$s</string>
     <string name="msg_edit_schedule2">Edit Schedule for %1$s (2)</string>
+
+    <string name="menu_new_recrule">New Recording Rule</string>
+    <string name="title_recrules">Recording Rules</string>
+
+    <string name="recrule_DonotRecord">Do not Record</string>
+    <string name="recrule_NotRecording">Not Recording</string>
+    <string name="recrule_OverrideRecording">Override Recording</string>
+    <string name="recrule_RecordAll">Record All</string>
+    <string name="recrule_RecordDaily">Record Daily</string>
+    <string name="recrule_RecordOne">Record One</string>
+    <string name="recrule_RecordWeekly">Record Weekly</string>
+    <string name="recrule_RecordingTemplate">Recording Template</string>
+    <string name="recrule_SingleRecord">Single Record</string>
+    <string name="recrule_srch_KeywordSearch">Keyword Search</string>
+    <string name="recrule_srch_ManualSearch">Manual Search</string>
+    <string name="recrule_srch_None">None</string>
+    <string name="recrule_srch_PeopleSearch">People Search</string>
+    <string name="recrule_srch_PowerSearch">Power Search</string>
+    <string name="recrule_srch_TitleSearch">Title Search</string>
+    <string name="recrule_template">Template</string>
+
+    <string name="recrule_last">Last Recorded:</string>
+    <string name="recrule_next">Next Recording:</string>
+    <string name="recrule_inactive">Inactive</string>
 
 
     <!-- Words to exclude from the start titles when sorting.

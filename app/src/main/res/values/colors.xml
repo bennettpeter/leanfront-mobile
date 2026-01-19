@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="exo_black_opacity_60">#40000000</color>
     <color name="exo_bottom_bar_background">#40000000</color>
+    <color name="willrecord">#FF00C000</color>
+    <color name="wontrecord">#FFC00000</color>
 </resources>

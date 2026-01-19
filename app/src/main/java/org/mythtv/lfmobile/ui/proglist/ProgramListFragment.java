@@ -42,7 +42,6 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
-/**
  * Program List fragment that is used by upcoming list and guide search results
  */
 public class ProgramListFragment extends MainActivity.MyFragment {
@@ -57,11 +56,6 @@ public class ProgramListFragment extends MainActivity.MyFragment {
     private int orientation;
     private boolean hideNav = false;
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        binding = null;
-    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -82,11 +76,14 @@ public class ProgramListFragment extends MainActivity.MyFragment {
             binding.swiperefresh.setRefreshing(false);
         });
         binding.swiperefresh.setOnRefreshListener(() -> {
-            model.startFetch();
+            refresh();
         });
-        DividerItemDecoration dec = new DividerItemDecoration(recyclerView.getContext(),
-               DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dec);
+        DividerItemDecoration dec1 = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dec1);
+        DividerItemDecoration dec2 = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.HORIZONTAL);
+        recyclerView.addItemDecoration(dec2);
         return root;
     }
 
@@ -163,7 +160,7 @@ public class ProgramListFragment extends MainActivity.MyFragment {
                 if (id == R.id.id_show_all) {
                     model.showAll = !menuItem.isChecked();
                     menuItem.setChecked(model.showAll);
-                    model.startFetch();
+                    refresh();
                     return true;
                 }
                 return false;
@@ -184,7 +181,6 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         if (menuProvider != null) {
             getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
-        ((MainActivity)getActivity()).myFragment = this;
         ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
         if (model.type == ProgramListModel.TYPE_GUIDE_SEARCH) {
             View v = ((MainActivity) getActivity()).mainView;
@@ -203,7 +199,7 @@ public class ProgramListFragment extends MainActivity.MyFragment {
                 }
             }
         }
-        model.startFetch();
+        refresh();
     }
 
     @Override
@@ -225,10 +221,16 @@ public class ProgramListFragment extends MainActivity.MyFragment {
         super.onPause();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
+
     public void startFetch() {
         if (binding != null && binding.swiperefresh != null) {
             binding.swiperefresh.setRefreshing(true);
-            model.startFetch();
+            refresh();
         }
     }
 
@@ -236,8 +238,6 @@ public class ProgramListFragment extends MainActivity.MyFragment {
             <ProgramListModel.ProgramItem, ProgramListViewHolder> {
 
         private ProgramListFragment fragment;
-        private float defaultTextSize = 15.0f;
-        private float largeTextSize = 20.0f;
 
         protected ProgramListAdapter(ProgramListFragment fragment) {
             super(new DiffUtil.ItemCallback<ProgramListModel.ProgramItem>() {
@@ -347,7 +347,14 @@ public class ProgramListFragment extends MainActivity.MyFragment {
                 args.putSerializable(ScheduleViewModel.STARTTIME, startTime);
                 if (v == binding.itemPaperclip)
                     args.putBoolean(ScheduleViewModel.ISOVERRIDE, true);
-                args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+                switch (fragment.model.type) {
+                    case ProgramListModel.TYPE_GUIDE_SEARCH:
+                        args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+                        break;
+                    case ProgramListModel.TYPE_UPCOMING:
+                        args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_UPCOMING);
+                        break;
+                }
                 NavHostFragment navHostFragment =
                         (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
                 NavController navController = navHostFragment.getNavController();

@@ -63,6 +63,7 @@ public class RecordRule {
     public boolean autoUserJob3;
     public boolean autoUserJob4;
     public int     transcoder;
+    public Date    nextRecording;
     public Date    lastRecorded;
     public String  recordingStatus;
     public int     recStatusCode;
@@ -190,6 +191,7 @@ public class RecordRule {
         autoUserJob3 = scheduleNode.getNode("AutoUserJob3").getBoolean();
         autoUserJob4 = scheduleNode.getNode("AutoUserJob4").getBoolean();
         transcoder = scheduleNode.getInt("Transcoder",0);
+        nextRecording = scheduleNode.getNode("NextRecording").getDate();
         lastRecorded = scheduleNode.getNode("LastRecorded").getDate();
         return this;
     }

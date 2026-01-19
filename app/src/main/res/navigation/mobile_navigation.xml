@@ -22,6 +22,11 @@
         android:label="@string/menu_guide" />
 
     <fragment
+        android:id="@+id/nav_recrules"
+        android:name="org.mythtv.lfmobile.ui.recrules.RuleListFragment"
+        android:label="@string/menu_recrules" />
+
+    <fragment
         android:id="@+id/nav_upcoming"
         android:name="org.mythtv.lfmobile.ui.proglist.ProgramListFragment"
         android:label="@string/menu_upcoming" />
