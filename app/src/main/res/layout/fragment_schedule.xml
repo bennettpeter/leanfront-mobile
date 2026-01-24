@@ -88,15 +88,6 @@
             android:inputType="text"
             android:padding="6sp"
             android:textSize="15sp" />
-        <!--Season & Episode-->
-        <TextView
-            android:id="@+id/season_episode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="6sp"
-            android:paddingTop="12sp"
-            android:paddingBottom="6sp"
-            android:textSize="15sp" />
         <!--Description-->
         <TextView
             android:id="@+id/description_heading"
@@ -117,6 +108,74 @@
             android:maxLines="10"
             android:padding="6sp"
             android:textSize="15sp" />
+        <!--Season & Episode-->
+        <TextView
+            android:id="@+id/season_episode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6sp"
+            android:paddingTop="12sp"
+            android:paddingBottom="6sp"
+            android:textSize="15sp" />
+        <!--Channel-->
+        <TextView
+            android:id="@+id/channel_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6sp"
+            android:paddingTop="12sp"
+            android:text="@string/sched_channel"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+        <Spinner
+            android:id="@+id/channel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6sp"
+            android:visibility="gone"/>
+        <!--Date and Time -->
+        <TextView
+            android:id="@+id/dttime_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6sp"
+            android:paddingTop="12sp"
+            android:text="@string/sched_dttime"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/dttime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6sp"
+            android:paddingTop="12sp"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+        <!--Duration-->
+        <TextView
+            android:id="@+id/duration_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6sp"
+            android:paddingTop="12sp"
+            android:text="@string/sched_duration"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+        <EditText
+            android:id="@+id/duration"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:focusable="true"
+            android:inputType="text|number"
+            android:maxLines="1"
+            android:padding="6sp"
+            android:text="60"
+            android:textSize="15sp"
+            android:visibility="gone"/>
         <!--Schedule Type-->
         <TextView
             android:layout_width="match_parent"

@@ -349,10 +349,10 @@ public class ProgramListFragment extends MainActivity.MyFragment {
                     args.putBoolean(ScheduleViewModel.ISOVERRIDE, true);
                 switch (fragment.model.type) {
                     case ProgramListModel.TYPE_GUIDE_SEARCH:
-                        args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+                        args.putInt(ScheduleViewModel.SCHEDREASON, ScheduleViewModel.SCHED_GUIDE);
                         break;
                     case ProgramListModel.TYPE_UPCOMING:
-                        args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_UPCOMING);
+                        args.putInt(ScheduleViewModel.SCHEDREASON, ScheduleViewModel.SCHED_UPCOMING);
                         break;
                 }
                 NavHostFragment navHostFragment =

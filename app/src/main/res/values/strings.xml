@@ -55,6 +55,7 @@
     <string name="msg_edit_schedule2">Edit Schedule for %1$s (2)</string>
 
     <string name="menu_new_recrule">New Recording Rule</string>
+    <string name="menu_new_template">New Recording Template</string>
     <string name="title_recrules">Recording Rules</string>
 
     <string name="recrule_DonotRecord">Do not Record</string>
@@ -66,12 +67,12 @@
     <string name="recrule_RecordWeekly">Record Weekly</string>
     <string name="recrule_RecordingTemplate">Recording Template</string>
     <string name="recrule_SingleRecord">Single Record</string>
-    <string name="recrule_srch_KeywordSearch">Keyword Search</string>
-    <string name="recrule_srch_ManualSearch">Manual Search</string>
-    <string name="recrule_srch_None">None</string>
-    <string name="recrule_srch_PeopleSearch">People Search</string>
-    <string name="recrule_srch_PowerSearch">Power Search</string>
-    <string name="recrule_srch_TitleSearch">Title Search</string>
+<!--    <string name="recrule_srch_KeywordSearch">Keyword Search</string>-->
+<!--    <string name="recrule_srch_ManualSearch">Manual Search</string>-->
+<!--    <string name="recrule_srch_None">None</string>-->
+<!--    <string name="recrule_srch_PeopleSearch">People Search</string>-->
+<!--    <string name="recrule_srch_PowerSearch">Power Search</string>-->
+<!--    <string name="recrule_srch_TitleSearch">Title Search</string>-->
     <string name="recrule_template">Template</string>
 
     <string name="recrule_last">Last Recorded:</string>
@@ -185,7 +186,13 @@
     <string name="sched_search_type">Search Type</string>
     <string name="sched_title">Title</string>
     <string name="sched_subtitle">Subtitle</string>
+    <string name="sched_add_tables">Additional Tables</string>
+    <string name="sched_srch_value">Search Value</string>
     <string name="sched_description">Description</string>
+    <string name="sched_sql_where">SQL Where Condition</string>
+    <string name="sched_channel">Channel</string>
+    <string name="sched_dttime">Start Date and Time</string>
+    <string name="sched_duration">Duration in Minutes</string>
     <string name="sched_type">Schedule Type</string>
     <string name="sched_rec_group">Recording Group</string>
     <string name="sched_active_msg">Recording Rule is Active</string>
@@ -219,7 +226,7 @@
     <string name="sched_srch_TitleSearch">Title Search</string>
     <string name="sched_srch_KeywordSearch">Keyword Search</string>
     <string name="sched_srch_PeopleSearch">People Search</string>
-    <string name="sched_srch_Manual_Search">Manual Search</string>
+    <string name="sched_srch_Manual_Search">Manual Record</string>
 
 
     <string name="sched_type_not">Do Not Record This Program</string>

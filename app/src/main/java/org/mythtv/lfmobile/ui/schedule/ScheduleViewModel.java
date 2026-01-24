@@ -1,5 +1,8 @@
 package org.mythtv.lfmobile.ui.schedule;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -11,6 +14,8 @@ import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.Action;
 import org.mythtv.lfmobile.data.AsyncBackendCall;
+import org.mythtv.lfmobile.data.VideoContract;
+import org.mythtv.lfmobile.data.VideoDbHelper;
 import org.mythtv.lfmobile.data.XmlNode;
 
 import java.util.ArrayList;
@@ -21,7 +26,7 @@ public class ScheduleViewModel extends ViewModel {
     public static final String CHANID = "CHANID";
     public static final String STARTTIME = "STARTTIME";
     public static final String RECORDID = "RECORDID";
-    public static final String SCHEDTYPE = "SCHEDTYPE";
+    public static final String SCHEDREASON = "SCHEDREASON";
     public static final String ISOVERRIDE = "ISOVERRIDE";
     private boolean initDone;
     MutableLiveData<Integer> initDoneLiveData = new MutableLiveData<>();
@@ -31,10 +36,12 @@ public class ScheduleViewModel extends ViewModel {
     final MutableLiveData<Integer> toast = new MutableLiveData<>();
 
     int recordId;
-    int schedType;
+    int schedReason;
     public final static int SCHED_GUIDE = 1;
     public final static int SCHED_RULELIST = 2;
     public final static int SCHED_UPCOMING = 3;
+    public final static int SCHED_NEWRULE = 4;
+    public final static int SCHED_NEWTEMPLATE = 5;
 
     boolean isOverride;
     boolean newOverride;
@@ -59,6 +66,13 @@ public class ScheduleViewModel extends ViewModel {
     ArrayList<String> mRecStorageGroupList;
     SparseArray<String> mInputList = new SparseArray<>();
     ArrayList<String> mRecRuleFilterList;
+    ArrayList<String> names = new ArrayList<>();
+    ArrayList<Integer> chanids = new ArrayList<>();
+    ArrayList<String> callSigns = new ArrayList<>();
+    // This date contains the value set by user before it is updated
+    // into recordRule.startTime
+    Date manualStartTime = new Date();
+
     int mGroupId;
     int chanId;
     Date startTime;
@@ -75,7 +89,7 @@ public class ScheduleViewModel extends ViewModel {
             chanId = args.getInt(CHANID, 0);
             startTime = (Date) args.getSerializable(STARTTIME);
             recordId = args.getInt(RECORDID,0);
-            schedType = args.getInt(SCHEDTYPE,0);
+            schedReason = args.getInt(SCHEDREASON,0);
             isOverride = args.getBoolean(ISOVERRIDE, false);
             AsyncBackendCall call = new AsyncBackendCall((caller) -> {
                 detailsList = caller.getXmlResults();
@@ -187,9 +201,14 @@ public class ScheduleViewModel extends ViewModel {
             if (recordId != 0)
                 toast.postValue(R.string.msg_rec_rule_gone);
             recordRule = new RecordRule().mergeTemplate(defaultTemplate);
+            recordRule.findTime = "00:00:00";
+            recordRule.findDay = 0;
         }
         if (recordRule.type == null)
-            recordRule.type = "Not Recording";
+            if (schedReason == SCHED_NEWTEMPLATE)
+                recordRule.type = "Recording Template";
+            else
+                recordRule.type = "Not Recording";
         if (recordRule.startTime == null)
             recordRule.startTime = new Date();
         if (recordRule.searchType == null) {
@@ -255,50 +274,48 @@ public class ScheduleViewModel extends ViewModel {
                 }
             }
         }
-        String recordRuleStr = AsyncBackendCall.getString(recordRule);
-        savedHashCode = recordRuleStr.hashCode();
+        if (schedReason != SCHED_NEWRULE) {
+            String recordRuleStr = AsyncBackendCall.getString(recordRule);
+            savedHashCode = recordRuleStr.hashCode();
+        }
+        if (schedReason == SCHED_NEWRULE || "Manual Search".equals(recordRule.searchType) ) {
+            loadChannels();
+        }
     }
-//    public void setManualParms(RecordRule rule) {
-//        rule.chanId = chanid;
-//        rule.station = station;
-//        Date date = new Date(actionDate.getDate());
-//        GregorianCalendar calDate = new GregorianCalendar();
-//        calDate.setTime(date);
-//        Date time = new Date(actionTime.getTime());
-//        GregorianCalendar calTime = new GregorianCalendar();
-//        calTime.setTime(time);
-//        GregorianCalendar calStart = new GregorianCalendar(
-//                calDate.get(Calendar.YEAR),
-//                calDate.get(Calendar.MONTH),
-//                calDate.get(Calendar.DATE),
-//                calTime.get(Calendar.HOUR_OF_DAY),
-//                calTime.get(Calendar.MINUTE),
-//                0
-//        );
-//        rule.startTime = calStart.getTime();
-//        // 60000 is number of milliseconds in a minute
-//        rule.endTime = new Date(rule.startTime.getTime()
-//                + Long.parseLong((actionDuration.getDescription().toString())) * 60000);
-//        rule.title = actionTitle.getDescription().toString() + " (" + getContext().getString(R.string.sched_manual_srch) + ")";
-//        if (rule.title.length() == 0) {
-//            java.text.DateFormat timeFormatter = android.text.format.DateFormat.getTimeFormat(getContext());
-//            java.text.DateFormat dateFormatter = android.text.format.DateFormat.getLongDateFormat(getContext());
-//            java.text.DateFormat dayFormatter = new SimpleDateFormat("EEE ");
-//            StringBuilder title = new StringBuilder(chanName).append(' ')
-//                    .append(dayFormatter.format(rule.startTime))
-//                    .append(dateFormatter.format(rule.startTime)).append(' ')
-//                    .append(timeFormatter.format(rule.startTime));
-//            rule.title = title.toString();
-//        }
-//        rule.subtitle = actionSubtitle.getDescription().toString();
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(rule.startTime);
-//        // findday: Saturday = 0 , Sunday = 1, etc
-//        // java DAY_OF_WEEK Saturday = 7, Sunday = 1
-//        rule.findDay = cal.get(Calendar.DAY_OF_WEEK) % 7;
-//        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss.SSS");
-//        rule.findTime = sdfTime.format(rule.startTime);
-//    }
+
+    private void loadChannels() {
+        if (names.isEmpty()) {
+            // Get list of channels
+            Context context = MyApplication.getAppContext();
+            VideoDbHelper dbh = VideoDbHelper.getInstance(context);
+            SQLiteDatabase db = dbh.getReadableDatabase();
+            if (db == null)
+                return;
+            final String[] columns = {
+                    VideoContract.VideoEntry.COLUMN_SUBTITLE,
+                    VideoContract.VideoEntry.COLUMN_CHANID,
+                    VideoContract.VideoEntry.COLUMN_CALLSIGN
+            };
+            Cursor cursor = db.query(
+                    VideoContract.VideoEntry.VIEW_NAME,   // The table to query
+                    columns,             // The array of columns to return (pass null to get all)
+                    VideoContract.VideoEntry.COLUMN_RECTYPE
+                            + " = " + VideoContract.VideoEntry.RECTYPE_CHANNEL, // The where clause
+                    null,          // The values for the WHERE clause
+                    null,                   // don't group the rows
+                    null,                   // don't filter by row groups
+                    "CAST (" + VideoContract.VideoEntry.COLUMN_CHANNUM + " AS REAL), "
+                            + VideoContract.VideoEntry.COLUMN_CHANNUM  // The sort order
+            );
+            while (cursor.moveToNext()) {
+                names.add(cursor.getString(0));
+                chanids.add(cursor.getInt(1));
+                callSigns.add(cursor.getString(2));
+            }
+            cursor.close();
+            VideoDbHelper.releaseDatabase();
+        }
+    }
 
     void mergeTemplate(RecordRule template) {
         isDirty = true;

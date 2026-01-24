@@ -95,4 +95,10 @@
         <item>@string/menu_exit_nosave</item>
     </string-array>
 
+    <string-array name="prompt_cannot_save">
+        <item>@string/menu_continue_editing</item>
+        <item>@string/menu_exit_nosave</item>
+    </string-array>
+
+
 </resources>

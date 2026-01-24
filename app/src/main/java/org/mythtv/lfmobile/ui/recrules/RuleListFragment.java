@@ -2,7 +2,6 @@ package org.mythtv.lfmobile.ui.recrules;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
@@ -26,17 +25,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
-import org.mythtv.lfmobile.databinding.FragmentProglistBinding;
 import org.mythtv.lfmobile.databinding.FragmentRulelistBinding;
-import org.mythtv.lfmobile.databinding.ItemProgramBinding;
 import org.mythtv.lfmobile.databinding.ItemRecruleBinding;
-import org.mythtv.lfmobile.ui.proglist.ProgramListFragment;
-import org.mythtv.lfmobile.ui.proglist.ProgramListModel;
 import org.mythtv.lfmobile.ui.schedule.ScheduleViewModel;
 
 import java.text.DateFormat;
@@ -44,7 +38,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 public class RuleListFragment extends MainActivity.MyFragment {
     private static final String TAG = "lfm";
@@ -93,18 +86,36 @@ public class RuleListFragment extends MainActivity.MyFragment {
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                MenuItem item = menu.add(R.id.recrules_group, R.id.id_new_rule, 0, R.string.menu_new_recrule);
+                menu.add(R.id.recrules_group, R.id.id_new_rule, 0, R.string.menu_new_recrule);
+                menu.add(R.id.recrules_group, R.id.id_new_template, 0, R.string.menu_new_template);
             }
-
             @Override
             public void onPrepareMenu(@NonNull Menu menu) {
-//                menu.removeGroup(R.id.recrules_group);
-//                MenuItem item = menu.add(R.id.recrules_group, R.id.id_new_rule, 0, R.string.menu_new_recrule);
                 MenuProvider.super.onPrepareMenu(menu);
             }
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                // TODO: Implement new rule process
+                int id = menuItem.getItemId();
+                int reason = 0;
+                if (id == R.id.id_new_rule)
+                    reason = ScheduleViewModel.SCHED_NEWRULE;
+                else if (id == R.id.id_new_template)
+                    reason = ScheduleViewModel.SCHED_NEWTEMPLATE;
+                if (reason != 0) {
+                    try {
+                        Bundle args = new Bundle();
+                        args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
+                        args.putInt(ScheduleViewModel.SCHEDREASON, reason);
+                        NavHostFragment navHostFragment =
+                                (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+                        NavController navController = navHostFragment.getNavController();
+                        navController.navigate(R.id.nav_schedule, args);
+                        return true;
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception setting up new rule edit.", e);
+                        e.printStackTrace();
+                    }
+                }
                 return false;
             }
         };
@@ -246,7 +257,6 @@ public class RuleListFragment extends MainActivity.MyFragment {
             this.binding = binding;
             View.OnClickListener listener  = v -> {
                 actionRequest(fragment, v);
-
             };
             binding.getRoot().setOnClickListener(listener);
         }
@@ -256,14 +266,7 @@ public class RuleListFragment extends MainActivity.MyFragment {
                 Bundle args = new Bundle();
                 args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
                 args.putInt(ScheduleViewModel.RECORDID, item.id);
-                args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_RULELIST);
-
-//                args.putInt(ScheduleViewModel.CHANID, item.chanId);
-//                Date startTime = dateFormat.parse(item.startTime + "+0000");
-//                args.putSerializable(ScheduleViewModel.STARTTIME, startTime);
-//                if (v == binding.itemPaperclip)
-//                    args.putBoolean(ScheduleViewModel.ISOVERRIDE, true);
-//                args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+                args.putInt(ScheduleViewModel.SCHEDREASON, ScheduleViewModel.SCHED_RULELIST);
                 NavHostFragment navHostFragment =
                         (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
                 NavController navController = navHostFragment.getNavController();
@@ -272,7 +275,6 @@ public class RuleListFragment extends MainActivity.MyFragment {
                 Log.e(TAG, CLASS + " Exception setting up schedule edit.", e);
                 e.printStackTrace();
             }
-
         }
     }
 }

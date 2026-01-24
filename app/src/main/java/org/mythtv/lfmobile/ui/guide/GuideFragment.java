@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -29,9 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -525,7 +522,7 @@ public class GuideFragment extends MainActivity.MyFragment {
             }
             if (v == binding.itemPaperclip)
                 args.putBoolean(ScheduleViewModel.ISOVERRIDE, true);
-            args.putInt(ScheduleViewModel.SCHEDTYPE, ScheduleViewModel.SCHED_GUIDE);
+            args.putInt(ScheduleViewModel.SCHEDREASON, ScheduleViewModel.SCHED_GUIDE);
             NavHostFragment navHostFragment =
                     (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
             NavController navController = navHostFragment.getNavController();

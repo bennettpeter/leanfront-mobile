@@ -2,4 +2,5 @@
 <resources>
     <item name="id_show_all" type="id"></item>
     <item name="id_new_rule" type="id"></item>
+    <item name="id_new_template" type="id"></item>
 </resources>

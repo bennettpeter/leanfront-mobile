@@ -1,19 +1,9 @@
 package org.mythtv.lfmobile.ui.schedule;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuProvider;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.lifecycle.ViewModelProvider;
-
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -25,10 +15,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuProvider;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MyApplication;
@@ -37,27 +38,15 @@ import org.mythtv.lfmobile.data.AsyncBackendCall;
 import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.databinding.FragmentScheduleBinding;
 import org.mythtv.lfmobile.ui.MultiSpinner;
-import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class ScheduleFragment extends MainActivity.MyFragment {
-
-    private ScheduleViewModel model;
-    private FragmentScheduleBinding binding;
-
-    private static DateFormat mTimeFormatter;
-    private static DateFormat mDateFormatter;
-    private static DateFormat mDayFormatter;
-    private String templateName = "";
-    ArrayList<Integer> typePrompts = new ArrayList<>();
-    ArrayList<String> typeOptions = new ArrayList<>();
-    ArrayList<String> inputPrompts = new ArrayList<>();
-    ArrayList<Integer> inputValues = new ArrayList<>();
-    private boolean hideNav = false;
 
     static final int[] searchPrompts = {
             R.string.sched_srch_None,
@@ -75,7 +64,13 @@ public class ScheduleFragment extends MainActivity.MyFragment {
             "People Search",
             "Manual Search"
     };
-
+    // These must match the vaalues above
+    static final int SRCH_NONE = 0;
+    static final int SRCH_POWER = 1;
+    static final int SRCH_TITLE = 2;
+    static final int SRCH_KWORD = 3;
+    static final int SRCH_PEOPLE = 4;
+    static final int SRCH_MANUAL = 5;
     static final int[] sDupMethodPrompts = {
             R.string.sched_dup_none, R.string.sched_dup_s_and_d,
             R.string.sched_dup_s_then_d, R.string.sched_dup_s,
@@ -84,34 +79,84 @@ public class ScheduleFragment extends MainActivity.MyFragment {
             "None", "Subtitle and Description",
             "Subtitle then Description", "Subtitle",
             "Description"};
-
     static final int[] sDupScopePrompts = {
             R.string.sched_dup_both, R.string.sched_dup_curr,
             R.string.sched_dup_prev};
     static final String[] sDupScopeValues = {
             "All Recordings", "Current Recordings",
             "Previous Recordings"};
-
     static final int[] sExtendPrompts = {
             R.string.sched_extend_none, R.string.sched_extend_espn, R.string.sched_extend_mlb};
     static final String[] sExtendValues = {
             "None", "ESPN", "MLB"};
-
     static final int[] sRecProfilePrompts = {
             R.string.sched_recprof_default, R.string.sched_recprof_livetv,
             R.string.sched_recprof_highq, R.string.sched_recprof_lowq};
     static final String[] sRecProfileValues = {
             "Default", "Live TV",
             "High Quality", "Low Quality"};
-
     static final int[] sPostProcPrompts = {
             R.string.sched_pp_commflag, R.string.sched_pp_metadata,
             R.string.sched_pp_transcode,
             R.string.sched_pp_job1, R.string.sched_pp_job2,
             R.string.sched_pp_job3, R.string.sched_pp_job4};
-
-    static final NumericFocus numericFocus= new NumericFocus();
+    static final NumericFocus numericFocus = new NumericFocus();
+    private static DateFormat mTimeFormatter;
+    private static DateFormat mDateFormatter;
+    private static DateFormat mDayFormatter;
+    ArrayList<Integer> typePrompts = new ArrayList<>();
+    ArrayList<String> typeOptions = new ArrayList<>();
+    ArrayList<String> inputPrompts = new ArrayList<>();
+    ArrayList<Integer> inputValues = new ArrayList<>();
+    private ScheduleViewModel model;
+    private FragmentScheduleBinding binding;
+    private String templateName = "";
+    private boolean hideNav = false;
     private MenuProvider menuProvider;
+
+    private static int validateNumber(EditText view, Object action, int min, int max, int defValue) {
+        String s;
+        int i;
+        boolean fix = false;
+        s = action.toString();
+        if (s.isEmpty() || "-".equals(s))
+            return 0;
+        try {
+            i = Integer.parseInt(s);
+        } catch (Exception e) {
+            i = defValue;
+            fix = true;
+        }
+        if (i < min) {
+            i = min;
+            fix = true;
+        } else if (i > max) {
+            i = max;
+            fix = true;
+        }
+        if (fix) {
+            String newVal;
+            if (i == 0)
+                newVal = "";
+            else
+                newVal = String.valueOf(i);
+            view.setText(newVal);
+            view.setSelection(newVal.length());
+        }
+        return i;
+    }
+
+    private static int parseInt(String str) {
+        int ret = 0;
+        if (!str.isEmpty() && !"-".equals(str)) {
+            try {
+                ret = Integer.parseInt(str);
+            } catch (Exception ex) {
+                ret = 0;
+            }
+        }
+        return ret;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,7 +178,6 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     public void onDestroy() {
         super.onDestroy();
     }
-
 
     @Override
     public void startFetch() {
@@ -160,9 +204,9 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                    MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
-                    if (refreshItem != null)
-                        refreshItem.setVisible(false);
+                MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
+                if (refreshItem != null)
+                    refreshItem.setVisible(false);
             }
 
             @Override
@@ -170,7 +214,30 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                 return false;
             }
         };
-
+        binding.dttime.setOnClickListener((v) -> {
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(model.manualStartTime);
+            DatePickerDialog dlgDate = new DatePickerDialog(getContext(), (dpView, yy, mm, dd) -> {
+                cal.set(Calendar.YEAR, yy);
+                cal.set(Calendar.MONTH, mm);
+                cal.set(Calendar.DAY_OF_MONTH, dd);
+                TimePickerDialog dlgTime = new TimePickerDialog(getContext(), (tpView, hh, min) -> {
+                    cal.set(Calendar.HOUR_OF_DAY, hh);
+                    cal.set(Calendar.MINUTE, min);
+                    model.manualStartTime.setTime(cal.getTimeInMillis());
+                    initText(binding.dttime, model.manualStartTime, null);
+                    updateHeading();
+                }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
+                dlgTime.show();
+            }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            DatePicker picker = dlgDate.getDatePicker();
+            long minDate = System.currentTimeMillis();
+            if (model.manualStartTime.getTime() < minDate)
+                minDate = model.manualStartTime.getTime();
+            picker.setMinDate(minDate);
+//            picker.setMaxDate(System.currentTimeMillis() + 56L * 24 * 60 * 60000);
+            dlgDate.show();
+        });
     }
 
     @Override
@@ -191,6 +258,8 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                     ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
                     if (model.isOverride)
                         bar.setTitle(R.string.menu_override);
+                    else if ("Recording Template".equals(model.recordRule.type))
+                        bar.setTitle(R.string.recrule_RecordingTemplate);
                     else
                         bar.setTitle(R.string.menu_schedule);
                     bar.setSubtitle(null);
@@ -213,8 +282,8 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         super.onResume();
         ((MainActivity) getActivity()).myFragment = this;
         if (menuProvider != null)
-            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
-        View v = ((MainActivity)getActivity()).mainView;
+            getActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
+        View v = ((MainActivity) getActivity()).mainView;
         View nav = v.findViewById(R.id.bottom_nav_view);
         if (nav != null) {
             if (nav.getVisibility() == View.VISIBLE) {
@@ -260,8 +329,8 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     private void setupViews() {
         // Call Sign
         initText(binding.callSign, model.recordRule.station);
-        // Start Time
-        initText(binding.dateTime, model.recordRule.startTime);
+        // Start Time & End Time
+        initText(binding.dateTime, model.recordRule.startTime, model.recordRule.endTime);
         // Template
         initSpinner(binding.template, null,
                 model.templateNames.toArray(new String[]{}), templateName);
@@ -273,7 +342,7 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                 if (position > 0) {
                     RecordRule template = model.templateList.get(position - 1);
                     String newTamplateName = model.templateNames.get(position);
-                    if (! newTamplateName.equals(templateName)) {
+                    if (!newTamplateName.equals(templateName)) {
                         model.mergeTemplate(template);
                         templateName = newTamplateName;
                         setupViews();
@@ -286,7 +355,8 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         });
         // Search Type (spinner)
         initSpinner(binding.searchType, searchPrompts, searchValues, model.recordRule.searchType);
-        binding.searchType.setEnabled(model.schedType != model.SCHED_GUIDE
+        binding.searchType.setEnabled(
+                model.schedReason == ScheduleViewModel.SCHED_NEWRULE
                 && model.recordRule.recordId == 0);
         binding.searchType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -294,22 +364,96 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                 model.recordRule.searchType = searchValues[position];
                 // Schedule Type changes based on search type
                 setupScheduleType();
+                dynamicSetups(position);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                //error if we get here
+                onItemSelected(parent, null, 0, 0);
             }
         });
         // Title
         initText(binding.title, model.recordRule.title);
+        binding.title.setOnFocusChangeListener( (v, hasFocus) -> {
+            if (!hasFocus)
+                fixTitle();
+        });
+        binding.title.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {  }
+            @Override
+            public void afterTextChanged(Editable s) {
+                enableSave();
+            }
+        });
         // Subtitle
         initText(binding.subtitle, model.recordRule.subtitle);
         // Season & Episode
         if (model.recordRule.episode > 0)
             initText(binding.seasonEpisode,
                     "S" + model.recordRule.season + " E" + model.recordRule.episode);
+        else
+            binding.seasonEpisode.setVisibility(View.GONE);
         // Description
         initText(binding.description, model.recordRule.description);
+        binding.description.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {  }
+            @Override
+            public void afterTextChanged(Editable s) {
+                fixTitle();
+            }
+        });
+        // Channel
+        int pos = model.chanids.indexOf(model.recordRule.chanId);
+        String chansel = null;
+        if (pos > -1)
+            chansel = model.names.get(pos);
+        initSpinner(binding.channel, null, model.names.toArray(new String[]{}), chansel);
+        binding.channel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateHeading();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        // Start Date and Time
+        model.manualStartTime = model.recordRule.startTime;
+        if (model.manualStartTime == null)
+            model.manualStartTime = new Date();
+        initText(binding.dttime, model.manualStartTime, null);
+
+        // Duration
+        if (model.recordRule.startTime != null
+                && model.recordRule.endTime != null)
+            initText(binding.duration,
+                    (int) ((model.recordRule.endTime.getTime()
+                            - model.recordRule.startTime.getTime()) / 60000L));
+        else
+            initText(binding.duration, 5);
+        binding.duration.setOnFocusChangeListener(numericFocus);
+        binding.duration.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateNumber(binding.duration, s, 1, 1440, 5);
+                updateHeading();
+            }
+        });
+
         // Schedule Type (spinner)
         setupScheduleType();
         binding.scheduleType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -319,8 +463,10 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                 // save becomes disabled in some cases
                 enableSave();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                onItemSelected(parent, null, 0, 0);
             }
         });
         // Recording Group
@@ -335,20 +481,26 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         initText(binding.startOffset, model.recordRule.startOffset);
         binding.startOffset.setOnFocusChangeListener(numericFocus);
         binding.startOffset.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {  }
-            @Override public void afterTextChanged(Editable s) {
-                validateNumber(binding.startOffset, s,-480,480, 0);
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {  }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {   }
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateNumber(binding.startOffset, s, -480, 480, 0);
             }
         });
         // End Offset
         initText(binding.endOffset, model.recordRule.endOffset);
         binding.endOffset.setOnFocusChangeListener(numericFocus);
         binding.endOffset.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {  }
-            @Override public void afterTextChanged(Editable s) {
-                validateNumber(binding.endOffset, s,-480,480, 0);
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {  }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {  }
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateNumber(binding.endOffset, s, -480, 480, 0);
             }
         });
         // New Episodes Only
@@ -357,10 +509,13 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         initText(binding.recPriority, model.recordRule.recPriority);
         binding.recPriority.setOnFocusChangeListener(numericFocus);
         binding.recPriority.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {  }
-            @Override public void afterTextChanged(Editable s) {
-                validateNumber(binding.recPriority, s,-100,100, 0);
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {  }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {  }
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateNumber(binding.recPriority, s, -100, 100, 0);
             }
         });
 
@@ -398,13 +553,15 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         initText(binding.maxEpisodes, model.recordRule.maxEpisodes);
         binding.maxEpisodes.setOnFocusChangeListener(numericFocus);
         binding.maxEpisodes.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {  }
-            @Override public void afterTextChanged(Editable s) {
-                validateNumber(binding.maxEpisodes, s,0,100, 0);
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {  }
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateNumber(binding.maxEpisodes, s, 0, 100, 0);
             }
         });
-
         // Deletion on max (max newest)
         binding.maxNewest.setChecked(model.recordRule.maxNewest);
         // Auto Expire
@@ -432,29 +589,51 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         }));
     }
 
-    private void initText(TextView view, Date time) {
+    private void updateHeading() {
+        int srchPos = binding.searchType.getSelectedItemPosition();
+        if (srchPos == SRCH_MANUAL) {
+            // Channel
+            int chanPos = binding.channel.getSelectedItemPosition();
+            model.recordRule.chanId = model.chanids.get(chanPos);
+            model.recordRule.station = model.callSigns.get(chanPos);
+            // Start Time
+            model.recordRule.startTime = new Date(model.manualStartTime.getTime());
+            // End Time
+            String sVal = binding.duration.getText().toString();
+            int duration = parseInt(sVal);
+            model.recordRule.endTime = new Date(model.manualStartTime.getTime() + duration * 60000L);
+            // Call Sign
+            initText(binding.callSign, model.recordRule.station);
+            // Start Time & End Time
+            initText(binding.dateTime, model.recordRule.startTime, model.recordRule.endTime);
+        }
+    }
+
+    private void initText(TextView view, Date time, Date endTime) {
         if (mTimeFormatter == null) {
             Context context = MyApplication.getAppContext();
             mTimeFormatter = android.text.format.DateFormat.getTimeFormat(context);
             mDateFormatter = android.text.format.DateFormat.getDateFormat(context);
             mDayFormatter = new SimpleDateFormat("EEE ");
         }
+        String result = new String();
         if (time != null) {
-            view.setText(
-                    mDayFormatter.format(time)
+            result = mDayFormatter.format(time)
                             + mDateFormatter.format(time)
-                            + " " + mTimeFormatter.format(time));
+                            + " " + mTimeFormatter.format(time);
         }
+        if (endTime != null) {
+            result = result + " - " + mTimeFormatter.format(endTime);
+        }
+        view.setText(result);
     }
 
     private void initText(TextView view, CharSequence text) {
-        if (text != null)
-            view.setText(text);
+        view.setText(text);
     }
 
     private void initText(TextView view, int number) {
-        if (view.hasFocus() && number != 0)
-            view.setText(String.valueOf(number));
+        view.setText(String.valueOf(number));
     }
 
     private void setupSpinner(Spinner spin, ArrayList<String> list) {
@@ -512,7 +691,8 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         typeOptions.clear();
 
         if ("Recording Template".equalsIgnoreCase(model.recordRule.type)) {
-            if (!"Default".equalsIgnoreCase(model.recordRule.category)) {
+            if (!"Default".equalsIgnoreCase(model.recordRule.category)
+                    && model.recordRule.recordId > 0) {
                 typePrompts.add(R.string.sched_type_del_template);
                 typeOptions.add("Not Recording");
             }
@@ -576,13 +756,81 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         initSpinner(binding.scheduleType, intTypePrompts, typeOptions.toArray(new String[]{}), model.recordRule.type);
     }
 
+    private void dynamicSetups(int position) {
+        if (model.schedReason == model.SCHED_NEWRULE) {
+            binding.title.setText(null);
+            binding.subtitle.setText(null);
+            binding.description.setText(null);
+        }
+        if (position != SRCH_MANUAL) {
+            binding.channelHeading.setVisibility(View.GONE);
+            binding.channel.setVisibility(View.GONE);
+            binding.dttimeHeading.setVisibility(View.GONE);
+            binding.dttime.setVisibility(View.GONE);
+            binding.durationHeading.setVisibility(View.GONE);
+            binding.duration.setVisibility(View.GONE);
+        }
+        if ("Recording Template".equals(model.recordRule.type)) {
+            binding.title.setFocusableInTouchMode(true);
+            binding.subtitleHeading.setVisibility(View.GONE);
+            binding.subtitle.setVisibility(View.GONE);
+            binding.descriptionHeading.setVisibility(View.GONE);
+            binding.description.setVisibility(View.GONE);
+        }
+        else switch (position) {
+            case SRCH_NONE:
+                binding.title.setFocusable(false);
+                binding.subtitleHeading.setVisibility(View.VISIBLE);
+                binding.subtitle.setVisibility(View.VISIBLE);
+                binding.subtitleHeading.setText(R.string.sched_subtitle);
+                binding.subtitle.setFocusable(false);
+                binding.descriptionHeading.setText(R.string.sched_description);
+                binding.description.setFocusable(false);
+                break;
+            case SRCH_POWER:
+                binding.title.setFocusableInTouchMode(true);
+                binding.subtitleHeading.setVisibility(View.VISIBLE);
+                binding.subtitle.setVisibility(View.VISIBLE);
+                binding.subtitleHeading.setText(R.string.sched_add_tables);
+                binding.subtitle.setFocusableInTouchMode(true);
+                binding.descriptionHeading.setText(R.string.sched_sql_where);
+                binding.description.setFocusableInTouchMode(true);
+                break;
+            case SRCH_TITLE:
+            case SRCH_KWORD:
+            case SRCH_PEOPLE:
+                binding.title.setFocusable(false);
+                binding.subtitleHeading.setVisibility(View.GONE);
+                binding.subtitle.setVisibility(View.GONE);
+                binding.descriptionHeading.setText(R.string.sched_srch_value);
+                binding.description.setFocusableInTouchMode(true);
+                break;
+            case SRCH_MANUAL:
+                binding.title.setFocusableInTouchMode(true);
+                binding.subtitleHeading.setVisibility(View.GONE);
+                binding.subtitle.setVisibility(View.GONE);
+                binding.descriptionHeading.setText(R.string.sched_description);
+                binding.description.setFocusable(false);
+                binding.description.setText(null);
+                binding.channelHeading.setVisibility(View.VISIBLE);
+                binding.channel.setVisibility(View.VISIBLE);
+                binding.dttimeHeading.setVisibility(View.VISIBLE);
+                binding.dttime.setVisibility(View.VISIBLE);
+                binding.durationHeading.setVisibility(View.VISIBLE);
+                binding.duration.setVisibility(View.VISIBLE);
+                break;
+        }
+        enableSave();
+    }
+
     private void updateFromView() {
+        fixTitle();
         // Call Sign - N/A - display only
         // Start Time - N/A - display only
         // Template - N/A - applied when selected
         // Search Type (spinner)
-        int position = binding.searchType.getSelectedItemPosition();
-        model.recordRule.searchType = searchValues[position];
+        int srchPos = binding.searchType.getSelectedItemPosition();
+        model.recordRule.searchType = searchValues[srchPos];
         // Title
         model.recordRule.title = binding.title.getText().toString();
         // Subtitle
@@ -590,14 +838,36 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         // Season & Episode - N/A - display only
         // Description
         model.recordRule.description = binding.description.getText().toString();
+        // Special values for manual search
+        if (srchPos == SRCH_MANUAL) {
+            // Channel
+            int chanPos = binding.channel.getSelectedItemPosition();
+            model.recordRule.chanId = model.chanids.get(chanPos);
+            model.recordRule.station = model.callSigns.get(chanPos);
+            // Start Time
+            model.recordRule.startTime = new Date(model.manualStartTime.getTime());
+            // Findday
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(model.recordRule.startTime);
+            model.recordRule.findDay = cal.get(GregorianCalendar.DAY_OF_WEEK);
+            if (model.recordRule.findDay == 7)
+                model.recordRule.findDay = 0;
+            // findtime
+            final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+            model.recordRule.findTime = timeFormat.format(model.recordRule.startTime);
+            // End Time
+            String sVal = binding.duration.getText().toString();
+            int duration = parseInt(sVal);
+            model.recordRule.endTime = new Date(model.manualStartTime.getTime() + duration * 60000L);
+        }
         // Schedule Type (spinner)
-        position = binding.scheduleType.getSelectedItemPosition();
+        int position = binding.scheduleType.getSelectedItemPosition();
         model.recordRule.type = typeOptions.get(position);
         // Recording Group (spinner)
         position = binding.recordingGroup.getSelectedItemPosition();
         model.recordRule.recGroup = model.mRecGroupList.get(position);
         // Active
-        model.recordRule.inactive = ! binding.active.isChecked();
+        model.recordRule.inactive = !binding.active.isChecked();
         // Playback Group
         position = binding.playbackGroup.getSelectedItemPosition();
         model.recordRule.playGroup = model.mPlayGroupList.get(position);
@@ -628,7 +898,7 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         position = binding.autoExtend.getSelectedItemPosition();
         model.recordRule.autoExtend = sExtendValues[position];
         // Filters (MultiSpinner)
-        boolean [] selected = binding.selectedFilters.getSelected();
+        boolean[] selected = binding.selectedFilters.getSelected();
         nVal = 0;
         for (int ix = 0; ix < selected.length; ix++) {
             if (selected[ix])
@@ -651,15 +921,62 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         model.recordRule.autoExpire = binding.autoExpire.isChecked();
         // post Processing (MultiSpinner)
         selected = binding.postProc.getSelected();
-        model.recordRule.autoCommflag =   selected[0];
+        model.recordRule.autoCommflag = selected[0];
         model.recordRule.autoMetaLookup = selected[1];
-        model.recordRule.autoTranscode =  selected[2];
-        model.recordRule.autoUserJob1 =   selected[3];
-        model.recordRule.autoUserJob2 =   selected[4];
-        model.recordRule.autoUserJob3 =   selected[5];
-        model.recordRule.autoUserJob4 =   selected[6];
+        model.recordRule.autoTranscode = selected[2];
+        model.recordRule.autoUserJob1 = selected[3];
+        model.recordRule.autoUserJob2 = selected[4];
+        model.recordRule.autoUserJob3 = selected[5];
+        model.recordRule.autoUserJob4 = selected[6];
         // Metadata Lookup Id (Inetref)
         model.recordRule.inetref = binding.inetref.getText().toString();
+    }
+
+    // Fix title for search types
+    void fixTitle() {
+        EditText source = null;
+        EditText dest2 = null;
+        int srchPos = binding.searchType.getSelectedItemPosition();
+        String suffix = "("+getString(searchPrompts[srchPos])+")";
+        switch (srchPos) {
+            case SRCH_MANUAL:
+                dest2 = binding.description;
+            case SRCH_POWER:
+                String title = binding.title.getText().toString();
+                if (!title.matches(".*\\(.*\\).*"))
+                    source = binding.title;
+                break;
+            case SRCH_TITLE:
+            case SRCH_KWORD:
+            case SRCH_PEOPLE:
+                source = binding.description;
+                break;
+        }
+        if ("Recording Template".equalsIgnoreCase(model.recordRule.type)) {
+            source = null;
+            String title = binding.title.getText().toString();
+            if (!title.matches(".*\\(.*\\).*")) {
+                source = binding.title;
+                suffix = "(" + getString(R.string.recrule_template) + ")";
+            }
+        }
+        if (source != null) {
+            String text = source.getText().toString();
+            text = text.trim();
+            if (!text.isEmpty()) {
+                text = text +" " + suffix;
+            }
+            String titleText = binding.title.getText().toString();
+            if (!text.equals(titleText))
+                binding.title.setText(text);
+        }
+        if (dest2 != null) {
+            String oldText = dest2.getText().toString();
+            String newtext = binding.title.getText().toString();
+            if (!newtext.equals(oldText))
+                dest2.setText(newtext);
+        }
+        enableSave();
     }
 
     private void save(boolean close) {
@@ -671,24 +988,31 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         updateFromView();
         String recordRuleStr = AsyncBackendCall.getString(model.recordRule);
         int newHashCode = recordRuleStr.hashCode();
-        if (!binding.saveButton.isEnabled() || newHashCode == model.savedHashCode
-                || model.savedHashCode == 0)
+        if (newHashCode == model.savedHashCode)
             return true;
         else {
+            boolean canSave = binding.saveButton.isEnabled();
+            int prompts;
+            if (canSave)
+                prompts = R.array.prompt_save_changes;
+            else
+                prompts = R.array.prompt_cannot_save;
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder
                     .setTitle(R.string.menu_changes)
-                    .setItems(R.array.prompt_save_changes,
+                    .setItems(prompts,
                             (dialog, which) -> {
                                 // The 'which' argument contains the index position
                                 // of the selected item
                                 // 0 = save, 1 = continue, 2 = exit
+                                if (!canSave)
+                                    which++;
                                 switch (which) {
                                     case 0:
                                         save(true);
                                         break;
                                     case 2:
-                                        model.savedHashCode = 0;
+                                        model.savedHashCode = newHashCode;
                                         close();
                                         break;
                                 }
@@ -708,55 +1032,16 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     // keystroke
     private void enableSave() {
         boolean enabled = true;
+        int typePos = binding.scheduleType.getSelectedItemPosition();
+        String type = typeOptions.get(typePos);
+        boolean notRec = "Not Recording".equals(type);
         if (model.recordRule == null
-                || (model.recordRule.recordId == 0
-                && "Not Recording". equals(model.recordRule.type)))
+                || (model.recordRule.recordId == 0 && notRec)
+                || (model.schedReason == ScheduleViewModel.SCHED_NEWRULE
+                    && binding.searchType.getSelectedItemPosition() == SRCH_NONE)
+                || binding.title.getText().length() == 0)
             enabled = false;
         binding.saveButton.setEnabled(enabled);
-    }
-
-    private static void validateNumber(EditText view, Object action, int min, int max, int defValue) {
-        String s;
-        int i;
-        boolean fix = false;
-        s = action.toString();
-        if (s.isEmpty() || "-".equals(s))
-            return;
-        try {
-            i = Integer.parseInt(s);
-        } catch (Exception e) {
-            i = defValue;
-            fix = true;
-        }
-        if (i < min) {
-            i = min;
-            fix = true;
-        }
-        else if (i > max) {
-            i = max;
-            fix = true;
-        }
-        if (fix) {
-            String newVal;
-            if (i == 0)
-                newVal = "";
-            else
-                newVal = String.valueOf(i);
-            view.setText(newVal);
-            view.setSelection(newVal.length());
-        }
-    }
-
-    private static int parseInt(String str) {
-        int ret = 0;
-        if (! str.isEmpty() && ! "-".equals(str)) {
-            try {
-                ret = Integer.parseInt(str);
-            } catch (Exception ex) {
-                ret = 0;
-            }
-        }
-        return ret;
     }
 
     static private class NumericFocus implements View.OnFocusChangeListener {
