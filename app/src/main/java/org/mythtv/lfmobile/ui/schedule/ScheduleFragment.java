@@ -35,6 +35,7 @@ import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.AsyncBackendCall;
+import org.mythtv.lfmobile.data.AsyncRemoteCall;
 import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.databinding.FragmentScheduleBinding;
 import org.mythtv.lfmobile.ui.MultiSpinner;
@@ -193,6 +194,44 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         model = new ViewModelProvider(this).get(ScheduleViewModel.class);
+        model.toast.observe(getViewLifecycleOwner(), (Integer msg) -> {
+            if (msg == 0)
+                return;
+            Toast.makeText(getContext(),
+                            msg, Toast.LENGTH_LONG)
+                    .show();
+            model.toast.setValue(0);
+        });
+        model.alert.observe(getViewLifecycleOwner(), (String msg) -> {
+            if (msg == null)
+                return;
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.sched_failed).setMessage(msg).show();
+            model.alert.setValue(null);
+        });
+        model.initDoneLiveData.observe(getViewLifecycleOwner(), (done) -> {
+            switch (done) {
+                case ScheduleViewModel.INIT_READY:
+                    ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+                    if (model.isOverride)
+                        bar.setTitle(R.string.menu_override);
+                    else if ("Recording Template".equals(model.recordRule.type))
+                        bar.setTitle(R.string.recrule_RecordingTemplate);
+                    else
+                        bar.setTitle(R.string.menu_schedule);
+                    bar.setSubtitle(null);
+                    setupViews();
+                    break;
+                case ScheduleViewModel.INIT_SAVED:
+                    enableSave();
+                    break;
+                case ScheduleViewModel.INIT_CLOSE:
+                    close();
+                    break;
+            }
+        });
+        Bundle args = getArguments();
+        model.init(args);
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         return root;
@@ -238,43 +277,6 @@ public class ScheduleFragment extends MainActivity.MyFragment {
 //            picker.setMaxDate(System.currentTimeMillis() + 56L * 24 * 60 * 60000);
             dlgDate.show();
         });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        model.toast.observe(this, (Integer msg) -> {
-            if (msg == 0)
-                return;
-            Toast.makeText(getContext(),
-                            msg, Toast.LENGTH_LONG)
-                    .show();
-            model.toast.setValue(0);
-        });
-
-        model.initDoneLiveData.observe(getViewLifecycleOwner(), (done) -> {
-            switch (done) {
-                case ScheduleViewModel.INIT_READY:
-                    ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-                    if (model.isOverride)
-                        bar.setTitle(R.string.menu_override);
-                    else if ("Recording Template".equals(model.recordRule.type))
-                        bar.setTitle(R.string.recrule_RecordingTemplate);
-                    else
-                        bar.setTitle(R.string.menu_schedule);
-                    bar.setSubtitle(null);
-                    setupViews();
-                    break;
-                case ScheduleViewModel.INIT_SAVED:
-                    enableSave();
-                    break;
-                case ScheduleViewModel.INIT_CLOSE:
-                    close();
-                    break;
-            }
-        });
-        Bundle args = getArguments();
-        model.init(args);
     }
 
     @Override
@@ -361,10 +363,13 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         binding.searchType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String oldType = model.recordRule.searchType;
                 model.recordRule.searchType = searchValues[position];
-                // Schedule Type changes based on search type
-                setupScheduleType();
-                dynamicSetups(position);
+                if (!model.recordRule.searchType.equals(oldType)) {
+                    // Schedule Type changes based on search type
+                    setupScheduleType();
+                    dynamicSetups(position);
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -579,6 +584,32 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                 makeStrings(sPostProcPrompts).toArray(new String[]{}), ppVal);
         // Metadata Lookup Id (Inetref)
         initText(binding.inetref, model.recordRule.inetref);
+        // Metadata search phrase
+        if ("None".equals(model.recordRule.searchType))
+            initText(binding.searchPhrase, model.recordRule.title);
+        // Metadata search buttons
+        View.OnClickListener mdSrchListener = (v) -> {
+            int task;
+            if (v == binding.searchTvmazeBn)
+                task = AsyncRemoteCall.ACTION_LOOKUP_TVMAZE;
+            else if (v == binding.searchTvdbBn)
+                task = AsyncRemoteCall.ACTION_LOOKUP_TVDB;
+            else if (v == binding.searchTmdbTvBn)
+                task = AsyncRemoteCall.ACTION_LOOKUP_TV;
+            else if (v == binding.searchTmdbMvBn)
+                task = AsyncRemoteCall.ACTION_LOOKUP_MOVIE;
+            else
+                return;
+            AsyncRemoteCall call = new AsyncRemoteCall(getActivity(), taskRunner -> {
+                selectMetaResult(taskRunner);
+            });
+            call.stringParameter = binding.searchPhrase.getText().toString();
+            call.execute(task);
+        };
+        binding.searchTvdbBn.setOnClickListener(mdSrchListener);
+        binding.searchTvmazeBn.setOnClickListener(mdSrchListener);
+        binding.searchTmdbTvBn.setOnClickListener(mdSrchListener);
+        binding.searchTmdbMvBn.setOnClickListener(mdSrchListener);
         // Save Button
         binding.saveButton.setOnClickListener((v -> {
             save(false);
@@ -587,6 +618,88 @@ public class ScheduleFragment extends MainActivity.MyFragment {
         binding.closeButton.setOnClickListener((v -> {
             close();
         }));
+    }
+
+    void selectMetaResult(AsyncRemoteCall taskRunner) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+        final AsyncRemoteCall.Parser parser;
+        int task = taskRunner.tasks[0];
+        switch (task) {
+            case AsyncRemoteCall.ACTION_LOOKUP_TVMAZE:
+            case AsyncRemoteCall.ACTION_LOOKUP_TV:
+            case AsyncRemoteCall.ACTION_LOOKUP_TVDB:
+            case AsyncRemoteCall.ACTION_LOOKUP_MOVIE:
+                parser = taskRunner.results.get(0);
+                break;
+            default:
+                return;
+        }
+        ArrayList<CharSequence> prompts = new ArrayList<>();
+        for (AsyncRemoteCall.TvEntry entry : parser.entries) {
+            if (entry.name == null || entry.id == 0)
+                break; // should not happen
+            StringBuilder stringBuilder = new StringBuilder(entry.name);
+            boolean paren=false;
+            if (entry.firstAirDate != null
+                    && entry.firstAirDate.length() >= 4) {
+                paren = true;
+                stringBuilder
+                        .append(" [")
+                        .append(entry.firstAirDate.substring(0, 4));
+            }
+            if (entry.type != null) {
+                if (!paren) {
+                    stringBuilder.append(" [");
+                    paren = true;
+                }
+                else
+                    stringBuilder.append(" ");
+                stringBuilder.append(entry.type);
+            }
+            if (paren)
+                stringBuilder.append("]");
+            if (entry.overview != null && entry.overview.length() > 0) {
+                String desc = entry.overview.trim();
+                if (desc.length() > 300)
+                    desc = desc.substring(0,300) + " ...";
+                stringBuilder.append(" :\n");
+                stringBuilder.append("-----\n");
+                stringBuilder.append(desc);
+            }
+            stringBuilder.append("\n====");
+//            stringBuilder.append('\n');
+            prompts.add(stringBuilder.toString());
+        }
+        if (prompts.size() > 0)
+            alertBuilder.setTitle(R.string.sched_metadata_select_prompt);
+        else
+            alertBuilder.setTitle(R.string.sched_metadata_select_none);
+        alertBuilder
+                .setItems(prompts.toArray(new CharSequence[0]),
+                        (dialog, which) -> {
+                            // The 'which' argument contains the index position
+                            // of the selected item
+                            if (which < parser.entries.size()) {
+                                StringBuilder inetRef = new StringBuilder();
+                                switch(taskRunner.tasks[0]) {
+                                    case AsyncRemoteCall.ACTION_LOOKUP_TVMAZE:
+                                        inetRef.append("tvmaze.py_");
+                                        break;
+                                    case AsyncRemoteCall.ACTION_LOOKUP_TV:
+                                        inetRef.append("tmdb3tv.py_");
+                                        break;
+                                    case AsyncRemoteCall.ACTION_LOOKUP_MOVIE:
+                                        inetRef.append("tmdb3.py_");
+                                        break;
+                                    case AsyncRemoteCall.ACTION_LOOKUP_TVDB:
+                                        inetRef.append("ttvdb4.py_");
+                                        break;
+                                }
+                                inetRef.append(parser.entries.get(which).id);
+                                binding.inetref.setText(inetRef.toString());
+                            }
+                        });
+        alertBuilder.show();
     }
 
     private void updateHeading() {

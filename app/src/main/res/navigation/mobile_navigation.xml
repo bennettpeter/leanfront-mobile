@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/nav_videolist"
         android:name="org.mythtv.lfmobile.ui.videolist.VideoListFragment"
-        android:label="@string/menu_videolist"
-        tools:layout="@layout/fragment_videolist" />
+        android:label="@string/menu_videolist" />
+<!--        tools:layout="@layout/fragment_videolist" />-->
 
     <fragment
         android:id="@+id/nav_settings"

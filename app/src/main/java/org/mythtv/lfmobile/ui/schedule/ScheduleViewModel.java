@@ -34,6 +34,7 @@ public class ScheduleViewModel extends ViewModel {
     static public final int INIT_SAVED = 2;
     static public final int INIT_CLOSE = 3;
     final MutableLiveData<Integer> toast = new MutableLiveData<>();
+    final MutableLiveData<String> alert = new MutableLiveData<>();
 
     int recordId;
     int schedReason;
@@ -274,10 +275,8 @@ public class ScheduleViewModel extends ViewModel {
                 }
             }
         }
-        if (schedReason != SCHED_NEWRULE) {
-            String recordRuleStr = AsyncBackendCall.getString(recordRule);
-            savedHashCode = recordRuleStr.hashCode();
-        }
+        String recordRuleStr = AsyncBackendCall.getString(recordRule);
+        savedHashCode = recordRuleStr.hashCode();
         if (schedReason == SCHED_NEWRULE || "Manual Search".equals(recordRule.searchType) ) {
             loadChannels();
         }
@@ -351,10 +350,19 @@ public class ScheduleViewModel extends ViewModel {
             if (caller == null)
                 return;
             XmlNode response = caller.getXmlResult();
+            Exception e = response.getException();
             String result = null;
             if (response != null)
                 result = response.getString();
-            if (result == null || "false".equals(result)) {
+            if (e instanceof XmlNode.APIException) {
+                String err = ((XmlNode.APIException) e).getApiError();
+                if (err != null) {
+                    String[] parts = err.split("<TITLE>|</TITLE>");
+                    if (parts.length > 1)
+                        alert.postValue(parts[1]);
+                }
+            }
+            else if (result == null || "false".equals(result)) {
                 toast.postValue(R.string.sched_failed);
             } else {
                 String recordRuleStr = AsyncBackendCall.getString(recordRule);
@@ -366,8 +374,8 @@ public class ScheduleViewModel extends ViewModel {
                 else if (recordRule.recordId == 0) {
                     try {
                         recordRule.recordId = Integer.parseInt(result);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
                     }
                 }
                 int resp = INIT_SAVED;

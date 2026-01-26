@@ -5,7 +5,7 @@
     <string name="menu_videolist">Media</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_search">Search</string>
-    <string name="menu_recrules">Rec Rules</string>
+    <string name="menu_recrules">Rules</string>
     <string name="menu_upcoming">Upcoming</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_guide">Guide</string>
@@ -67,12 +67,6 @@
     <string name="recrule_RecordWeekly">Record Weekly</string>
     <string name="recrule_RecordingTemplate">Recording Template</string>
     <string name="recrule_SingleRecord">Single Record</string>
-<!--    <string name="recrule_srch_KeywordSearch">Keyword Search</string>-->
-<!--    <string name="recrule_srch_ManualSearch">Manual Search</string>-->
-<!--    <string name="recrule_srch_None">None</string>-->
-<!--    <string name="recrule_srch_PeopleSearch">People Search</string>-->
-<!--    <string name="recrule_srch_PowerSearch">Power Search</string>-->
-<!--    <string name="recrule_srch_TitleSearch">Title Search</string>-->
     <string name="recrule_template">Template</string>
 
     <string name="recrule_last">Last Recorded:</string>
@@ -213,7 +207,19 @@
     <string name="sched_max_newest_note">If unchecked, stop recording when maximum episodes are reached.</string>
     <string name="sched_auto_expire">Auto Expire</string>
     <string name="sched_pp_title">Post Processing Options</string>
-    <string name="sched_metadata_id">Metadata Lookup Id (InetRef)</string>
+
+
+    <string name="sched_metadata_id">Series or Movie Id</string>
+    <string name="sched_metadata_search_name">Phrase to use in Search</string>
+    <string name="sched_metadata_search_movie_bn">Search Movies on TMDB</string>
+    <string name="sched_metadata_search_tv_bn">Search TV Series on TMDB</string>
+    <string name="sched_metadata_search_tmdb_desc">Metadata provided by themoviedb.org</string>
+    <string name="sched_metadata_search_tvdb_bn">Search TheTVDB</string>
+    <string name="sched_metadata_search_tvdb_desc">Metadata provided TheTVDB.com. Please consider adding missing information or subscribing.</string>
+    <string name="sched_metadata_search_tvmaze_bn">Search TVmaze</string>
+    <string name="sched_metadata_search_tvmaze_desc">Metadata provided by tvmaze.com.</string>
+    <string name="sched_metadata_select_prompt">Select Appropriate Entry</string>
+    <string name="sched_metadata_select_none">No Match Found</string>
 
 
     <string name="sched_active">Active</string>

@@ -613,7 +613,7 @@ public class AsyncBackendCall implements Runnable {
 
                 case Action.ADD_OR_UPDATERECRULE:
                     try {
-                        RecordRule  recordRule = (RecordRule) args.get("RECORDRULE");
+                        RecordRule recordRule = (RecordRule) args.get("RECORDRULE");
                         SimpleDateFormat sdfUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         sdfUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
                         String baseURL;
@@ -626,12 +626,15 @@ public class AsyncBackendCall implements Runnable {
                                 (XmlNode.mythApiUrl(null,
                                         baseURL));
                         urlBuilder.append(getString(recordRule));
-                        xmlResult = XmlNode.fetch(urlBuilder.toString(), "POST");
+                        xmlResult = XmlNode.safeFetch(urlBuilder.toString(), "POST");
                         String result = xmlResult.getString();
-                        if (recordRule.recordId == 0) { // if a new rule is being created
+                        if (result != null && recordRule.recordId == 0) { // if a new rule is being created
                             Log.i(TAG, CLASS + " Recording scheduled, RecordId:" + result);
                             recordRule.recordId = Integer.parseInt(result);
                         }
+                        Exception e = xmlResult.getException();
+                        if (e != null)
+                            Log.e(TAG, CLASS + " APIException Updating Record Schedule.", e);
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception Updating Record Schedule.", e);
                     }

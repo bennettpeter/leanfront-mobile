@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.schedule.ScheduleFragment">
     <LinearLayout
         android:layout_width="match_parent"
@@ -449,7 +450,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="6sp" />
-        <!--Metadata Lookup Id-->
+        <!--Series or Movie Id-->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -468,6 +469,161 @@
             android:maxLines="1"
             android:padding="6sp"
             android:textSize="15sp" />
+        <!--Phrase to use in Search-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="6sp"
+            android:paddingTop="12sp"
+            android:text="@string/sched_metadata_search_name"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/search_phrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12sp"
+            android:focusable="true"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="6sp"
+            android:textSize="15sp" />
+        <!-- Search TVDB -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/search_tvdb_bn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/tvdb_logo"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:src="@drawable/tvdb_logo"
+                app:tint="@color/black"
+                app:tintMode="add"
+                android:backgroundTint="@color/black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/search_tvdb_bn_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_tvdb_bn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvdb_logo"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_tvdb_desc"
+                app:layout_constraintTop_toBottomOf="@id/search_tvdb_bn_txt"
+                app:layout_constraintStart_toEndOf="@id/tvdb_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="12sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Search TVMaze -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/search_tvmaze_bn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/tvmaze_logo"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:src="@drawable/tvmaze_logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:paddingTop="20dp"
+                android:id="@+id/search_tvmaze_bn_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_tvmaze_bn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tvmaze_logo"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_tvmaze_desc"
+                app:layout_constraintTop_toBottomOf="@id/search_tvmaze_bn_txt"
+                app:layout_constraintStart_toEndOf="@id/tvmaze_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="12sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Search TV series on TMDB -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/search_tmdb_tv_bn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/tmdb_tv_logo"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:src="@drawable/tmdb_logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:paddingTop="20dp"
+                android:id="@+id/search_tmdb_tv_bn_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_tv_bn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tmdb_tv_logo"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_tmdb_desc"
+                app:layout_constraintTop_toBottomOf="@id/search_tmdb_tv_bn_txt"
+                app:layout_constraintStart_toEndOf="@id/tmdb_tv_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="12sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Search Movies on TMDB -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/search_tmdb_mv_bn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/tmdb_mv_logo"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:src="@drawable/tmdb_logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:paddingTop="20dp"
+                android:id="@+id/search_tmdb_mv_bn_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_movie_bn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tmdb_mv_logo"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="6sp"
+                android:text="@string/sched_metadata_search_tmdb_desc"
+                app:layout_constraintTop_toBottomOf="@id/search_tmdb_mv_bn_txt"
+                app:layout_constraintStart_toEndOf="@id/tmdb_mv_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="12sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <!--Buttons-->
         <LinearLayout
             android:layout_width="match_parent"

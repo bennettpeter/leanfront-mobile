@@ -27,9 +27,11 @@ import org.mythtv.lfmobile.MainActivityModel;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
@@ -200,6 +202,9 @@ public class XmlNode {
             int respCode =  urlConnection.getResponseCode();
             Log.i(TAG, CLASS + " Response: " + respCode
                     + " " + urlConnection.getResponseMessage());
+            if (respCode == 400) {
+                throw new APIException(e.getMessage(),e,urlConnection);
+            }
             if (respCode == 401) {
                 // MythTask will process login
                 if (!urlString.endsWith("/Myth/DelayShutdown"))
@@ -232,7 +237,7 @@ public class XmlNode {
         try {
             return fetch(urlString,requestMethod);
         } catch(IOException | XmlPullParserException e) {
-            Log.i(TAG, CLASS + " Unsupported url " + urlString);
+            Log.i(TAG, CLASS + " safeFetch fail. url " + urlString);
             return new XmlNode(e);
         }
     }
@@ -393,4 +398,34 @@ public class XmlNode {
         return ret;
     }
 
+    static public class APIException extends IOException {
+        String apiError;
+        APIException(String message, Throwable cause, HttpURLConnection urlConnection) {
+            super(message, cause);
+            if (urlConnection != null) {
+                InputStream es = urlConnection.getErrorStream();
+                if (es != null) {
+                    BufferedReader rdr = new BufferedReader(new InputStreamReader(es));
+                    for (;;) {
+                        String line = null;
+                        try {
+                            line = rdr.readLine();
+                        } catch (IOException ignored) {
+                            line = null;
+                        }
+                        if (line == null)
+                            break;
+                        Log.i(TAG,CLASS+ " " + line);
+                        if (apiError == null)
+                            apiError = line;
+                        else
+                            apiError += line;
+                    }
+                }
+            }
+        }
+        public String getApiError() {
+            return apiError;
+        }
+    }
 }
