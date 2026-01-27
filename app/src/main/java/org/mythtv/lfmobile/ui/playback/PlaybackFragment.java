@@ -116,6 +116,7 @@ public class PlaybackFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        setObservers();
         binding = FragmentPlaybackBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         return root;
@@ -223,7 +224,6 @@ public class PlaybackFragment extends Fragment {
             viewModel.maybePlaying = true;
         }
         setupControls();
-        setObservers();
         contentView = getView().findViewById(R.id.player_view);
         if (contentView != null) {
             gestureDetector = new GestureDetector(getContext(),gestureProcess);

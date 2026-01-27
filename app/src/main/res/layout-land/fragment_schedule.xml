@@ -267,8 +267,6 @@
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:src="@drawable/tvmaze_logo"
-                        app:tint="@color/black"
-                        app:tintMode="add"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
                     <TextView
@@ -302,8 +300,6 @@
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:src="@drawable/tmdb_logo"
-                        app:tint="@color/black"
-                        app:tintMode="add"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
                     <TextView
@@ -337,8 +333,6 @@
                         android:layout_width="100dp"
                         android:layout_height="80dp"
                         android:src="@drawable/tmdb_logo"
-                        app:tint="@color/black"
-                        app:tintMode="add"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
                     <TextView
