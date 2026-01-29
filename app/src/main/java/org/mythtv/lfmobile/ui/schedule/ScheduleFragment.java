@@ -365,11 +365,9 @@ public class ScheduleFragment extends MainActivity.MyFragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String oldType = model.recordRule.searchType;
                 model.recordRule.searchType = searchValues[position];
-                if (!model.recordRule.searchType.equals(oldType)) {
-                    // Schedule Type changes based on search type
-                    setupScheduleType();
-                    dynamicSetups(position);
-                }
+                // Schedule Type changes based on search type
+                setupScheduleType();
+                dynamicSetups(position);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
