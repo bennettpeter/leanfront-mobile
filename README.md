@@ -17,7 +17,8 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 - [Guide Screen](#guide-screen)
 - [Guide Search Screen](#guide-search-screen)
 - [Schedule Screen](#schedule-screen)
-- [Override Recordiung](#override-recording)
+- [Override Recording](#override-recording)
+- [Rules Screen](#rules-screen)
 - [Upcoming Screen](#upcoming-screen)
 - [Installing leanfront](#installing-leanfront)
 - [Leanfront Features](#leanfront-features)
@@ -144,6 +145,11 @@ The schedule screen includes all of the normal options for scheduling a recordin
 
 From the paperclip icon you can get to this screen where you can select override options for an individual episode.
 
+## Rules Screen
+![](ScreenShots/Rules.png)
+
+This lists all the recording rules. From here you can update or delete any rule. You can also create a new search or manual recording rule from the menu accessed by tapping the three dots at the top right hand side of the screen.
+
 ## Upcoming Screen
 ![](ScreenShots/upcoming.png)
 
@@ -189,7 +195,7 @@ The first time you run the app it will prompt you for the MythTV Backend setting
 - The *Master Backend Override* MythTV setting is supported. Playback will be from the master backend even for recordings made on a slave. However the Preview image still uses the slave backend, so it will not show if the slave is down.
 - Note that some phones do not support MPEG-2 playback. In this case MPEG-2 recordings are decoded via software.
 - Supports MythTV commercial breaks and cut list.
-- Shows the program guide with searcjhj capabilities and supports scheduling recordings and changing schedules 
+- Shows the program guide with search capabilities and supports scheduling recordings and changing schedules 
 
 ## Release Notes
 
