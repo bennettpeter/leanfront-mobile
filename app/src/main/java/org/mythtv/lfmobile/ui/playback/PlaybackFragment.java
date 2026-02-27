@@ -331,6 +331,8 @@ public class PlaybackFragment extends Fragment {
         ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(), rFactory);
         builder.setSeekBackIncrementMs(viewModel.seekBack * 1000);
         builder.setSeekForwardIncrementMs(viewModel.seekFwd * 1000);
+        // 12 hours to cater for playback of recordings in progress
+        builder.setStuckPlayingNotEndingTimeoutMs(12*60*60*1000);
         viewModel.player = builder.build();
         binding.playerView.setPlayer(viewModel.player);
         binding.playerView.setSizeGetter(viewModel);
