@@ -69,12 +69,13 @@ public class VideoListFragment extends MainActivity.MyFragment {
     private MenuProvider menuProvider;
     private ArrayList <Video> videoList = new ArrayList<>();
     private int orientation;
+    private OnBackPressedCallback bpCallback;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        bpCallback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
                 if (videoListModel.pageType == VideoListModel.TYPE_SERIES) {
@@ -93,7 +94,7 @@ public class VideoListFragment extends MainActivity.MyFragment {
                 }
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -197,6 +198,8 @@ public class VideoListFragment extends MainActivity.MyFragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (bpCallback != null)
+            bpCallback.setEnabled(true);
         ((MainActivity)getActivity()).myFragment = this;
         if (menuProvider != null) {
             getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());

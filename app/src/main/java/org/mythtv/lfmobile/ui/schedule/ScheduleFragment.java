@@ -114,6 +114,7 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     private String templateName = "";
     private boolean hideNav = false;
     private MenuProvider menuProvider;
+    private OnBackPressedCallback bpCallback;
 
     private static int validateNumber(EditText view, Object action, int min, int max, int defValue) {
         String s;
@@ -162,7 +163,7 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        bpCallback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
                 if (canClose()) {
@@ -171,7 +172,7 @@ public class ScheduleFragment extends MainActivity.MyFragment {
                 }
             }
         };
-        getActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+        getActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
 
     }
 
@@ -282,6 +283,8 @@ public class ScheduleFragment extends MainActivity.MyFragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (bpCallback != null)
+            bpCallback.setEnabled(true);
         ((MainActivity) getActivity()).myFragment = this;
         if (menuProvider != null)
             getActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
