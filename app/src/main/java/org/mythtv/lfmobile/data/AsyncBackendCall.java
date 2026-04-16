@@ -439,20 +439,34 @@ public class AsyncBackendCall implements Runnable {
                         Log.e(TAG, CLASS + " Exception in Myth/GetHostName.", e);
                     }
                     break;
+                case Action.TESTURL:
+                    // params: URL, ID
+                    // ** Fall through to next case **
                 case Action.FILELENGTH: {
-                    // params: -1 or null to bypass check for changing
-                    //         0 or a value to check for changing
+                    // params:
+                    // PRIORLENG
+                    //   -1 or null to bypass check for changing
+                    //   0 or a value to check for changing
                     long priorLength = -1;
+                    int xmlRespCode = 0;
+                    int id = -1;
+                    Integer idObject = (Integer) args.get("ID");
+                    if (idObject != null)
+                        id = idObject;
                     Long param = (Long) args.get("PRIORLENG");
                     if (param != null)
                         priorLength = param;
-                    String urlString = video.videoUrl;
+                    String urlString = (String) args.get("URL");
+                    if (urlString == null)
+                        urlString = video.videoUrl;
                     long fileLength = -1;
                     for (int counter = 0; counter < 5; counter++) {
-                        try {
-                            // pause 1 second between attempts
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ignored) {
+                        if (task == Action.FILELENGTH) {
+                            try {
+                                // pause 1 second between attempts
+                                Thread.sleep(1000);
+                            } catch (InterruptedException ignored) {
+                            }
                         }
                         HttpURLConnection urlConnection = null;
                         try {
@@ -469,6 +483,7 @@ public class AsyncBackendCall implements Runnable {
                             Log.i(TAG, CLASS + " URL: " + urlString);
                             urlConnection.connect();
                             try {
+                                xmlRespCode = urlConnection.getResponseCode();
                                 Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
                                         + " " + urlConnection.getResponseMessage());
                             } catch (Exception ignored) {
@@ -488,19 +503,24 @@ public class AsyncBackendCall implements Runnable {
                             if (priorLength == -1 || fileLength > priorLength)
                                 break;
                         } catch (Exception e) {
-                            try {
-                                Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                        + " " + urlConnection.getResponseMessage());
-                            } catch (IOException ioException) {
-                                ioException.printStackTrace();
+                            if (task == Action.FILELENGTH) {
+                                try {
+                                    Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
+                                            + " " + urlConnection.getResponseMessage());
+                                } catch (IOException ioException) {
+                                    ioException.printStackTrace();
+                                }
+                                Log.e(TAG, CLASS + " Exception getting file length.", e);
                             }
-                            Log.e(TAG, CLASS + " Exception getting file length.", e);
                         } finally {
                             if (urlConnection != null)
                                 urlConnection.disconnect();
                         }
                     }
-                    response = new Long(fileLength);
+                    if (task == Action.FILELENGTH)
+                        response = new Long(fileLength);
+                    else
+                        response = new Integer[]{id, xmlRespCode};
                     break;
                 }
                 case Action.GUIDE: {

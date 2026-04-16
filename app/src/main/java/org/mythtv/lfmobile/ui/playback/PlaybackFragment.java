@@ -13,12 +13,14 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.util.UnstableApi;
@@ -29,8 +31,11 @@ import androidx.media3.exoplayer.ExoPlaybackException;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.mediacodec.MediaCodecRenderer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.MergingMediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.exoplayer.source.SampleQueue;
+import androidx.media3.exoplayer.source.SingleSampleMediaSource;
 import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.DefaultTimeBar;
 
@@ -59,6 +64,7 @@ import org.mythtv.lfmobile.databinding.FragmentPlaybackBinding;
 import org.mythtv.lfmobile.player.MyExtractorsFactory;
 import org.mythtv.lfmobile.player.MyRenderersFactory;
 
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -92,7 +98,11 @@ public class PlaybackFragment extends Fragment {
     private float seekAccel = Settings.getFloat("pref_drag_accel");
     private int prefTextSize = Settings.getInt("pref_duration_textsize");
     private final Handler handler = new Handler(Looper.getMainLooper());
-
+    private String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
+    private String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
+            MimeTypes.TEXT_SSA, MimeTypes.TEXT_VTT, MimeTypes.APPLICATION_TTML};
+    private boolean [] subtFound = new boolean[subtExtens.length];
+    private int subtChecked = -1;
 
     public static PlaybackFragment newInstance() {
         return new PlaybackFragment();
@@ -109,7 +119,6 @@ public class PlaybackFragment extends Fragment {
         viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
         viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0l);
         viewModel.frameRate = intent.getFloatExtra(PlaybackActivity.FRAMERATE, 30f);
-        setPlaySettings();
     }
 
     @Nullable
@@ -244,7 +253,7 @@ public class PlaybackFragment extends Fragment {
 
     public void onResume() {
         super.onResume();
-        if ((Build.VERSION.SDK_INT <= 23 || viewModel.player == null)) {
+        if (Build.VERSION.SDK_INT <= 23) {//  || viewModel.player == null)) {
             initializePlayer();
             viewModel.maybePlaying = true;
         }
@@ -311,6 +320,32 @@ public class PlaybackFragment extends Fragment {
 
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
+        // Check for external subtitles
+        if (subtChecked == -1) {
+            subtChecked = 0;
+            for (int ix = 0; ix < subtExtens.length; ix++) {
+                AsyncBackendCall call = new AsyncBackendCall((taskRunner) -> {
+                    // results[0] = id, results[1] = Http Response
+                    Integer[] results = (Integer[]) (taskRunner.response);
+                    if (results[1] == 200) {
+                        subtFound[results[0]] = true;
+                        Log.i(TAG, CLASS + " External subtitle found: " + subtExtens[results[0]]);
+                    }
+                    subtChecked++;
+                });
+                call.args.put("ID", ix);
+                int dot = viewModel.video.videoUrl.lastIndexOf('.');
+                call.args.put("URL", viewModel.video.videoUrl.substring(0, dot + 1) + subtExtens[ix]);
+                call.execute(Action.TESTURL);
+            }
+        }
+        if (subtChecked < subtExtens.length) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed( () -> {
+                initializePlayer();
+            }, 100);
+            return;
+        }
         TextView durationView = getView().findViewById(R.id.my_duration);
         durationView.setText(null);
         viewModel.fileLength = 0;
@@ -343,13 +378,44 @@ public class PlaybackFragment extends Fragment {
         viewModel.fillTables();
         String userAgent = Util.getUserAgent(getActivity(), "PlaybackViewModel");
         DataSource.Factory dsFactory = new MythHttpDataSource.Factory(userAgent);
-
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (dsFactory, extFactory);
         pmf.experimentalParseSubtitlesDuringExtraction(false);
         viewModel.mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
         viewModel.mediaSource.setPossibleEmptyTrack(viewModel.possibleEmptyTrack);
-        viewModel.player.setMediaSource(viewModel.mediaSource, viewModel.bookmark);
+        // see DefaultMediaSourceFactory for non-deprecated code. Must be done
+        // in conjunction with abve call to experimentalParseSubtitlesDuringExtraction
+        SingleSampleMediaSource.Factory singleSampleMediaSourceFactory =
+                new SingleSampleMediaSource.Factory(dsFactory);
+        ArrayList<MediaSource> msList = new ArrayList<>();
+        msList.add(viewModel.mediaSource);
+        for (int ix = 0 ; ix < subtExtens.length; ix++) {
+            if (subtFound[ix]) {
+                int dot = viewModel.video.videoUrl.toString().lastIndexOf('.');
+                Uri subtitleUri = Uri.parse(viewModel.video.videoUrl.toString()
+                        .substring(0, dot+1) + subtExtens[ix]);
+                MediaItem.SubtitleConfiguration subtitle =
+                        new MediaItem.SubtitleConfiguration.Builder(subtitleUri)
+                                .setMimeType(subtMimes[ix]) // The correct MIME type (required).
+                                .setLabel("External (" + subtExtens[ix] + ")")
+//                        .setLanguage(language) // The subtitle language (optional).
+//                        .setSelectionFlags(selectionFlags) // Selection flags for the track (optional).
+                                .build();
+                MediaSource subtmediaSource =
+                        singleSampleMediaSourceFactory.createMediaSource(
+                                subtitle, /* durationUs= */ C.TIME_UNSET);
+                msList.add(subtmediaSource);
+            }
+        }
+
+        if (msList.size() > 1) {
+            MediaSource [] mediaSources = new MediaSource[msList.size()];
+            mediaSources = msList.toArray(mediaSources);
+            MergingMediaSource mmSource = new MergingMediaSource(mediaSources);
+            viewModel.player.setMediaSource(mmSource, viewModel.bookmark);
+        }
+        else
+            viewModel.player.setMediaSource(viewModel.mediaSource, viewModel.bookmark);
         viewModel.player.setPlaybackSpeed(viewModel.speed);
         viewModel.savedDuration = 0;
         viewModel.player.prepare();
@@ -438,11 +504,6 @@ public class PlaybackFragment extends Fragment {
         call.videos.add(viewModel.video);
 //        call.params = new Boolean(watched);
         call.execute(Action.SET_WATCHED);
-    }
-
-    private void setPlaySettings() {
-//        viewModel.possibleEmptyTrack = "true".equals(Settings.getString("pref_poss_empty"));
-
     }
 
     void seekTo(long position) {
