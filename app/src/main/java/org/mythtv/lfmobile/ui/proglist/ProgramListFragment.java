@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -131,9 +133,21 @@ public class ProgramListFragment extends MainActivity.MyFragment {
 
                             @Override
                             public boolean onMenuItemActionCollapse(@NonNull MenuItem item) {
+                                // All the null checkes are here because google preleanch checks found a nullpointerexception
+                                // here when running a test in 16KB page mode
+                                FragmentActivity activity = getActivity();
+                                if (activity == null)
+                                    return false;
+                                FragmentManager fManager = activity.getSupportFragmentManager();
+                                if (fManager == null)
+                                    return false;
                                 NavHostFragment navHostFragment =
-                                        (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+                                        (NavHostFragment) fManager.findFragmentById(R.id.nav_host_fragment_content_main);
+                                if (navHostFragment == null)
+                                    return false;
                                 NavController navController = navHostFragment.getNavController();
+                                if (navController == null)
+                                    return false;
                                 navController.navigateUp();
                                 return false;
                             }
