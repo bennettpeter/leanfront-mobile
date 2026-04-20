@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
-task gitinfo {
+tasks.register('gitinfo') {
     ext.describe = 'git describe --dirty'.execute().text.trim()
     ext.describe2 = 'git -C ../leanfront describe origin/master'.execute().text.trim()
     def split = ext.describe.split("-")
@@ -18,9 +18,13 @@ task gitinfo {
     println "Version Name: " + ext.versionName + ", Version Code: " + ext.version
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
 android {
     namespace 'org.mythtv.lfmobile'
-    compileSdk 35
+    compileSdk = 36
     lintOptions{
         disable 'MissingTranslation'
     }
@@ -29,7 +33,7 @@ android {
         applicationId "org.mythtv.leanfront"
         minSdk 23
         targetSdk 36
-        compileSdk 36
+        compileSdk = 36
         versionCode gitinfo.ext.version
         versionName gitinfo.ext.versionName
 
