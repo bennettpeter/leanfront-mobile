@@ -161,18 +161,22 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
 
     void onUpdateProgress() {
         long currPos = savedCurrentPosition;
-        if (currPos >= endCommBreakMs) {
-            synchronized (this) {
-                endCommBreakMs = Long.MAX_VALUE;
+        // No checking for commercial at the very start.
+        // Skip fails at the very beginning
+        if (currPos > 100) {
+            if (currPos >= endCommBreakMs) {
+                synchronized (this) {
+                    endCommBreakMs = Long.MAX_VALUE;
+                }
+                onEndCommBreak();
             }
-            onEndCommBreak();
-        }
-        if (currPos >= nextCommBreakMs) {
-            long next = nextCommBreakMs;
-            synchronized (this) {
-                nextCommBreakMs = Long.MAX_VALUE;
+            if (currPos >= nextCommBreakMs) {
+                long next = nextCommBreakMs;
+                synchronized (this) {
+                    nextCommBreakMs = Long.MAX_VALUE;
+                }
+                onCommBreak(next, currPos);
             }
-            onCommBreak(next, currPos);
         }
         durationLive.postValue(savedDuration);
     }
