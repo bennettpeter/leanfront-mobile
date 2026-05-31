@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public MyFragment myFragment;
     public static MainActivity mainActivity;
     public View mainView;
+    public boolean bottomNavEnabled;
     private static final String TAG = "lfm";
     static final String CLASS = "MainActivity";
     @Override
@@ -56,7 +58,19 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(navigationView, navController);
         }
 
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            bottomNavEnabled = Settings.getBoolean("pref_land_bottomnav");
+        else
+            bottomNavEnabled = true;
+
         BottomNavigationView bottomNavigationView = binding.appBarMain.contentMain.bottomNavView;
+
+        if (bottomNavigationView != null && !bottomNavEnabled) {
+            bottomNavigationView.setVisibility(View.GONE);
+            bottomNavigationView = null;
+        }
+
         if (bottomNavigationView != null) {
             mAppBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.nav_videolist)

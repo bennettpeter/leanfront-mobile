@@ -187,5 +187,10 @@
             android:dialogMessage="@string/pref_tweaks_desc"
             android:defaultValue="2600"/>
 
+        <SwitchPreference
+            android:key="pref_land_bottomnav"
+            android:title="@string/pref_land_bottomnav"
+            android:defaultValue="false"/>
+
     </PreferenceCategory>
 </PreferenceScreen>

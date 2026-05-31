@@ -108,6 +108,14 @@ public class Settings {
         return getFloat(key,null);
     }
 
+    public static boolean getBoolean(String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences
+                (MyApplication.getAppContext());
+        if (prefs != null)
+            return prefs.getBoolean(key, false);
+        return false;
+    }
+
     public static void putString(SharedPreferences.Editor editor, String key,
                                  @Nullable String group, String value) {
         if (key.startsWith("pref_"))

@@ -124,6 +124,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                     return false;
                 });
 
+        findPreference("pref_land_bottomnav")
+                .setOnPreferenceChangeListener((pref,action) -> {
+                    ((MainActivity)getActivity()).recreate();
+                    return true;
+                });
+
         if (!BackendCache.getInstance().loginNeeded) {
             findPreference("pref_backend_userid").setVisible(false);
             findPreference("pref_backend_passwd").setVisible(false);
