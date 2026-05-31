@@ -120,9 +120,9 @@ public class MainActivity extends AppCompatActivity {
         viewModel.startMythTask();
     }
 
-    public static class MyFragment extends Fragment {
-        public void startFetch() {}
-        public boolean navigateUp(){
+    public interface MyFragment  {
+        default void startFetch() {}
+        default boolean navigateUp(){
             return false;
         }
     }

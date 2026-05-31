@@ -29,6 +29,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.mythtv.lfmobile.MainActivity;
@@ -47,7 +48,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class ScheduleFragment extends MainActivity.MyFragment {
+public class ScheduleFragment extends Fragment implements MainActivity.MyFragment {
 
     static final int[] searchPrompts = {
             R.string.sched_srch_None,

@@ -3,17 +3,19 @@ package org.mythtv.lfmobile.ui.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MainActivityModel;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
-public class SettingsFragment extends PreferenceFragmentCompat
+public class SettingsFragment extends PreferenceFragmentCompat implements MainActivity.MyFragment
 {
 
     public static boolean isActive = false;
@@ -130,10 +132,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public void onResume() {
+        ((MainActivity)getActivity()).myFragment = this;
         isActive = true;
         reloadDB = false;
         super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
+        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        bar.setSubtitle(null);
         if (BackendCache.getInstance().loginNeeded) {
             findPreference("pref_backend_userid").setVisible(true);
             findPreference("pref_backend_passwd").setVisible(true);
@@ -141,14 +145,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
             findPreference("pref_backend_userid").setVisible(false);
             findPreference("pref_backend_passwd").setVisible(false);
         }
-//        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-//        bar.setDisplayHomeAsUpEnabled(true);
-//        bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP|ActionBar.DISPLAY_SHOW_HOME,
-//                ActionBar.DISPLAY_HOME_AS_UP|ActionBar.DISPLAY_SHOW_HOME);
     }
 
     @Override
     public void onPause() {
+        ((MainActivity)getActivity()).myFragment = null;
         if (reloadDB && VideoListModel.getInstance() != null)
             VideoListModel.getInstance().startFetch();
         reloadDB = false;

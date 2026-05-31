@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -54,7 +55,7 @@ import org.mythtv.lfmobile.ui.schedule.ScheduleViewModel;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class GuideFragment extends MainActivity.MyFragment {
+public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     private static final String TAG = "lfm";
     private static final String CLASS = "GuideFragment";
     private FragmentGuideBinding binding;

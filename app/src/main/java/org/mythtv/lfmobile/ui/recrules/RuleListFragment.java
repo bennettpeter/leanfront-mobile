@@ -2,6 +2,7 @@ package org.mythtv.lfmobile.ui.recrules;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
@@ -39,7 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class RuleListFragment extends MainActivity.MyFragment {
+public class RuleListFragment extends Fragment implements MainActivity.MyFragment {
     private static final String TAG = "lfm";
     private static final String CLASS = "RuleListFragment";
     private MenuProvider menuProvider;
