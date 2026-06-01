@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Przeciągnij przyspieszenie</string>
   <string name="pref_drag_accel_desc">Ustaw 1.0 do przeciągania liniowego. Ustaw wyższą wartość dla przyspieszenia wykładniczego.</string>
   <string name="pref_duration_textsize">Odtwarzanie rozmiar tekstu w orientacji krajobrazu</string>
+  <string name="pref_land_bottomnav">Pokaż dolną nawigację w trybie poziomym.</string>
+  <string name="pref_startview_title">Widok uruchamiania aplikacji</string>
   <string name="resume_last">Graj z ostatniej pozycji gry</string>
   <string name="play">Grać od początku</string>
   <string name="menu_mark_unwatched">Znak jako nieuczciony</string>

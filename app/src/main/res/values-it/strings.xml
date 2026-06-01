@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Trascinare l\'accelerazione</string>
   <string name="pref_drag_accel_desc">Imposta 1.0 per il trascinamento lineare. Imposta un valore più elevato per l\'accelerazione esponenziale.</string>
   <string name="pref_duration_textsize">Riproduzione del testo Progressi della dimensione del testo in orientamento paesaggistico</string>
+  <string name="pref_land_bottomnav">Mostra la navigazione in basso in modalità orizzontale.</string>
+  <string name="pref_startview_title">Visualizzazione avvio app</string>
   <string name="resume_last">Gioca dall\'ultima posizione di gioco</string>
   <string name="play">Gioca dall\'inizio</string>
   <string name="menu_mark_unwatched">Segna come nonostante</string>

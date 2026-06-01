@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Συρράττω επιτάχυνση</string>
   <string name="pref_drag_accel_desc">Ρυθμίστε 1.0 για γραμμική μεταφορά. Ορίστε υψηλότερη τιμή για εκθετική επιτάχυνση.</string>
   <string name="pref_duration_textsize">Μέγεθος κειμένου προόδου αναπαραγωγής στον προσανατολισμό του τοπίου</string>
+  <string name="pref_land_bottomnav">Εμφάνιση της κάτω πλοήγησης σε οριζόντια λειτουργία.</string>
+  <string name="pref_startview_title">Προβολή εκκίνησης εφαρμογής</string>
   <string name="resume_last">Παίξτε από την τελευταία θέση παιχνιδιού</string>
   <string name="play">Παίξτε από την αρχή</string>
   <string name="menu_mark_unwatched">Σηματοδοτείται ως ακατέργαστο</string>

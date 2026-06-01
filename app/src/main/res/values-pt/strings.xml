@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Aceleração de arrasto</string>
   <string name="pref_drag_accel_desc">Defina 1.0 para arrastar linear. Defina um valor mais alto para aceleração exponencial.</string>
   <string name="pref_duration_textsize">Tamanho do texto do progresso da reprodução na orientação da paisagem</string>
+  <string name="pref_land_bottomnav">Mostrar navegação inferior no modo paisagem.</string>
+  <string name="pref_startview_title">Visualização de inicialização do aplicativo</string>
   <string name="resume_last">Jogue da última posição de jogo</string>
   <string name="play">Jogue desde o início</string>
   <string name="menu_mark_unwatched">Marque como não acumulado</string>

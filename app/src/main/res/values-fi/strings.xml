@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Kiihtyvyys</string>
   <string name="pref_drag_accel_desc">Aseta 1.0 lineaariseen vetämiseen. Aseta suurempi arvo eksponentiaaliselle kiihtyvyydelle.</string>
   <string name="pref_duration_textsize">Toiston edistymisen tekstin koko maisemasuunnassa</string>
+  <string name="pref_land_bottomnav">Näytä pohjanavigointi vaakatilassa.</string>
+  <string name="pref_startview_title">Sovelluksen käynnistysnäkymä</string>
   <string name="resume_last">Pelata viimeisimmästä pelialueesta</string>
   <string name="play">Pelaaminen alusta alkaen</string>
   <string name="menu_mark_unwatched">Merkitä</string>

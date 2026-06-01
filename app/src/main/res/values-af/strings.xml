@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Sleep versnelling</string>
   <string name="pref_drag_accel_desc">Stel 1.0 vir lineêre sleep. Stel \'n hoër waarde vir eksponensiële versnelling.</string>
   <string name="pref_duration_textsize">Afspeel vordering teksgrootte in landskapsoriëntasie</string>
+  <string name="pref_land_bottomnav">Wys ondernavigasie in landskapmodus.</string>
+  <string name="pref_startview_title">App opstart-aansig</string>
   <string name="resume_last">Speel uit die laaste speelposisie</string>
   <string name="play">Speel van die begin af</string>
   <string name="menu_mark_unwatched">Merk so onbewustelik</string>

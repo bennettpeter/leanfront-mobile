@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Dra acceleration</string>
   <string name="pref_drag_accel_desc">Ställ in 1.0 för linjär dragning. Ställ in ett högre värde för exponentiell acceleration.</string>
   <string name="pref_duration_textsize">Uppspelningens framsteg textstorlek i landskapsorientering</string>
+  <string name="pref_land_bottomnav">Visa bottennavigering i liggande läge.</string>
+  <string name="pref_startview_title">Appstartvy</string>
   <string name="resume_last">Spela från sista spelpositionen</string>
   <string name="play">Spela från Start</string>
   <string name="menu_mark_unwatched">Markera som oönskat</string>

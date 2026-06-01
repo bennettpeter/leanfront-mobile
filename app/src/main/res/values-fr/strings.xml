@@ -119,6 +119,8 @@
   <string name="pref_drag_accel">Accélération de traînée</string>
   <string name="pref_drag_accel_desc">Définissez 1.0 pour la traînée linéaire. Définissez une valeur plus élevée pour l\'accélération exponentielle.</string>
   <string name="pref_duration_textsize">La lecture de la lecture Taille du texte dans l\'orientation du paysage</string>
+  <string name="pref_land_bottomnav">Afficher la navigation inférieure en mode paysage.</string>
+  <string name="pref_startview_title">Vue de démarrage de l\'application</string>
   <string name="resume_last">Jouer de la dernière position de jeu</string>
   <string name="play">Jouer depuis le début</string>
   <string name="menu_mark_unwatched">Marquez comme non fixé</string>
