@@ -100,5 +100,21 @@
         <item>@string/menu_exit_nosave</item>
     </string-array>
 
+    <string-array name="startview_pref_entries">
+        <item>@string/menu_videolist</item>
+        <item>@string/menu_settings</item>
+        <item>@string/menu_guide</item>
+        <item>@string/menu_recrules</item>
+        <item>@string/menu_upcoming</item>
+    </string-array>
+
+    <!--  Important - These must correspond to the items in array MainActibity.navItems-->
+    <string-array name="startview_pref_values">
+        <item>videolist</item>
+        <item>settings</item>
+        <item>guide</item>
+        <item>recrules</item>
+        <item>upcoming</item>
+    </string-array>
 
 </resources>

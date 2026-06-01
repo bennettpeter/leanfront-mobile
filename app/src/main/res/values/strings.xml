@@ -142,6 +142,7 @@
     <string name="pref_duration_textsize">Playback Progress Text Size in Landscape Orientation</string>
     <!-- This is a boolean and always defaults to false so there is no default value in this file  -->
     <string name="pref_land_bottomnav">Show Bottom Navigation in Landscape Mode.</string>
+    <string name="pref_startview_title">App Startup View</string>
 
     <string name="sdef_livetv_rowsize" translatable="false">100</string>
     <string name="sdef_http_port" translatable="false">6544</string>
@@ -166,6 +167,7 @@
     <!--    Values airdate or starttime-->
     <string name="sdef_seq" translatable="false">starttime</string>
     <string name="sdef_seq_ascdesc" translatable="false">asc</string>
+    <string name="sdef_startview" translatable="false">videolist</string>
 
     <string name="resume_last">Play from last play position</string>
     <string name="play">Play from start</string>

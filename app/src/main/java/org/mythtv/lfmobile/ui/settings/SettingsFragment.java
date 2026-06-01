@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile.ui.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -13,6 +14,7 @@ import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MainActivityModel;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.BackendCache;
+import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements MainActivity.MyFragment
@@ -126,10 +128,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
 
         findPreference("pref_land_bottomnav")
                 .setOnPreferenceChangeListener((pref,action) -> {
-                    ((MainActivity)getActivity()).recreate();
+                    getActivity().recreate();
                     return true;
                 });
-
+        findPreference("pref_startview")
+                .setOnPreferenceChangeListener((pref,action) -> {
+                    if (!Settings.getString("pref_startview").equals(action.toString())) {
+                        getActivity().finish();
+                        Intent i = getContext().getPackageManager()
+                                .getLaunchIntentForPackage(getContext().getPackageName());
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getContext().startActivity(i);
+                        return true;
+                    }
+                    return false;
+                });
         if (!BackendCache.getInstance().loginNeeded) {
             findPreference("pref_backend_userid").setVisible(false);
             findPreference("pref_backend_passwd").setVisible(false);

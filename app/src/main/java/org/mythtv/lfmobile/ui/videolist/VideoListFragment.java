@@ -2,7 +2,6 @@ package org.mythtv.lfmobile.ui.videolist;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,8 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuHost;
 import androidx.core.view.MenuProvider;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
@@ -164,7 +163,9 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     public boolean navigateUp() {
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        View v = ((MainActivity) getActivity()).mainView;
+        DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
+        if (drawer == null) {
             requireActivity().getOnBackPressedDispatcher().onBackPressed();
             return true;
         }
@@ -184,13 +185,16 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             bar.setSubtitle(videoListModel.recGroup + " : " + videoListModel.title);
         else
             bar.setSubtitle(videoListModel.title);
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        View v = ((MainActivity) getActivity()).mainView;
+        DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
+        if (drawer == null) {
             if ((videoListModel.pageType == VideoListModel.TYPE_SERIES
-            || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
-                && videoListModel.videoPath.length() > 0)))
+                    || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
+                    && videoListModel.videoPath.length() > 0))) {
                 bar.setDisplayHomeAsUpEnabled(true);
-            else
+            } else {
                 bar.setDisplayHomeAsUpEnabled(false);
+            }
         }
         videoListModel.refresh();
     }

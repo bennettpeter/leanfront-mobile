@@ -239,6 +239,8 @@ public class VideoListModel extends ViewModel {
             else
                 videoPath = dir;
         }
+        else if (dir.length() == 0)
+            videoPath="";
         Context context = MyApplication.getAppContext();
         String colon;
         if (videoPath.length() > 0)

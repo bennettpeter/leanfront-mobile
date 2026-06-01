@@ -37,6 +37,7 @@ public class MainActivityModel extends ViewModel {
     final MutableLiveData<Integer> toast = new MutableLiveData<>();
     static MainActivityModel instance;
     long lastRestartTime;
+    boolean startupDone;
 
     public static MainActivityModel getInstance() {
         return instance;

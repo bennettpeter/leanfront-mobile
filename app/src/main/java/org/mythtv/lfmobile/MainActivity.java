@@ -1,6 +1,7 @@
 package org.mythtv.lfmobile;
 
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
@@ -11,9 +12,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -34,11 +35,25 @@ public class MainActivity extends AppCompatActivity {
     public static MainActivity mainActivity;
     public View mainView;
     public boolean bottomNavEnabled;
+    // Important - these must correspond to items in
+    // StringArray(R.array.startview_pref_values)
+    static int[] navItems = {
+            R.id.nav_videolist,
+            R.id.nav_settings,
+            R.id.nav_guide,
+            R.id.nav_recrules,
+            R.id.nav_upcoming
+    };
+    public static int startupView;
+    static String[] views;
+
     private static final String TAG = "lfm";
     static final String CLASS = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Resources res = getResources();
+        views = res.getStringArray(R.array.startview_pref_values);
         viewModel = new ViewModelProvider(this).get(MainActivityModel.class);
         MainActivityModel.instance = viewModel;
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -47,11 +62,18 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
         assert navHostFragment != null;
         navController = navHostFragment.getNavController();
-
+        getStartView();
+        if (!viewModel.startupDone) {
+            NavGraph navGraph = navController.getNavInflater().inflate(R.navigation.mobile_navigation);
+            navGraph.setStartDestination(startupView);
+            navController.setGraph(navGraph);
+            viewModel.startupDone = true;
+        }
         NavigationView navigationView = binding.navView;
         if (navigationView != null) {
             mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_videolist, R.id.nav_settings)
+                    R.id.nav_videolist, R.id.nav_settings, R.id.nav_guide, R.id.nav_recrules,
+                    R.id.nav_upcoming)
                     .setOpenableLayout(binding.drawerLayout)
                     .build();
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
@@ -72,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (bottomNavigationView != null) {
-            mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_videolist)
+            mAppBarConfiguration = new AppBarConfiguration.Builder(startupView)
                     .build();
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             NavigationUI.setupWithNavController(bottomNavigationView, navController);
@@ -95,6 +116,19 @@ public class MainActivity extends AppCompatActivity {
         mainActivity = this;
         binding.appBarMain.toolbar.setTitleTextAppearance(this,R.style.ToolbarTitleText);
         binding.appBarMain.toolbar.setSubtitleTextAppearance(this,R.style.ToolbarSubtitleText);
+    }
+
+    private void getStartView() {
+        String start = Settings.getString("startview");
+        int ix = find(views, start, 0);
+        startupView = navItems[ix];
+    }
+
+    public static int find(String[] arr, String target, int idefault) {
+        for (int ix = 0 ; ix < arr.length; ix++) {
+            if (target.equals(arr[ix])) return ix;
+        }
+        return idefault;
     }
 
     @Override

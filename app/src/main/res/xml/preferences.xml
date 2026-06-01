@@ -192,5 +192,14 @@
             android:title="@string/pref_land_bottomnav"
             android:defaultValue="false"/>
 
+        <ListPreference
+            android:key="pref_startview"
+            android:title="@string/pref_startview_title"
+            android:entries="@array/startview_pref_entries"
+            app:useSimpleSummaryProvider="true"
+            android:dialogTitle="@string/pref_startview_title"
+            android:entryValues="@array/startview_pref_values"
+            android:defaultValue="@string/sdef_startview"/>
+
     </PreferenceCategory>
 </PreferenceScreen>
