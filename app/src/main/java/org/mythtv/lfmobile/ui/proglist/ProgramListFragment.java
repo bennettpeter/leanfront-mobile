@@ -58,6 +58,7 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
     private MenuProvider menuProvider;
     private int orientation;
     private boolean hideNav = false;
+    private boolean lockDrawer = false;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -209,7 +210,7 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
             DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
             if (drawer != null) {
                 if (drawer.getDrawerLockMode(Gravity.LEFT) == DrawerLayout.LOCK_MODE_UNLOCKED) {
-                    hideNav = true;
+                    lockDrawer = true;
                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                 }
             }
@@ -224,11 +225,13 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
             getActivity().removeMenuProvider(menuProvider);
             getActivity().invalidateMenu();
         }
+        View v = ((MainActivity) getActivity()).mainView;
         if (hideNav) {
-            View v = ((MainActivity) getActivity()).mainView;
             View nav = v.findViewById(R.id.bottom_nav_view);
             if (nav != null)
                 nav.setVisibility(View.VISIBLE);
+        }
+        if (lockDrawer) {
             DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
             if (drawer != null)
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);

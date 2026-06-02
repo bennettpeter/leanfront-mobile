@@ -114,6 +114,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
     private FragmentScheduleBinding binding;
     private String templateName = "";
     private boolean hideNav = false;
+    private boolean lockDrawer = false;
     private MenuProvider menuProvider;
     private OnBackPressedCallback bpCallback;
 
@@ -300,7 +301,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
         if (drawer != null) {
             if (drawer.getDrawerLockMode(Gravity.LEFT) == DrawerLayout.LOCK_MODE_UNLOCKED) {
-                hideNav = true;
+                lockDrawer = true;
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
         }
@@ -314,11 +315,13 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
             getActivity().removeMenuProvider(menuProvider);
             getActivity().invalidateMenu();
         }
+        View v = ((MainActivity) getActivity()).mainView;
         if (hideNav) {
-            View v = ((MainActivity) getActivity()).mainView;
             View nav = v.findViewById(R.id.bottom_nav_view);
             if (nav != null)
                 nav.setVisibility(View.VISIBLE);
+        }
+        if (lockDrawer) {
             DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
             if (drawer != null)
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
