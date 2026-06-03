@@ -57,6 +57,14 @@ Leanfront can be installed from the [Google play store](https://play.google.com/
 
 </details>
 
+## Landscape Orientation
+
+When a phone or tablet is turned into landscape orientation, it shows a "hamburger" icon. Tapping this opens a drawer menu for pages that would show in the bottom navigation in portrait orientation.
+
+Another way to open the drawer menu is to tap and hold at the left hand side of the screen. You will see the edge of the drawer. Swipe right to open it.
+
+The Settings screen includes an option to show bottom navigation in landscape orientation. This is useful for tablets, but on phones the bottom navigation may take up too much screen room to be useful in landscape.
+
 ## Series Screen
 
 ![](ScreenShots/Series.png)
@@ -97,6 +105,8 @@ If an amount too high or too low is entered, it is automatically set to the maxi
 
 If your backend has been set up to require user authentication for the service API, you will see user Name and Password prompts. Leanfront needs these to communicate with the backend. These do not show if you do not have a user authentication requirement, so most people will never see these prompts.
 
+- **Maximum Recordings/Videos to load.** Leanfront can handle an unlimited number of recordings and videos. However loading huge numbers of recordings and videos results in excessively long times to load the listing. With 60,000 recordings it takes about 3 minutes to load he list from the backend and another 3 to 4 minutes to format the display. To avoid this, the system defaults to loading the only the most recent 20,000. If you are happy with waiting minutes for the screen to refresh, you can increase the value. If you want a quicker refresh you can reduce the value.
+
 ### Audio Decode and Video Decode
 
 By default leanfront will use mediacodec hardware decoding for audio and video. If there is no hardware decoder it will switch to software decoding with ffmpeg. You can force it to only use mediacodec or to prefer software decoding.
@@ -104,10 +114,6 @@ By default leanfront will use mediacodec hardware decoding for audio and video. 
 Software decoding of Video can show bad performance on most low-cost android TV devices. It works well on NVidia Shield. 
 
 ### Advanced
-
-- **Maximum Recordings/Videos to load.** Leanfront can handle an unlimited number of recordings and videos. However loading huge numbers of recordings and videos results in excessively long times to load the listing. WIth 60,000 recordings it takes about 3 minutes to load he list from the backend and another 3 to 4 minutes to format the display. To avoid this, the system defaults to loading the only the most recent 10,000. If you are happy with waiting minutes for the screen to refresh, you can increase the value. If you want a quicker refresh you can reduce the value.
-
-The advanced section of settings includes a value that may need to be changed to suit unusual circumstances. Be careful when changing it as you may cause bad things to happen if you use inappropriate values.
 
 - **TS Search Packets.** Increase this if when playing a recording or other TS file, the recording length does not show in the OSD, and you cannot use skips or bookmarks. The default value supplied with exoplayer is 600. I have set a default value of 2600 in leanfront. The value is limited to a range of 600 - 100,000. Increasing the value will cause the start of playback to take longer and use more memory. Also skips forwards and back will take longer. Thus it is best to make this the smallest value that works for you.
 
