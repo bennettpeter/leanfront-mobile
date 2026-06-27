@@ -282,11 +282,13 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                 else
                     menu.add(Menu.NONE, Action.SET_WATCHED, ix++, R.string.menu_mark_watched);
                 if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING) {
-                    if ("Deleted".equals(video.recGroup))
-                        menu.add(Menu.NONE, Action.UNDELETE, ix++, R.string.menu_undelete);
-                    else {
-                        menu.add(Menu.NONE, Action.DELETE_AND_RERECORD, ix++, R.string.menu_delete_rerecord);
-                        menu.add(Menu.NONE, Action.DELETE, ix++, R.string.menu_delete);
+                    if (!"LiveTV".equals(video.recGroup)) {
+                        if ("Deleted".equals(video.recGroup))
+                            menu.add(Menu.NONE, Action.UNDELETE, ix++, R.string.menu_undelete);
+                        else {
+                            menu.add(Menu.NONE, Action.DELETE_AND_RERECORD, ix++, R.string.menu_delete_rerecord);
+                            menu.add(Menu.NONE, Action.DELETE, ix++, R.string.menu_delete);
+                        }
                     }
                     menu.add(Menu.NONE, Action.ALLOW_RERECORD, ix++, R.string.menu_rerecord);
                 }
