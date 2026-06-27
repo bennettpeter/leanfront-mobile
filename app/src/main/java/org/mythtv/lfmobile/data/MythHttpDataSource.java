@@ -11,8 +11,10 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.BaseDataSource;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DataSpec;
-import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.datasource.HttpDataSource;
+import androidx.media3.datasource.okhttp.OkHttpDataSource;
+
+import org.mythtv.lfmobile.MyApplication;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,7 +39,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         String auth = BackendCache.getInstance().authorization;
         if (auth != null && auth.length() > 0)
             defaultRequestProperties.put("Authorization",auth);
-        mHttpDataSource = new DefaultHttpDataSource.Factory()
+        mHttpDataSource = new OkHttpDataSource.Factory(MyApplication.httpClient)
                 .setUserAgent(userAgent)
                 .setDefaultRequestProperties(defaultRequestProperties)
                 .createDataSource();

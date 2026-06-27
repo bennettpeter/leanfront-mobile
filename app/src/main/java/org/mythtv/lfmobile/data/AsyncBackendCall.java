@@ -7,14 +7,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.ui.schedule.RecordRule;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,6 +23,10 @@ import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AsyncBackendCall implements Runnable {
 
@@ -201,7 +204,7 @@ public class AsyncBackendCall implements Runnable {
                 case Action.DELETE:
                     // Delete recording
                     // If already deleted do not delete again.
-                    if (!isRecording || "Deleted".equals(video.recGroup))
+                    if (!isRecording || "Deleted".equals(video.recGroup) || "LiveTV".equals(video.recGroup))
                         break;
                     try {
                         String urlString = XmlNode.mythApiUrl(null,
@@ -209,7 +212,7 @@ public class AsyncBackendCall implements Runnable {
                                         + video.recordedid);
                         xmlResult = XmlNode.fetch(urlString, null);
                         String recGroup = xmlResult.getString(new String[] {"Recording","RecGroup"});
-                        if (recGroup == null || "Deleted".equals(recGroup))
+                        if (recGroup == null || "Deleted".equals(recGroup)  || "LiveTV".equals(video.recGroup))
                             break;
                         urlString = XmlNode.mythApiUrl(video.hostname,
                                 "/Dvr/DeleteRecording?RecordedId="
@@ -468,29 +471,33 @@ public class AsyncBackendCall implements Runnable {
                             } catch (InterruptedException ignored) {
                             }
                         }
-                        HttpURLConnection urlConnection = null;
+                        Response response = null;
                         try {
-                            URL url = new URL(urlString);
-                            urlConnection = (HttpURLConnection) url.openConnection();
-                            urlConnection.addRequestProperty("Cache-Control", "no-cache");
-                            urlConnection.addRequestProperty("Accept-Encoding", "identity");
+                            Request.Builder builder = new Request.Builder()
+                                    .url(urlString);
+                            builder.header("Cache-Control", "no-cache");
+                            builder.header("Accept-Encoding", "identity");
                             String auth = BackendCache.getInstance().authorization;
                             if (auth != null && auth.length() > 0)
-                                urlConnection.addRequestProperty("Authorization", auth);
-                            urlConnection.setConnectTimeout(1000);
-                            urlConnection.setReadTimeout(1000);
-                            urlConnection.setRequestMethod("HEAD");
+                                builder.header("Authorization", auth);
+                            builder.head();
                             Log.i(TAG, CLASS + " URL: " + urlString);
-                            urlConnection.connect();
+                            Request request = builder.build();
+                            response = null;
                             try {
-                                xmlRespCode = urlConnection.getResponseCode();
-                                Log.d(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                        + " " + urlConnection.getResponseMessage());
+                                Call call = MyApplication.fileLengthHttpClient.newCall(request);
+                                response = call.execute();
+                                xmlRespCode = response.code();
+                                Log.d(TAG, CLASS + " Response: " + xmlRespCode
+                                        + " " + response.message());
                             } catch (Exception ignored) {
                                 // Sometimes there is a ProtocolException in the urlConnection.getResponseCode
                                 // Ignore the error so that we can continue
                             }
-                            String strContentLeng = urlConnection.getHeaderField("Content-Length");
+                            if (response == null || xmlRespCode < 200 || xmlRespCode > 299)
+                                throw new IOException("Http error:" + xmlRespCode);
+                            fileLength = 0;
+                            String strContentLeng = response.header("Content-Length");
                             if (strContentLeng == null) {
                                 Log.e(TAG, CLASS + " FileLength failure. Content-Length null ");
                                 // try again
@@ -504,17 +511,11 @@ public class AsyncBackendCall implements Runnable {
                                 break;
                         } catch (Exception e) {
                             if (task == Action.FILELENGTH) {
-                                try {
-                                    Log.i(TAG, CLASS + " Response: " + urlConnection.getResponseCode()
-                                            + " " + urlConnection.getResponseMessage());
-                                } catch (IOException ioException) {
-                                    ioException.printStackTrace();
-                                }
                                 Log.e(TAG, CLASS + " Exception getting file length.", e);
                             }
                         } finally {
-                            if (urlConnection != null)
-                                urlConnection.disconnect();
+                            if (response != null)
+                                response.close();
                         }
                     }
                     if (task == Action.FILELENGTH)
