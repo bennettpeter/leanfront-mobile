@@ -84,6 +84,7 @@ public class VideoDbBuilder {
     public static final String XMLTAG_VIDEOPROPS = "VideoProps";
     public static final String XMLTAG_VIDEOPROPNAMES = "VideoPropNames";
     public static final String XMLTAG_HOSTNAME = "HostName";
+    public static final String XMLTAG_CATEGORY = "Category";
 
     // Specific to video list
     public static final String[] XMLTAGS_VIDEO = {"VideoMetadataInfos", "VideoMetadataInfo"};
@@ -203,6 +204,7 @@ public class VideoDbBuilder {
             String channel = null;
             String chanid = null;
             String callsign = null;
+            String category = null;
             String airdate = null;
             String starttime = null;
             String endtime = null;
@@ -228,6 +230,7 @@ public class VideoDbBuilder {
                 channel = programNode.getString(XMLTAGS_CHANNELNAME);
                 chanid = programNode.getString(XMLTAGS_CHANID);
                 callsign = programNode.getString(XMLTAGS_CALLSIGN);
+                category = programNode.getString(XMLTAG_CATEGORY);
                 airdate = programNode.getString(XMLTAG_AIRDATE);
                 starttime = programNode.getString(XMLTAG_STARTTIME);
 
@@ -399,6 +402,7 @@ public class VideoDbBuilder {
             videoValues.put(VideoContract.VideoEntry.COLUMN_CHANNEL, channel);
             videoValues.put(VideoContract.VideoEntry.COLUMN_CHANID, chanid);
             videoValues.put(VideoContract.VideoEntry.COLUMN_CALLSIGN, callsign);
+            videoValues.put(VideoContract.VideoEntry.COLUMN_CATEGORY, category);
             videoValues.put(VideoContract.VideoEntry.COLUMN_AIRDATE, airdate);
 
             videoValues.put(VideoContract.VideoEntry.COLUMN_STARTTIME, starttime);

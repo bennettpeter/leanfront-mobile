@@ -22,6 +22,18 @@
         android:checkableBehavior="all">
     </group>
     <group
+        android:id="@+id/all_group"
+        android:checkableBehavior="all">
+    </group>
+    <group
+        android:id="@+id/video_group"
+        android:checkableBehavior="all">
+    </group>
+    <group
+        android:id="@+id/category_group"
+        android:checkableBehavior="all">
+    </group>
+    <group
         android:id="@+id/changroup_group"
         android:checkableBehavior="all">
     </group>

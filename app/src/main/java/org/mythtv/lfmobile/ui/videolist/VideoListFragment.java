@@ -2,6 +2,7 @@ package org.mythtv.lfmobile.ui.videolist;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -137,21 +138,49 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             @Override
             public void onPrepareMenu(@NonNull Menu menu) {
                 menu.removeGroup(R.id.recgroup_group);
+                menu.removeGroup(R.id.all_group);
+                menu.removeGroup(R.id.video_group);
+                menu.removeGroup(R.id.category_group);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    menu.setGroupDividerEnabled(true);
+                }
                 if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+                    int seq = 0;
+                    MenuItem item = menu.add(R.id.all_group, 0, seq++, videoListModel.allTitle);
+                    item.setCheckable(true);
+                    if (videoListModel.allTitle.equals(videoListModel.recGroup))
+                        item.setChecked(true);
                     for (int ix = 0; ix < videoListModel.recGroups.size(); ix++) {
-                        MenuItem item = menu.add(R.id.recgroup_group, 0, ix, videoListModel.recGroups.get(ix));
+                        item = menu.add(R.id.recgroup_group, 0, seq++, videoListModel.recGroups.get(ix));
                         item.setCheckable(true);
-                        if (videoListModel.recGroups.get(ix).equals(videoListModel.recGroup))
+                        if (videoListModel.recGroups.get(ix).equals(videoListModel.recGroup)
+                            && videoListModel.listingGroup == R.id.recgroup_group)
                             item.setChecked(true);
                     }
+                    for (int ix = 0; ix < videoListModel.categories.size(); ix++) {
+                        item = menu.add(R.id.category_group, 0, seq++, videoListModel.categories.get(ix));
+                        item.setCheckable(true);
+                        if (videoListModel.categories.get(ix).equals(videoListModel.recGroup)
+                            && videoListModel.listingGroup == R.id.category_group)
+                            item.setChecked(true);
+                    }
+                    item = menu.add(R.id.video_group, 0, seq++, videoListModel.videosTitle);
+                    item.setCheckable(true);
+                    if (videoListModel.videosTitle.equals(videoListModel.recGroup))
+                        item.setChecked(true);
                 }
                 MenuProvider.super.onPrepareMenu(menu);
             }
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                if (menuItem.getGroupId() == R.id.recgroup_group) {
+                int groupid = menuItem.getGroupId();
+                if (groupid == R.id.recgroup_group
+                || groupid == R.id.all_group
+                || groupid == R.id.video_group
+                || groupid == R.id.category_group ) {
                     int id = menuItem.getItemId();
                     if (id == 0) {
+                        videoListModel.listingGroup = groupid;
                         videoListModel.setRecGroup(menuItem.getTitle().toString());
                         refresh();
                         return true;
@@ -234,7 +263,8 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     private void onItemClick(int position) {
-        if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP) {
+        if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP
+        || videoListModel.pageType == VideoListModel.TYPE_CATEGORY) {
             videoListModel.pageType = VideoListModel.TYPE_SERIES;
             videoListModel.setTitle(videoList.get(position).title);
             refresh();

@@ -24,6 +24,7 @@ public class VideoListModel extends ViewModel {
     static final int TYPE_RECGROUP = 1;
     static final int TYPE_SERIES = 2;
     static final int TYPE_VIDEODIR = 3;
+    static final int TYPE_CATEGORY = 4;
     int pageType;
     // Rec group being shown
     String recGroup;
@@ -31,11 +32,14 @@ public class VideoListModel extends ViewModel {
     String title;
     private final ArrayList <Video> videoList = new ArrayList<>();
     ArrayList <String> recGroups = new ArrayList<>();
+    ArrayList <String> categories = new ArrayList<>();
     private static VideoListModel instance;
     String allTitle = "";
     String videosTitle = "";
     // videoPath must not have any leading or trailing slash
     String videoPath = "";
+    // R.id.recgroup_group, R.id.all_group, R.id.video_group, R.id.category_group
+    int listingGroup;
 
     public VideoListModel() {
         addCloseable(() -> {
@@ -47,6 +51,7 @@ public class VideoListModel extends ViewModel {
         Context context = MyApplication.getAppContext();
         allTitle = context.getString(R.string.all_title) + "\t";
         recGroup = allTitle;
+        listingGroup = R.id.all_group;
         videosTitle = context.getString(R.string.group_videos) + "\t";
         setRecGroup(allTitle);
         startFetch();
@@ -80,7 +85,7 @@ public class VideoListModel extends ViewModel {
     void refresh() {
         synchronized(this) {
             loadRecGroupList();
-            if (pageType == TYPE_RECGROUP)
+            if (pageType == TYPE_RECGROUP || pageType == TYPE_CATEGORY)
                 loadRecGroup(recGroup);
             else if (pageType == TYPE_SERIES)
                 loadTitle();
@@ -91,7 +96,6 @@ public class VideoListModel extends ViewModel {
     }
     private void loadRecGroupList() {
         recGroups.clear();
-        recGroups.add(allTitle);
         Context context = MyApplication.getAppContext();
         // Load only a list of unique recgroups
         VideoDbHelper dbh = VideoDbHelper.getInstance(context);
@@ -110,17 +114,34 @@ public class VideoListModel extends ViewModel {
             }
         }
         csr.close();
-        recGroups.add(videosTitle);
+        categories.clear();
+        final String sql2 = "SELECT category FROM video "
+                + "WHERE rectype = 1 and recgroup != 'Deleted' "
+                + "GROUP BY category ORDER BY category";
+        csr = db.rawQuery(sql2, null);
+        if (csr.moveToFirst()) {
+            while (!csr.isAfterLast()) {
+                if (!csr.isNull(0)) {
+                    String category = csr.getString(0);
+                    categories.add(category);
+                }
+                csr.moveToNext();
+            }
+        }
+        csr.close();
     }
 
 
     void setRecGroup(String recGroup) {
         this.recGroup = recGroup;
-        if (videosTitle.equals(recGroup)) {
+        if (listingGroup == R.id.video_group) {
             setVideos("");
             return;
         }
-        pageType = TYPE_RECGROUP;
+        if (listingGroup == R.id.category_group)
+            pageType = TYPE_CATEGORY;
+        else
+            pageType = TYPE_RECGROUP;
         this.title = recGroup;
     }
     private void loadRecGroup(String recGroup) {
@@ -147,6 +168,9 @@ public class VideoListModel extends ViewModel {
         if (allTitle.equals(recGroup)) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
             parms = new String[0];
+        } else if (listingGroup == R.id.category_group) {
+            sql.append("AND recgroup NOT IN ('LiveTV','Deleted') AND category = ? ");
+            parms = new String[]{recGroup};
         } else {
             sql.append("AND recgroup = ? ");
             parms = new String[]{recGroup};
@@ -191,6 +215,9 @@ public class VideoListModel extends ViewModel {
         ArrayList <String> parms = new ArrayList<>();
         if (allTitle.equals(recGroup)) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
+        } else if (listingGroup == R.id.category_group) {
+            sql.append("AND recgroup NOT IN ('LiveTV','Deleted') AND category = ? ");
+            parms.add(recGroup);
         } else{
             sql.append("AND recgroup = ? ");
             parms.add(recGroup);
