@@ -1,6 +1,5 @@
 package org.mythtv.lfmobile.ui.playback;
 
-import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -10,7 +9,6 @@ import androidx.annotation.OptIn;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.media3.common.Format;
-import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
@@ -28,7 +26,6 @@ import org.mythtv.lfmobile.data.CommBreakTable;
 import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.data.Video;
 
-@UnstableApi
 public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGetter {
     Video video;
     ExoPlayer player;
@@ -60,6 +57,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     final MutableLiveData<long[]> commSkipToast = new MutableLiveData<>();
     final MutableLiveData<Long> commBreakDlg = new MutableLiveData<>();
     final MutableLiveData<Long> durationLive = new MutableLiveData<>();
+    final MutableLiveData<Boolean> overlayDone = new MutableLiveData<>();
     // parameters are Exception and integer
     final MutableLiveData<Object[]> playerErrorLive = new MutableLiveData<>();
     private static final String TAG = "lfm";
@@ -70,15 +68,18 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             R.drawable.ic_aspect_4x3, R.drawable.ic_aspect_16x9, R.drawable.ic_aspect_9x16};
     int currentAspectIx = 0;
     float currentAspect = 0.0f;
+    @UnstableApi
     static final int[] RESIZE_MODES = {
             AspectRatioFrameLayout.RESIZE_MODE_FIT,
             AspectRatioFrameLayout.RESIZE_MODE_ZOOM
     };
     static final int[] RESIZE_DRAWABLES = {R.drawable.ic_zoom_button, R.drawable.ic_zoom_large};
     int currentResizeIx = 0;
+    @UnstableApi
     int currentResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
     long sampleOffsetUs = 0;
     long priorSampleOffsetUs = 0;
+    @UnstableApi
     ProgressiveMediaSource mediaSource;
     long playbackStartTime;
     long statusMonitorTime;
@@ -120,6 +121,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
                 frameRate = (float) (commBreakTable.frameratex1000 / 1000.);
             if (commBreakTable.entries.length > 0)
                 setNextCommBreak(-1);
+            overlayDone.postValue(true);
         });
         call.videos.add(video);
         call.args.put("COMMBREAKTABLE",commBreakTable);

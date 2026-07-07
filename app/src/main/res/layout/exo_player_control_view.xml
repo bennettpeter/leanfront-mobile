@@ -116,6 +116,11 @@
 
     </HorizontalScrollView>
 
+    <org.mythtv.lfmobile.ui.playback.SeekbarOverlay
+        android:id="@+id/ad_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
+
   </FrameLayout>
 
   <View android:id="@id/exo_progress_placeholder"

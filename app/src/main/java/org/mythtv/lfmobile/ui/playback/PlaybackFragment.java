@@ -147,6 +147,25 @@ public class PlaybackFragment extends Fragment {
         viewModel.playerErrorLive.observe(getViewLifecycleOwner(), (Object[] parm)-> {
             handlePlayerError((Exception) parm[0], (Integer)parm[1]);
         });
+        viewModel.overlayDone.observe(getViewLifecycleOwner(), (Boolean aBoolean)-> {
+            handler.postDelayed(new Runnable() {
+                boolean olaySetupDone = false;
+                @Override
+                public void run() {
+                    if (!olaySetupDone && viewModel.getDuration() > 0) {
+                        SeekbarOverlay olay = getView().findViewById(R.id.ad_overlay);
+                        if (olay != null) {
+                            olay.setup(viewModel.commBreakTable, viewModel);
+                            olay.bringToFront();
+                            olay.invalidate();
+                        }
+                        olaySetupDone = true;
+                    }
+                    if (!olaySetupDone)
+                        handler.postDelayed(this, 500);
+                }
+            }, 500);
+        });
     }
 
     @SuppressLint("StringFormatInvalid")
