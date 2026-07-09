@@ -156,7 +156,6 @@ public class PlaybackFragment extends Fragment {
                         SeekbarOverlay olay = getView().findViewById(R.id.ad_overlay);
                         if (olay != null) {
                             olay.setup(viewModel.commBreakTable, viewModel);
-                            olay.bringToFront();
                             olay.invalidate();
                         }
                         olaySetupDone = true;
