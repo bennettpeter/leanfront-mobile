@@ -165,6 +165,9 @@ public class PlaybackFragment extends Fragment {
                 }
             }, 500);
         });
+        viewModel.setBookmark.observe(getViewLifecycleOwner(), (Boolean aBoolean)-> {
+            setBookmark();
+        });
     }
 
     @SuppressLint("StringFormatInvalid")

@@ -60,6 +60,8 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     final MutableLiveData<Boolean> overlayDone = new MutableLiveData<>();
     // parameters are Exception and integer
     final MutableLiveData<Object[]> playerErrorLive = new MutableLiveData<>();
+    final MutableLiveData<Boolean> setBookmark = new MutableLiveData<>();
+
     private static final String TAG = "lfm";
     final String CLASS = "PlaybackViewModel";
     // aspectValues[0] will change from 0f to the default value of the video
@@ -86,8 +88,9 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     long fileLength;
     boolean isIncreasing;
     PlayerEventListener playerEventListener;
-    static final int STATUS_MONITOR_INTERVAL = 5000;
+    static final int STATUS_MONITOR_INTERVAL = 30000;
     float speed = 1.0f;
+
 
 
     @OptIn(markerClass = UnstableApi.class)
@@ -184,7 +187,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     }
 
     public long getDuration() {
-        if (savedDuration == 0 || isIncreasing) {
+        if (player != null && (savedDuration == 0 || isIncreasing)) {
             long duration = player.getDuration();
             if (isIncreasing && duration > 0 && playbackStartTime > 0)
                 duration += System.currentTimeMillis() - playbackStartTime;
@@ -217,8 +220,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             else
                 isIncreasing = false;
             fileLength = newLength;
-            if (isIncreasing)
-                startStatusMonitor();
+            startStatusMonitor();
         });
         call.mainThread = false;
         call.videos.add(video);
@@ -228,6 +230,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     }
 
     void startStatusMonitor() {
+        // Periodically save the last play position in case of a network failure
         statusMonitorTime = System.currentTimeMillis();
         handler.postDelayed(new Runnable() {
             long timeCheck = statusMonitorTime;
@@ -238,15 +241,16 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
                 // any that are from a prior call.
                 if (player == null || timeCheck != statusMonitorTime)
                     return;
+                setBookmark.postValue(true);
                 getFileLength(false);
                 if (player.getPlaybackParameters().speed > 1.0f) {
-                    if (player.getCurrentPosition() > getDuration() - 10000) {
+                    if (player.getCurrentPosition() > getDuration() - STATUS_MONITOR_INTERVAL - 5000) {
                         speed = 1.0f;
                         player.setPlaybackSpeed(speed);
                     }
                 }
             }
-        },STATUS_MONITOR_INTERVAL);
+        }, STATUS_MONITOR_INTERVAL);
     }
 
 
