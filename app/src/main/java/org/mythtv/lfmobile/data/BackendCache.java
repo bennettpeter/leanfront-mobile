@@ -25,7 +25,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     public HashMap<String, String> sHostMap;
     public boolean isConnected;
     public boolean wsdlDone;
-    public boolean initDone;
     // from GetHostName
     public String sHostName;
     // Authorization token
@@ -39,7 +38,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
         init();
     }
 
-    private void init() {
+    public void init() {
         sBackendIP = Settings.getString("pref_backend");
         sBackendIP = XmlNode.fixIpAddress((sBackendIP));
         sMainPort = Settings.getString("pref_http_port");
@@ -51,7 +50,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     public void getWsdl() {
         AsyncBackendCall call = new AsyncBackendCall( this);
         call.execute(Action.DVR_WSDL, Action.BACKEND_INFO, Action.GET_HOSTNAME);
-        wsdlDone = true;
     }
 
     synchronized public static BackendCache getInstance() {
@@ -101,7 +99,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
                 sHostName = xml.getString();
                 if (sHostName != null && sBackendIP != null && sMainPort != null)
                     sHostMap.put(sHostName, sBackendIP + ":" + sMainPort);
-                initDone = true;
                 break;
         }
     }

@@ -176,6 +176,10 @@ public class MainActivityModel extends ViewModel {
                         }
                     }
                 }
+                // We now have a connection
+                BackendCache bCache =  BackendCache.getInstance();
+                if (!bCache.wsdlDone)
+                    bCache.getWsdl();
             } catch (Exception ex) {
                 Log.e(TAG, CLASS + " MythTask Exception ", ex);
             }
