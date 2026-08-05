@@ -18,6 +18,7 @@ import org.mythtv.lfmobile.data.VideoDbHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class VideoListModel extends ViewModel {
 
     MutableLiveData<List<Video>> videos;
@@ -34,17 +35,15 @@ public class VideoListModel extends ViewModel {
     ArrayList <String> recGroups = new ArrayList<>();
     ArrayList <String> categories = new ArrayList<>();
     private static VideoListModel instance;
-    String allTitle = "";
-    String videosTitle = "";
+    String allTitle;
+    String videosTitle;
     // videoPath must not have any leading or trailing slash
     String videoPath = "";
     // R.id.recgroup_group, R.id.all_group, R.id.video_group, R.id.category_group
     int listingGroup;
 
     public VideoListModel() {
-        addCloseable(() -> {
-            instance = null;
-        });
+        addCloseable(() -> instance = null);
         instance = this;
         videos = new MutableLiveData<>();
         pageType = TYPE_RECGROUP;
@@ -73,9 +72,7 @@ public class VideoListModel extends ViewModel {
      */
     public void startFetch(int rectype, String recordedId, String recGroup) {
         FetchVideos fetchVideos = new FetchVideos(MyApplication.getAppContext(), rectype, recordedId, recGroup);
-        fetchVideos.execute((taskRunner) -> {
-            refresh();
-        });
+        fetchVideos.execute((taskRunner) -> refresh());
     }
 
     public void startFetch() {
@@ -203,6 +200,7 @@ public class VideoListModel extends ViewModel {
         this.title = title;
     }
 
+    @SuppressWarnings("ExtractMethodRecommender")
     private void loadTitle() {
         videoList.clear();
         Context context = MyApplication.getAppContext();
@@ -260,17 +258,17 @@ public class VideoListModel extends ViewModel {
                 videoPath = videoPath.substring(0, lsp);
             else
                 videoPath = "";
-        } else if (dir.length() > 0) {
-            if (videoPath.length() > 0)
+        } else if (!dir.isEmpty()) {
+            if (!videoPath.isEmpty())
                 videoPath = videoPath + "/" + dir;
             else
                 videoPath = dir;
         }
-        else if (dir.length() == 0)
+        else
             videoPath="";
         Context context = MyApplication.getAppContext();
         String colon;
-        if (videoPath.length() > 0)
+        if (!videoPath.isEmpty())
             colon = " : ";
         else
             colon = "";
@@ -294,7 +292,7 @@ public class VideoListModel extends ViewModel {
                 + "ORDER BY "
                 + fnSort;
         String [] parms;
-        if (videoPath.length() > 0)
+        if (!videoPath.isEmpty())
             parms = new String[]{videoPath + "/%"};
         else
             parms = new String[]{"%"};
@@ -341,7 +339,7 @@ public class VideoListModel extends ViewModel {
     }
 
     /**
-     * Create the Sql to sort with excluding articles "the" "a" etc at the front
+     * Create the SQL to sort with excluding articles "the" "a" etc. at the front
      * or at the front of directory names
      * @param columnName Column for sorting on
      * @param delim Delimiter to use - ^ for title and / for directory
@@ -358,7 +356,7 @@ public class VideoListModel extends ViewModel {
         for (String article : articles) {
             // Empty entries may be a single space
             article = article.trim();
-            if (article != null && article.length() > 0) {
+            if (!article.isEmpty()) {
                 titleSort.insert(0, "REPLACE(");
                 titleSort.append(",'").append(delim).append(article)
                         .append(" ','").append(delim).append("')");

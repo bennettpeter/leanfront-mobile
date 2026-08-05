@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile.ui.proglist;
 
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuProvider;
@@ -47,16 +49,17 @@ import java.util.Objects;
 /**
  * Program List fragment that is used by upcoming list and guide search results
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class ProgramListFragment extends Fragment implements MainActivity.MyFragment {
     private static final String TAG = "lfm";
     private static final String CLASS = "ProgramListFragment";
+    @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
     private FragmentProglistBinding binding;
     private ProgramListModel model;
     public static final int COLOR_WILLRECORD = 0xff00C000;
     public static final int COLOR_WONTRECORD = 0xffC00000;
     private MenuProvider menuProvider;
-    private int orientation;
     private boolean hideNav = false;
     private boolean lockDrawer = false;
 
@@ -74,14 +77,10 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
         ProgramListAdapter adapter = new ProgramListAdapter(this);
         recyclerView.setAdapter(adapter);
         model.programs.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized(model) {
-                adapter.submitList(new ArrayList<>(list));
-            }
+            adapter.submitList(new ArrayList<>(list));
             binding.swiperefresh.setRefreshing(false);
         });
-        binding.swiperefresh.setOnRefreshListener(() -> {
-            refresh();
-        });
+        binding.swiperefresh.setOnRefreshListener(this::refresh);
         DividerItemDecoration dec1 = new DividerItemDecoration(recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dec1);
@@ -94,20 +93,23 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        orientation = requireActivity().getResources().getConfiguration().orientation;
+        int orientation = requireActivity().getResources().getConfiguration().orientation;
         int spanCount = 1;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             spanCount = 2;
-        ((GridLayoutManager)binding.recyclerviewProgramlist.getLayoutManager()).setSpanCount(spanCount);
+        GridLayoutManager lm = (GridLayoutManager)binding.recyclerviewProgramlist.getLayoutManager();
+        if (lm != null)
+            lm.setSpanCount(spanCount);
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
                 if (model.type == ProgramListModel.TYPE_GUIDE_SEARCH) {
                     MenuItem searchItem = menu.findItem(R.id.search);
-                    if (searchItem != null) {
+                    SearchView searchView;
+                    if (searchItem != null
+                        && (searchView = (SearchView) searchItem.getActionView()) != null) {
                         searchItem.setVisible(true);
                         searchItem.expandActionView();
-                        SearchView searchView = (SearchView) searchItem.getActionView();
                         searchView.setQueryHint(getString(R.string.hint_guide_search));
                         searchView.setIconifiedByDefault(false);
                         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -141,15 +143,11 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
                                 if (activity == null)
                                     return false;
                                 FragmentManager fManager = activity.getSupportFragmentManager();
-                                if (fManager == null)
-                                    return false;
                                 NavHostFragment navHostFragment =
                                         (NavHostFragment) fManager.findFragmentById(R.id.nav_host_fragment_content_main);
                                 if (navHostFragment == null)
                                     return false;
                                 NavController navController = navHostFragment.getNavController();
-                                if (navController == null)
-                                    return false;
                                 navController.navigateUp();
                                 return false;
                             }
@@ -190,16 +188,19 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
     }
 
 
+    @SuppressLint("RtlHardcoded")
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).myFragment = this;
+        ((MainActivity)requireActivity()).myFragment = this;
         if (menuProvider != null) {
-            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+            requireActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
+        ActionBar ab = ((AppCompatActivity)requireActivity()).getSupportActionBar();
+        if (ab != null)
+            ab.setSubtitle(null);
         if (model.type == ProgramListModel.TYPE_GUIDE_SEARCH) {
-            View v = ((MainActivity) getActivity()).mainView;
+            View v = ((MainActivity) requireActivity()).mainView;
             View nav = v.findViewById(R.id.bottom_nav_view);
             if (nav != null) {
                 if (nav.getVisibility() == View.VISIBLE) {
@@ -220,12 +221,12 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
 
     @Override
     public void onPause() {
-        ((MainActivity)getActivity()).myFragment = null;
+        ((MainActivity)requireActivity()).myFragment = null;
         if (menuProvider != null) {
-            getActivity().removeMenuProvider(menuProvider);
-            getActivity().invalidateMenu();
+            requireActivity().removeMenuProvider(menuProvider);
+            requireActivity().invalidateMenu();
         }
-        View v = ((MainActivity) getActivity()).mainView;
+        View v = ((MainActivity) requireActivity()).mainView;
         if (hideNav) {
             View nav = v.findViewById(R.id.bottom_nav_view);
             if (nav != null)
@@ -246,7 +247,7 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
     }
 
     public void startFetch() {
-        if (binding != null && binding.swiperefresh != null) {
+        if (binding != null) {
             binding.swiperefresh.setRefreshing(true);
             refresh();
         }
@@ -255,19 +256,20 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
     private static class ProgramListAdapter extends ListAdapter
             <ProgramListModel.ProgramItem, ProgramListViewHolder> {
 
-        private ProgramListFragment fragment;
+        private final ProgramListFragment fragment;
 
         protected ProgramListAdapter(ProgramListFragment fragment) {
-            super(new DiffUtil.ItemCallback<ProgramListModel.ProgramItem>() {
+            super(new DiffUtil.ItemCallback<>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull ProgramListModel.ProgramItem oldItem, @NonNull ProgramListModel.ProgramItem newItem) {
-                    return (Objects.equals(oldItem.startTime,newItem.startTime)
-                        && Objects.equals(oldItem.title,newItem.title)
-                        && oldItem.chanId == newItem.chanId);
-               }
+                    return (Objects.equals(oldItem.startTime, newItem.startTime)
+                            && Objects.equals(oldItem.title, newItem.title)
+                            && oldItem.chanId == newItem.chanId);
+                }
+
                 @Override
                 public boolean areContentsTheSame(@NonNull ProgramListModel.ProgramItem oldItem, @NonNull ProgramListModel.ProgramItem newItem) {
-                    return Objects.equals(oldItem.statusName,newItem.statusName);
+                    return Objects.equals(oldItem.statusName, newItem.statusName);
                 }
             });
             this.fragment = fragment;
@@ -282,6 +284,8 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
         }
 
         @Override
+        @SuppressLint("SimpleDateFormat")
+        @SuppressWarnings("ExtractMethodRecommender")
         public void onBindViewHolder(@NonNull ProgramListViewHolder holder, int position) {
             holder.item = getItem(position);
             holder.binding.itemDate.setText(null);
@@ -294,14 +298,15 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
                     final DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
                             (MyApplication.getAppContext());
                     Date date = dbFormat.parse(holder.item.startTime + "+0000");
-                    dateStr.append(weekDay.format(date)).append(" ")
-                            .append(outFormat.format(date)).append(" ")
-                            .append(timeOfDay.format(date)).append(" ")
-                            .append(holder.item.callSign).append(" ")
-                            .append(holder.item.chanNum);
+                    if (date != null)
+                        dateStr.append(weekDay.format(date)).append(" ")
+                                .append(outFormat.format(date)).append(" ")
+                                .append(timeOfDay.format(date)).append(" ")
+                                .append(holder.item.callSign).append(" ")
+                                .append(holder.item.chanNum);
                     holder.binding.itemDate.setText(dateStr);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, CLASS + " Exception ", e);
                 }
             }
             holder.binding.itemStatus.setText(holder.item.statusName);
@@ -318,7 +323,7 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
             StringBuilder titleStr = new StringBuilder();
             titleStr.append(holder.item.title);
             boolean haveEpisode = holder.item.episode > 0;
-            boolean haveSubtitle = holder.item.subTitle != null && holder.item.subTitle.trim().length() > 0;
+            boolean haveSubtitle = holder.item.subTitle != null && !holder.item.subTitle.trim().isEmpty();
             if (haveEpisode || haveSubtitle)
                 titleStr.append(": ");
             if (haveEpisode) {
@@ -374,12 +379,14 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
                         break;
                 }
                 NavHostFragment navHostFragment =
-                        (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+                        (NavHostFragment) fragment.requireActivity().getSupportFragmentManager()
+                                .findFragmentById(R.id.nav_host_fragment_content_main);
+                if (navHostFragment != null) {
                 NavController navController = navHostFragment.getNavController();
                 navController.navigate(R.id.nav_schedule, args);
+                }
             } catch (Exception e) {
                 Log.e(TAG, CLASS + " Exception setting up schedule edit.", e);
-                e.printStackTrace();
             }
         }
 

@@ -3,13 +3,12 @@ package org.mythtv.lfmobile.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-//import org.mythtv.leanfront.data.AsyncBackendCall;
-//import org.mythtv.leanfront.data.VideoContract;
-//import org.mythtv.leanfront.ui.MainFragment;
+import androidx.annotation.NonNull;
 
 /**
  * Video is an object that holds the various metadata associated with a single video.
  */
+@SuppressWarnings("SpellCheckingInspection")
 public final class Video implements Parcelable {
     public final long id;
     public final int rectype;
@@ -28,12 +27,10 @@ public final class Video implements Parcelable {
     // type takes one of the values in MainFragment to indicate
     // a type of UI element
     public int type;
-    public static final int TYPE_RECGROUP = 2;
     public static final int TYPE_VIDEODIR = 3;
     public static final int TYPE_SERIES = 4;
     public static final int TYPE_EPISODE = 5;
     public static final int TYPE_VIDEO = 6;
-    public static final int TYPE_CHANNEL = 7;
 
     public final String season;
     public final String episode;
@@ -178,7 +175,7 @@ public final class Video implements Parcelable {
         showRecent = in.readInt() != 0;
     }
 
-    public static final Creator<Video> CREATOR = new Creator<Video>() {
+    public static final Creator<Video> CREATOR = new Creator<>() {
         @Override
         public Video createFromParcel(Parcel in) {
             return new Video(in);
@@ -240,6 +237,7 @@ public final class Video implements Parcelable {
         dest.writeInt(showRecentInt);
     }
 
+    @NonNull
     @Override
     public String toString() {
         String s = "Video{";
@@ -293,10 +291,10 @@ public final class Video implements Parcelable {
                 && (Integer.parseInt(progflags) & Video.FL_WATCHED) != 0;
     }
 
-    public boolean isBookmarked() {
-        return progflags != null
-                && (Integer.parseInt(progflags) & Video.FL_BOOKMARK) != 0;
-    }
+//    public boolean isBookmarked() {
+//        return progflags != null
+//                && (Integer.parseInt(progflags) & Video.FL_BOOKMARK) != 0;
+//    }
 
 //    public boolean isDamaged() {
 //        int damagedFlag = 0;
@@ -514,27 +512,6 @@ public final class Video implements Parcelable {
             this.showRecent = showRecent;
             return this;
         }
-
-        // This is removed because it is only used in case you are playing videos from
-        // sources outside of this application. That is not a supported function of
-        // this application.
-//        public Video buildFromMediaDesc(MediaDescription desc) {
-//            return new Video(
-//                    Long.parseLong(desc.getMediaId()),
-//                    VideoContract.VideoEntry.RECTYPE_VIDEO,
-//                    String.valueOf(desc.getTitle()),
-//                    "",
-//                    String.valueOf(desc.getDescription()),
-//                    "", // Media URI - not provided by MediaDescription.
-//                    "", // Background Image URI - not provided by MediaDescription.
-//                    String.valueOf(desc.getIconUri()),
-//                    String.valueOf(desc.getSubtitle()),
-//                    "", //recordid not provided
-//                    "","","","","","","",
-//                    "","","","", "", "0","0","",
-//                    "","","","", 0, false
-//            );
-//        }
 
         public Video build() {
             return new Video(

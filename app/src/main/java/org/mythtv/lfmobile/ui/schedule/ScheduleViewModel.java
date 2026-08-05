@@ -21,6 +21,7 @@ import org.mythtv.lfmobile.data.XmlNode;
 import java.util.ArrayList;
 import java.util.Date;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class ScheduleViewModel extends ViewModel {
     public static final String REQID = "REQID";
     public static final String CHANID = "CHANID";
@@ -74,7 +75,6 @@ public class ScheduleViewModel extends ViewModel {
     // into recordRule.startTime
     Date manualStartTime = new Date();
 
-    int mGroupId;
     int chanId;
     Date startTime;
     int savedHashCode;
@@ -83,9 +83,7 @@ public class ScheduleViewModel extends ViewModel {
     final String CLASS = "ScheduleViewModel";
 
     void init(Bundle args) {
-        if (initDone && reqId == args.getLong(REQID))
-            ;
-        else {
+        if (!initDone || reqId != args.getLong(REQID)) {
             reqId = args.getLong(REQID);
             chanId = args.getInt(CHANID, 0);
             startTime = (Date) args.getSerializable(STARTTIME);
@@ -178,6 +176,8 @@ public class ScheduleViewModel extends ViewModel {
                             recordRule.searchType = "None";
                     }
                     if (isOverride) {
+                        if (progDetails == null)
+                            return;
                         recordRule.inactive = false;
                         recordRule.recStatusCode = progDetails.recStatusCode;
                         recordRule.recordingStatus = progDetails.recordingStatus;
@@ -230,11 +230,11 @@ public class ScheduleViewModel extends ViewModel {
                 // end time to the same date as start time.
                 long startTm = recordRule.startTime.getTime();
                 long endTm = recordRule.endTime.getTime();
-                long startDt = startTm / (24l*60l*60l*1000l);
-                endTm = endTm % (24l*60l*60l*1000l);
-                endTm = startDt * (24l*60l*60l*1000l) + endTm;
+                long startDt = startTm / (24L * 60L * 60L * 1000L);
+                endTm = endTm % (24L * 60L * 60L * 1000L);
+                endTm = startDt * (24L * 60L * 60L * 1000L) + endTm;
                 if (endTm < startTm)
-                    endTm += (24l*60l*60l*1000l);
+                    endTm += (24L * 60L * 60L * 1000L);
                 recordRule.endTime.setTime(endTm);
             }
         }
@@ -312,7 +312,7 @@ public class ScheduleViewModel extends ViewModel {
                 callSigns.add(cursor.getString(2));
             }
             cursor.close();
-            VideoDbHelper.releaseDatabase();
+//            VideoDbHelper.releaseDatabase();
         }
     }
 
@@ -350,12 +350,11 @@ public class ScheduleViewModel extends ViewModel {
             if (caller == null)
                 return;
             XmlNode response = caller.getXmlResult();
-            Exception e = response.getException();
-            String result = null;
-            if (response != null)
-                result = response.getString();
-            if (e instanceof XmlNode.APIException) {
-                String err = ((XmlNode.APIException) e).getApiError();
+            Exception ex = response.getException();
+            String result;
+            result = response.getString();
+            if (ex instanceof XmlNode.APIException) {
+                String err = ((XmlNode.APIException) ex).getApiError();
                 if (err != null) {
                     String[] parts = err.split("<TITLE>|</TITLE>");
                     if (parts.length > 1)
@@ -374,8 +373,8 @@ public class ScheduleViewModel extends ViewModel {
                 else if (recordRule.recordId == 0) {
                     try {
                         recordRule.recordId = Integer.parseInt(result);
-                    } catch (Exception e2) {
-                        e2.printStackTrace();
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception ", e);
                     }
                 }
                 int resp = INIT_SAVED;

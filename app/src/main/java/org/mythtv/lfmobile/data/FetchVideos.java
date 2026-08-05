@@ -50,6 +50,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * FetchVideoService is responsible for fetching the videos from the Internet and inserting the
  * results into a local SQLite database.
  */
+@SuppressWarnings({"CharsetObjectCanBeUsed", "SpellCheckingInspection"})
 public class FetchVideos implements Runnable{
 
     public interface Listener {
@@ -58,17 +59,13 @@ public class FetchVideos implements Runnable{
 
     private static final String TAG = "lfm";
     final String CLASS = "FetchVideos";
-    public static final String RECORDEDID = "RecordedId";
-    public static final String RECTYPE = "RecType";
-    public static final String RECGROUP = "RecGroup";
-    public static final String ISPROGRESSBAR = "IsProgressBar";
     public static ReentrantLock fullRunLock = new ReentrantLock();
-    private static ExecutorService executor = Executors.newCachedThreadPool();
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
     private Listener listener;
-    private int recType;
-    private String recordedId;
+    private final int recType;
+    private final String recordedId;
     private String recGroup;
-    private Context  context;
+    private final Context  context;
     public boolean success = false;
 
     /**
@@ -154,40 +151,36 @@ public class FetchVideos implements Runnable{
                     }
                 }
                 if (firstLoop) {
-                    try {
-                        VideoDbHelper dbh = VideoDbHelper.getInstance(context);
-                        SQLiteDatabase db = dbh.getWritableDatabase();
-                        if (db == null)
-                            return;
-                        if (recType == -1)
-                            db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME); //delete all rows in a table
-                        else {
-                            if (recordedId == null && recGroup == null)
+                    VideoDbHelper dbh = VideoDbHelper.getInstance(context);
+                    SQLiteDatabase db = dbh.getWritableDatabase();
+                    if (db == null)
+                        return;
+                    if (recType == -1)
+                        db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME); //delete all rows in a table
+                    else {
+                        if (recordedId == null && recGroup == null)
+                            db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
+                                    + " WHERE RECTYPE = '" + recType + "'");
+                        else if (recordedId != null)
+                            db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
+                                    + " WHERE RECORDEDID = '" + recordedId
+                                    + "' AND RECTYPE = '" + recType + "'");
+                        else { // if (recGroup != null) {
+                            db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
+                                    + " WHERE RECGROUP = '" + recGroup.replace("'", "''")
+                                    + "' AND RECTYPE = '" + recType + "'");
+                            if ("LiveTV".equals(recGroup))
                                 db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
-                                        + " WHERE RECTYPE = '" + recType + "'");
-                            else if (recordedId != null)
-                                db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
-                                        + " WHERE RECORDEDID = '" + recordedId
-                                        + "' AND RECTYPE = '" + recType + "'");
-                            else if (recGroup != null) {
-                                db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
-                                        + " WHERE RECGROUP = '" + recGroup.replace("'", "''")
-                                        + "' AND RECTYPE = '" + recType + "'");
-                                if ("LiveTV".equals(recGroup))
-                                    db.execSQL("DELETE FROM " + VideoContract.VideoEntry.TABLE_NAME
-                                            + " WHERE RECTYPE = '" + VideoContract.VideoEntry.RECTYPE_CHANNEL + "'");
-                            }
+                                        + " WHERE RECTYPE = '" + VideoContract.VideoEntry.RECTYPE_CHANNEL + "'");
                         }
-                        VideoDbHelper.releaseDatabase();
-                    } finally {
-//                        AsyncMainLoader.lock.unlock();
                     }
+//                    VideoDbHelper.releaseDatabase();
                 }
                 VideoDbHelper dbh = VideoDbHelper.getInstance(context);
                 SQLiteDatabase db = dbh.getWritableDatabase();
                 db.beginTransaction();
                 for (ContentValues row : contentValuesList) {
-                    long id = db.insertWithOnConflict(VideoContract.VideoEntry.TABLE_NAME,
+                    db.insertWithOnConflict(VideoContract.VideoEntry.TABLE_NAME,
                             null,row,SQLiteDatabase.CONFLICT_IGNORE);
                 }
                 if (success)
@@ -207,7 +200,7 @@ public class FetchVideos implements Runnable{
 //            MainFragment.mFetchTime = 0;
             Log.e(TAG, CLASS + " Error occurred in downloading videos", e);
         } catch(Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         } finally {
             if (recType == -1 || recordedId == null)
                 fullRunLock.unlock();

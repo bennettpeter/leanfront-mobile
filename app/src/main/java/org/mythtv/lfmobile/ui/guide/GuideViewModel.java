@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile.ui.guide;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
@@ -19,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class GuideViewModel extends ViewModel {
     public static final int TIMESLOT_SIZE = 30; //minutes
     // 8 time slots = 4 hours of guide data at a time
@@ -38,7 +40,7 @@ public class GuideViewModel extends ViewModel {
     MutableLiveData<ArrayList<String>> dateLiveData = new MutableLiveData<>();
     ArrayList<ProgSlot> progList = new ArrayList<>();
     MutableLiveData<ArrayList<ProgSlot>> progLiveData = new MutableLiveData<>();
-    String allTitle = "";
+    String allTitle;
 
     public GuideViewModel() {
         Context context = MyApplication.getAppContext();
@@ -52,6 +54,7 @@ public class GuideViewModel extends ViewModel {
         loadChanGroups();
     }
 
+    @SuppressLint("SimpleDateFormat")
     synchronized void loadTimeslots(boolean resetTimeslots) {
         GregorianCalendar now = new GregorianCalendar();
         if (guideStartTime != null && !resetTimeslots) {
@@ -113,7 +116,7 @@ public class GuideViewModel extends ViewModel {
         AsyncBackendCall call = new AsyncBackendCall((caller) -> {
             XmlNode result = caller.getXmlResult();
             if (result == null) return;
-            loadGuideData(result, 0);
+            loadGuideData(result);
             chanLiveData.postValue(chanList);
             progLiveData.postValue(progList);
         });
@@ -125,9 +128,9 @@ public class GuideViewModel extends ViewModel {
         call.execute(Action.GUIDE);
     }
 
-    void loadGuideData(XmlNode result, int start) {
+    void loadGuideData(XmlNode result) {
         // If the user has changed time period or channel group,
-        // throw away furhter use of the old group or time slot
+        // throw away further use of the old group or time slot
         if (result == null)
             return;
         chanList.clear();
@@ -135,7 +138,7 @@ public class GuideViewModel extends ViewModel {
         XmlNode chanNode = null;
         for (; ; ) {
             if (chanNode == null)
-                chanNode = result.getNode("Channels").getNode("ChannelInfo", start);
+                chanNode = result.getNode("Channels").getNode("ChannelInfo", 0);
             else chanNode = chanNode.getNextSibling();
             if (chanNode == null) break;
 

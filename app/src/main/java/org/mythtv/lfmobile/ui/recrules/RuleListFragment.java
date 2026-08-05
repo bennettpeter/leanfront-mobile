@@ -1,11 +1,12 @@
 package org.mythtv.lfmobile.ui.recrules;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -39,15 +40,27 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class RuleListFragment extends Fragment implements MainActivity.MyFragment {
     private static final String TAG = "lfm";
     private static final String CLASS = "RuleListFragment";
     private MenuProvider menuProvider;
-    private int orientation;
     private RuleListViewModel model;
     private FragmentRulelistBinding binding;
+    private static final HashMap<String, Integer> typeNames = new HashMap<>();
 
+    static {
+        typeNames.put("Do not Record", R.string.recrule_DonotRecord);
+        typeNames.put("Not Recording", R.string.recrule_NotRecording);
+        typeNames.put("Override Recording", R.string.recrule_OverrideRecording);
+        typeNames.put("Record All", R.string.recrule_RecordAll);
+        typeNames.put("Record Daily", R.string.recrule_RecordDaily);
+        typeNames.put("Record One", R.string.recrule_RecordOne);
+        typeNames.put("Record Weekly", R.string.recrule_RecordWeekly);
+        typeNames.put("Recording Template", R.string.recrule_RecordingTemplate);
+        typeNames.put("Single Record", R.string.recrule_SingleRecord);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -59,14 +72,10 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
         RuleListAdapter adapter = new RuleListFragment.RuleListAdapter(this);
         recyclerView.setAdapter(adapter);
         model.rules.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized(model) {
-                adapter.submitList(new ArrayList<>(list));
-            }
+            adapter.submitList(new ArrayList<>(list));
             binding.swiperefresh.setRefreshing(false);
         });
-        binding.swiperefresh.setOnRefreshListener(() -> {
-            refresh();
-        });
+        binding.swiperefresh.setOnRefreshListener(this::refresh);
         DividerItemDecoration dec1 = new DividerItemDecoration(recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dec1);
@@ -79,11 +88,13 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        orientation = requireActivity().getResources().getConfiguration().orientation;
+        int orientation = requireActivity().getResources().getConfiguration().orientation;
         int spanCount = 1;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE)
             spanCount = 2;
-        ((GridLayoutManager)binding.recyclerviewRulelist.getLayoutManager()).setSpanCount(spanCount);
+        GridLayoutManager lm = (GridLayoutManager)binding.recyclerviewRulelist.getLayoutManager();
+        if (lm != null)
+            lm.setSpanCount(spanCount);
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -108,13 +119,15 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
                         args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
                         args.putInt(ScheduleViewModel.SCHEDREASON, reason);
                         NavHostFragment navHostFragment =
-                                (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-                        NavController navController = navHostFragment.getNavController();
-                        navController.navigate(R.id.nav_schedule, args);
+                                (NavHostFragment) requireActivity().getSupportFragmentManager()
+                                        .findFragmentById(R.id.nav_host_fragment_content_main);
+                        if (navHostFragment != null) {
+                            NavController navController = navHostFragment.getNavController();
+                            navController.navigate(R.id.nav_schedule, args);
+                        }
                         return true;
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception setting up new rule edit.", e);
-                        e.printStackTrace();
                     }
                 }
                 return false;
@@ -130,22 +143,24 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).myFragment = this;
+        ((MainActivity)requireActivity()).myFragment = this;
         if (menuProvider != null) {
-            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+            requireActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_recrules);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(null);
-
+        ActionBar ab = ((AppCompatActivity)requireActivity()).getSupportActionBar();
+        if (ab != null) {
+            ab.setTitle(R.string.title_recrules);
+            ab.setSubtitle(null);
+        }
         refresh();
     }
 
     @Override
     public void onPause() {
-        ((MainActivity)getActivity()).myFragment = null;
+        ((MainActivity)requireActivity()).myFragment = null;
         if (menuProvider != null) {
-            getActivity().removeMenuProvider(menuProvider);
-            getActivity().invalidateMenu();
+            requireActivity().removeMenuProvider(menuProvider);
+            requireActivity().invalidateMenu();
         }
         super.onPause();
     }
@@ -157,15 +172,17 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
     }
 
     public void startFetch() {
-        if (binding != null && binding.swiperefresh != null) {
+        if (binding != null) {
             binding.swiperefresh.setRefreshing(true);
             refresh();
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private static class RuleListAdapter extends ListAdapter
             <RuleListViewModel.RuleItem, RuleListFragment.RuleListViewHolder> {
-        private RuleListFragment fragment;
+        private final RuleListFragment fragment;
+
         static final SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
         static final SimpleDateFormat weekDay = new SimpleDateFormat("E");
         static final SimpleDateFormat timeOfDay = new SimpleDateFormat("HH:mm");
@@ -173,7 +190,7 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
                 (MyApplication.getAppContext());
 
         protected RuleListAdapter(RuleListFragment fragment) {
-            super(new DiffUtil.ItemCallback<RuleListViewModel.RuleItem>() {
+            super(new DiffUtil.ItemCallback<>() {
 
                 @Override
                 public boolean areItemsTheSame(@NonNull RuleListViewModel.RuleItem oldItem, @NonNull RuleListViewModel.RuleItem newItem) {
@@ -208,14 +225,15 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
                 try {
                     StringBuilder dateStr = new StringBuilder();
                     Date date = dbFormat.parse(holder.item.lastRecorded + "+0000");
-                    dateStr.append(weekDay.format(date)).append(" ")
-                            .append(outFormat.format(date)).append(" ")
-                            .append(timeOfDay.format(date));
+                    if (date != null)
+                        dateStr.append(weekDay.format(date)).append(" ")
+                                .append(outFormat.format(date)).append(" ")
+                                .append(timeOfDay.format(date));
                     holder.binding.itemLast.setText(dateStr);
                     holder.binding.itemLastTitle.setVisibility(View.VISIBLE);
                     holder.binding.itemLast.setVisibility(View.VISIBLE);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, CLASS + " Exception ", e);
                 }
             }
 
@@ -226,20 +244,19 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
                 try {
                     StringBuilder dateStr = new StringBuilder();
                     Date date = dbFormat.parse(holder.item.nextRecording + "+0000");
-                    dateStr.append(weekDay.format(date)).append(" ")
-                            .append(outFormat.format(date)).append(" ")
-                            .append(timeOfDay.format(date));
+                    if (date != null)
+                        dateStr.append(weekDay.format(date)).append(" ")
+                                .append(outFormat.format(date)).append(" ")
+                                .append(timeOfDay.format(date));
                     holder.binding.itemNext.setText(dateStr);
                     holder.binding.itemNextTitle.setVisibility(View.VISIBLE);
                     holder.binding.itemNext.setVisibility(View.VISIBLE);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, CLASS + " Exception ", e);
                 }
             }
-            String typeKey = "recrule_" + holder.item.type.replace(" ","");
-            Context context = MyApplication.getAppContext();
-            int tValue = context.getResources().getIdentifier(typeKey,"string",context.getPackageName());
-            if (tValue == 0)
+            Integer tValue = typeNames.get(holder.item.type);
+            if (tValue == null)
                 holder.binding.itemType.setText(holder.item.type);
             else
                 holder.binding.itemType.setText(tValue);
@@ -256,25 +273,25 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
         public RuleListViewHolder(ItemRecruleBinding binding, RuleListFragment fragment) {
             super(binding.getRoot());
             this.binding = binding;
-            View.OnClickListener listener  = v -> {
-                actionRequest(fragment, v);
-            };
+            View.OnClickListener listener  = v -> actionRequest(fragment, v);
             binding.getRoot().setOnClickListener(listener);
         }
 
-        private void actionRequest(RuleListFragment fragment, View v) {
+        private void actionRequest(RuleListFragment fragment, View ignoredV) {
             try {
                 Bundle args = new Bundle();
                 args.putLong(ScheduleViewModel.REQID, System.currentTimeMillis());
                 args.putInt(ScheduleViewModel.RECORDID, item.id);
                 args.putInt(ScheduleViewModel.SCHEDREASON, ScheduleViewModel.SCHED_RULELIST);
                 NavHostFragment navHostFragment =
-                        (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-                NavController navController = navHostFragment.getNavController();
-                navController.navigate(R.id.nav_schedule, args);
+                        (NavHostFragment) fragment.requireActivity().getSupportFragmentManager()
+                                .findFragmentById(R.id.nav_host_fragment_content_main);
+                if (navHostFragment != null) {
+                    NavController navController = navHostFragment.getNavController();
+                    navController.navigate(R.id.nav_schedule, args);
+                }
             } catch (Exception e) {
                 Log.e(TAG, CLASS + " Exception setting up schedule edit.", e);
-                e.printStackTrace();
             }
         }
     }

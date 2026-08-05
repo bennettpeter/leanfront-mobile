@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+@SuppressWarnings({"SpellCheckingInspection"})
 public class CommBreakTable {
     public Entry[] entries = new Entry[0];
     public int offSetType = 0;

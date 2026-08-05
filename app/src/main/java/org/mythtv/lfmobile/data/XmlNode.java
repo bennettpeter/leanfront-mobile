@@ -43,22 +43,24 @@ import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.Response;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class XmlNode {
     private static final String TAG = "lfm";
     private static final String CLASS = "XmlNode";
 
     private String name;
-    private HashMap<String, XmlNode> childMap = new HashMap<>();
-    private HashMap<String, String> attributeMap = new HashMap<>();
+    private final HashMap<String, XmlNode> childMap = new HashMap<>();
+    private final HashMap<String, String> attributeMap = new HashMap<>();
     private String text = null;
     private XmlNode nextSibling;
     private Exception exception;
 
+    @SuppressWarnings("CommentedOutCode")
     public static String getIpAndPort(String hostname) throws IOException, XmlPullParserException {
         String backendIP = Settings.getString("pref_backend");
         backendIP = fixIpAddress(backendIP);
         String mainPort = Settings.getString("pref_http_port");
-        if (backendIP.length() == 0 || mainPort.length() == 0) {
+        if (backendIP.isEmpty() || mainPort.isEmpty()) {
             Log.e(TAG, CLASS + " Backend port or IP address not specified");
             return null;
         }
@@ -100,14 +102,14 @@ public class XmlNode {
         return hostIpAndPort;
     }
 
-    public static boolean isSetupDone() {
+    public static boolean isSetupNotDone() {
         try {
             if (XmlNode.getIpAndPort(null) == null)
-                return false;
+                return true;
         } catch (Exception e) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static String fixIpAddress(String ipAddress) {
@@ -169,18 +171,16 @@ public class XmlNode {
         return ret;
     }
 
+    static final FormBody defaultBody = new FormBody.Builder().build();
     /**
      * Fetch XML object from a given URL.
      *
      * @return the XmlNode representation of the response
-     * @throws XmlPullParserException
-     * @throws IOException
      */
-    static final FormBody defaultBody = new FormBody.Builder().build();
     public static XmlNode fetch(String urlString, String requestMethod)
             throws XmlPullParserException, IOException {
         BackendCache bCache = BackendCache.getInstance();
-        XmlNode ret = null;
+        XmlNode ret;
         Response response = null;
         InputStream is = null;
         try {
@@ -188,7 +188,7 @@ public class XmlNode {
                     .url(urlString);
             builder.header("Cache-Control", "no-cache");
             String auth = BackendCache.getInstance().authorization;
-            if (auth != null && auth.length() > 0 )
+            if (auth != null && !auth.isEmpty())
                 builder.header("Authorization", auth);
             if (requestMethod != null) {
                 switch(requestMethod) {
@@ -316,8 +316,7 @@ public class XmlNode {
         if (strValue != null) {
             try {
                 result = Integer.parseInt(strValue);
-            } catch (NumberFormatException e) {
-                result = defaultValue;
+            } catch (NumberFormatException ignored) {
             }
         }
         return result;
@@ -329,8 +328,7 @@ public class XmlNode {
         if (strValue != null) {
             try {
                 result = Long.parseLong(strValue);
-            } catch (NumberFormatException e) {
-                result = defaultValue;
+            } catch (NumberFormatException ignored) {
             }
         }
         return result;
@@ -352,8 +350,7 @@ public class XmlNode {
         if (text !=  null) {
             try {
                 result = dateFormat.parse(text + "+0000");
-            } catch (ParseException e) {
-                result = null;
+            } catch (ParseException ignored) {
             }
         }
         return result;
@@ -368,18 +365,9 @@ public class XmlNode {
         return name;
     }
 
-    /**
-     * Convenience method to allow extra data to be stored in a node
-     * @param name
-     * @param value
-     */
-    public void setAttribute(String name, String value) {
-        attributeMap.put(name, value);
-    }
-
     public static String mythApiUrl(String hostName, String params) throws IOException, XmlPullParserException {
         String ipAndPort = getIpAndPort(hostName);
-        if (ipAndPort == null || ipAndPort.length() == 0)
+        if (ipAndPort == null || ipAndPort.isEmpty())
             return "";
         String url = "http://";
         if ("true".equals(Settings.getString("pref_http_ssl")))
@@ -407,33 +395,28 @@ public class XmlNode {
     }
 
     static public class APIException extends IOException {
-        String apiError;
+        StringBuilder apiError = new StringBuilder();
         APIException(String message, Response response) {
             super(message);
             if (response != null) {
-                InputStream es = response.body().byteStream();;
-                if (es != null) {
-                    BufferedReader rdr = new BufferedReader(new InputStreamReader(es));
-                    for (;;) {
-                        String line = null;
-                        try {
-                            line = rdr.readLine();
-                        } catch (IOException ignored) {
-                            line = null;
-                        }
-                        if (line == null)
-                            break;
-                        Log.i(TAG,CLASS+ " " + line);
-                        if (apiError == null)
-                            apiError = line;
-                        else
-                            apiError += line;
+                InputStream es = response.body().byteStream();
+                BufferedReader rdr = new BufferedReader(new InputStreamReader(es));
+                for (;;) {
+                    String line;
+                    try {
+                        line = rdr.readLine();
+                    } catch (IOException ignored) {
+                        line = null;
                     }
+                    if (line == null)
+                        break;
+                    Log.i(TAG,CLASS+ " " + line);
+                    apiError.append(line);
                 }
             }
         }
         public String getApiError() {
-            return apiError;
+            return apiError.toString();
         }
     }
 }

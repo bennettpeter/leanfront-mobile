@@ -1,9 +1,11 @@
 package org.mythtv.lfmobile.ui.videolist;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,6 +64,7 @@ import java.util.Objects;
  * the [RecyclerView] using LinearLayoutManager in a small screen
  * and shows items using GridLayoutManager in a large screen.
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class VideoListFragment extends Fragment implements MainActivity.MyFragment {
     private static final String TAG = "lfm";
     private static final String CLASS = "VideoListFragment";
@@ -69,7 +72,6 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     private VideoListModel videoListModel;
     private MenuProvider menuProvider;
     private ArrayList <Video> videoList = new ArrayList<>();
-    private int orientation;
     private OnBackPressedCallback bpCallback;
 
 
@@ -85,7 +87,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     refresh();
                 }
                 else if (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
-                    && videoListModel.videoPath.length() > 0) {
+                    && !videoListModel.videoPath.isEmpty()) {
                     videoListModel.setVideos("..");
                     refresh();
                 }
@@ -101,8 +103,6 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        orientation = requireActivity().getResources().getConfiguration().orientation;
-
         videoListModel =
                 new ViewModelProvider(this).get(VideoListModel.class);
 
@@ -113,14 +113,10 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         VideoListAdapter adapter = new VideoListAdapter(this);
         recyclerView.setAdapter(adapter);
         videoListModel.videos.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized(videoListModel) {
-                adapter.submitList(videoList = new ArrayList<>(list));
-            }
+            adapter.submitList(videoList = new ArrayList<>(list));
             binding.swiperefresh.setRefreshing(false);
         });
-        binding.swiperefresh.setOnRefreshListener(() -> {
-            videoListModel.startFetch();
-        });
+        binding.swiperefresh.setOnRefreshListener(() -> videoListModel.startFetch());
         DividerItemDecoration dec = new DividerItemDecoration(recyclerView.getContext(),
                DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dec);
@@ -164,6 +160,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                             && videoListModel.listingGroup == R.id.category_group)
                             item.setChecked(true);
                     }
+                    //noinspection UnusedAssignment
                     item = menu.add(R.id.video_group, 0, seq++, videoListModel.videosTitle);
                     item.setCheckable(true);
                     if (videoListModel.videosTitle.equals(videoListModel.recGroup))
@@ -181,7 +178,9 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     int id = menuItem.getItemId();
                     if (id == 0) {
                         videoListModel.listingGroup = groupid;
-                        videoListModel.setRecGroup(menuItem.getTitle().toString());
+                        CharSequence recGroup = menuItem.getTitle();
+                        if (recGroup != null)
+                            videoListModel.setRecGroup(recGroup.toString());
                         refresh();
                         return true;
                     }
@@ -192,7 +191,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     public boolean navigateUp() {
-        View v = ((MainActivity) getActivity()).mainView;
+        View v = ((MainActivity) requireActivity()).mainView;
         DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
         if (drawer == null) {
             requireActivity().getOnBackPressedDispatcher().onBackPressed();
@@ -202,28 +201,25 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     public void startFetch() {
-        if (videoListModel != null && binding != null
-                && binding.swiperefresh != null) {
+        if (videoListModel != null && binding != null) {
             binding.swiperefresh.setRefreshing(true);
             videoListModel.startFetch();
         }
     }
     void refresh() {
-        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
-            bar.setSubtitle(videoListModel.recGroup + " : " + videoListModel.title);
-        else
-            bar.setSubtitle(videoListModel.title);
-        View v = ((MainActivity) getActivity()).mainView;
+        ActionBar bar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
+        if (bar != null) {
+            if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
+                bar.setSubtitle(videoListModel.recGroup + " : " + videoListModel.title);
+            else
+                bar.setSubtitle(videoListModel.title);
+        }
+        View v = ((MainActivity) requireActivity()).mainView;
         DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
-        if (drawer == null) {
-            if ((videoListModel.pageType == VideoListModel.TYPE_SERIES
+        if (drawer == null && bar != null) {
+            bar.setDisplayHomeAsUpEnabled(videoListModel.pageType == VideoListModel.TYPE_SERIES
                     || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
-                    && videoListModel.videoPath.length() > 0))) {
-                bar.setDisplayHomeAsUpEnabled(true);
-            } else {
-                bar.setDisplayHomeAsUpEnabled(false);
-            }
+                    && !videoListModel.videoPath.isEmpty()));
         }
         videoListModel.refresh();
     }
@@ -234,24 +230,27 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         super.onResume();
         if (bpCallback != null)
             bpCallback.setEnabled(true);
-        ((MainActivity)getActivity()).myFragment = this;
+        ((MainActivity)requireActivity()).myFragment = this;
         if (menuProvider != null) {
-            getActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+            requireActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("MythTV");
-        if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP)
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(videoListModel.recGroup);
-        else if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle(videoListModel.title);
+        ActionBar bar = ((AppCompatActivity)requireActivity()).getSupportActionBar();
+        if (bar != null) {
+            bar.setTitle("MythTV");
+            if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP)
+                bar.setSubtitle(videoListModel.recGroup);
+            else if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
+                bar.setSubtitle(videoListModel.title);
+        }
         refresh();
     }
 
     @Override
     public void onPause() {
-        ((MainActivity)getActivity()).myFragment = null;
+        ((MainActivity)requireActivity()).myFragment = null;
         if (menuProvider != null) {
-            getActivity().removeMenuProvider(menuProvider);
-            getActivity().invalidateMenu();
+            requireActivity().removeMenuProvider(menuProvider);
+            requireActivity().invalidateMenu();
         }
         super.onPause();
     }
@@ -320,6 +319,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                             menu.add(Menu.NONE, Action.DELETE, ix++, R.string.menu_delete);
                         }
                     }
+                    //noinspection UnusedAssignment
                     menu.add(Menu.NONE, Action.ALLOW_RERECORD, ix++, R.string.menu_rerecord);
                 }
                 popup.setOnMenuItemClickListener( (MenuItem item) -> {
@@ -368,10 +368,12 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     vsi = vsi.getNode("VideoStreamInfo");
                     while (vsi != null && !"V".equals(vsi.getString("CodecType")))
                         vsi = vsi.getNextSibling();
-                    frameRate = Float.parseFloat(vsi.getString("FrameRate"));
-                    avgFrameRate = Float.parseFloat(vsi.getString("AvgFrameRate"));
-                } catch(Exception ex) {
-                    ex.printStackTrace();
+                    if (vsi != null) {
+                        frameRate = Float.parseFloat(vsi.getString("FrameRate"));
+                        avgFrameRate = Float.parseFloat(vsi.getString("AvgFrameRate"));
+                    }
+                } catch(Exception e) {
+                    Log.e(TAG, CLASS + " Exception ", e);
                 }
             }
             if (frameRate == 0.0)
@@ -386,7 +388,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                 bookmark[0] = 0;
             if (bookmark[0] < 100)
                 bookmark[0] = 100;
-            Activity activity = getActivity();
+            Activity activity = requireActivity();
             Intent intent = new Intent(activity, PlaybackActivity.class);
             intent.putExtra(PlaybackActivity.VIDEO, video);
             intent.putExtra(PlaybackActivity.BOOKMARK, bookmark[0]);
@@ -411,7 +413,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             subtitle.append("\uD83D\uDDD1");
         subtitle.append(video.title);
         boolean haveEpisode = video.episode != null && video.episode.compareTo("0") > 0;
-        boolean haveSubtitle = video.subtitle != null && video.subtitle.trim().length() > 0;
+        boolean haveSubtitle = video.subtitle != null && !video.subtitle.trim().isEmpty();
         if (haveEpisode || haveSubtitle)
             subtitle.append(": ");
         if (haveEpisode) {
@@ -425,22 +427,21 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
 
     private static class VideoListAdapter extends ListAdapter<Video, VideoListViewHolder> {
 
-        private VideoListFragment fragment;
-        private float defaultTextSize = 15.0f;
-        private float largeTextSize = 20.0f;
+        private final VideoListFragment fragment;
 
         protected VideoListAdapter(VideoListFragment fragment) {
-            super(new DiffUtil.ItemCallback<Video>() {
+            super(new DiffUtil.ItemCallback<>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
                     if (oldItem.id == -1 && newItem.id == -1)
                         return oldItem.title.equals(newItem.title);
                     return oldItem.id == newItem.id;
                 }
+
                 @Override
                 public boolean areContentsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
                     return Objects.equals(oldItem.cardImageUrl, newItem.cardImageUrl)
-                        && getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem));
+                            && getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem));
 
                 }
             });
@@ -455,10 +456,12 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         }
 
         @Override
+        @SuppressLint({"SimpleDateFormat", "CheckResult"})
         public void onBindViewHolder(@NonNull VideoListViewHolder holder, int position) {
             Video video = getItem(position);
             holder.itemDateView.setText(null);
             holder.itemDescView.setText(null);
+            float defaultTextSize = 15.0f;
             holder.itemDescView.setTextSize(defaultTextSize);
             String airdate = null;
             if (video.airdate != null) {
@@ -470,10 +473,11 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                         airdate = video.airdate.substring(0, 4);
                     else {
                         Date date = dbFormat.parse(video.airdate);
-                        airdate = outFormat.format(date);
+                        if (date != null)
+                            airdate = outFormat.format(date);
                     }
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, CLASS + " Exception ", e);
                 }
             }
             String recDate = null;
@@ -483,9 +487,10 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     final DateFormat outFormat = android.text.format.DateFormat.getMediumDateFormat
                             (MyApplication.getAppContext());
                     Date date = dbFormat.parse(video.starttime + "+0000");
-                    recDate = outFormat.format(date);
+                    if (date != null)
+                        recDate = outFormat.format(date);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, CLASS + " Exception ", e);
                 }
             }
 
@@ -495,6 +500,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             else if (recDate != null && !recDate.equals(airdate))
                 airdate += " (" + recDate + ")";
 
+            float largeTextSize = 20.0f;
             if (video.type == Video.TYPE_SERIES) {
                 holder.itemTitleView.setText(null);
                 holder.itemDescView.setText(video.title);
@@ -543,11 +549,11 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     options.timeout(5000);
                     String auth =  BackendCache.getInstance().authorization;
                     LazyHeaders.Builder lzhb =  new LazyHeaders.Builder();
-                    if (auth != null && auth.length() > 0)
+                    if (auth != null && !auth.isEmpty())
                         lzhb.addHeader("Authorization", auth);
                     GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
 
-                    Glide.with(fragment.getContext())
+                    Glide.with(fragment.requireContext())
                             .load(url)
                             .apply(options)
                             .into(holder.itemImageView);
@@ -563,7 +569,6 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         private final TextView itemDateView;
         private final TextView itemDescView;
         private final ImageView playIconView;
-        private final VideoListFragment fragment;
 
         public VideoListViewHolder(ItemVideolistBinding binding, VideoListFragment fragment) {
             super(binding.getRoot());
@@ -572,13 +577,10 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             itemDateView = binding.itemDate;
             itemDescView = binding.itemDesc;
             playIconView = binding.playIcon;
-            this.fragment = fragment;
-            itemImageView.setOnClickListener((View v) -> {
-                fragment.onItemClick(getBindingAdapterPosition());
-            });
-            binding.getRoot().setOnClickListener((View v) -> {
-                fragment.onItemMore(v, getBindingAdapterPosition());
-            });
+            itemImageView.setOnClickListener((View v) ->
+                    fragment.onItemClick(getBindingAdapterPosition()));
+            binding.getRoot().setOnClickListener((View v) ->
+                    fragment.onItemMore(v, getBindingAdapterPosition()));
         }
     }
 }

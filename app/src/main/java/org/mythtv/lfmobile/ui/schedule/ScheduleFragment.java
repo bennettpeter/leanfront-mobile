@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile.ui.schedule;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -48,6 +49,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+@SuppressWarnings({"ExtractMethodRecommender", "SpellCheckingInspection"})
 public class ScheduleFragment extends Fragment implements MainActivity.MyFragment {
 
     static final int[] searchPrompts = {
@@ -118,13 +120,13 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
     private MenuProvider menuProvider;
     private OnBackPressedCallback bpCallback;
 
-    private static int validateNumber(EditText view, Object action, int min, int max, int defValue) {
+    private static void validateNumber(EditText view, Object action, int min, int max, int defValue) {
         String s;
         int i;
         boolean fix = false;
         s = action.toString();
         if (s.isEmpty() || "-".equals(s))
-            return 0;
+            return;
         try {
             i = Integer.parseInt(s);
         } catch (Exception e) {
@@ -147,7 +149,6 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
             view.setText(newVal);
             view.setSelection(newVal.length());
         }
-        return i;
     }
 
     private static int parseInt(String str) {
@@ -155,8 +156,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         if (!str.isEmpty() && !"-".equals(str)) {
             try {
                 ret = Integer.parseInt(str);
-            } catch (Exception ex) {
-                ret = 0;
+            } catch (Exception ignored) {
             }
         }
         return ret;
@@ -170,22 +170,17 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
             public void handleOnBackPressed() {
                 if (canClose()) {
                     setEnabled(false);
-                    getActivity().getOnBackPressedDispatcher().onBackPressed();
+                    requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 }
             }
         };
-        getActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, bpCallback);
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    @Override
-    public void startFetch() {
-
     }
 
     public boolean navigateUp() {
@@ -200,7 +195,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         model.toast.observe(getViewLifecycleOwner(), (Integer msg) -> {
             if (msg == 0)
                 return;
-            Toast.makeText(getContext(),
+            Toast.makeText(requireContext(),
                             msg, Toast.LENGTH_LONG)
                     .show();
             model.toast.setValue(0);
@@ -208,21 +203,23 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         model.alert.observe(getViewLifecycleOwner(), (String msg) -> {
             if (msg == null)
                 return;
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
             builder.setTitle(R.string.sched_failed).setMessage(msg).show();
             model.alert.setValue(null);
         });
         model.initDoneLiveData.observe(getViewLifecycleOwner(), (done) -> {
             switch (done) {
                 case ScheduleViewModel.INIT_READY:
-                    ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-                    if (model.isOverride)
-                        bar.setTitle(R.string.menu_override);
-                    else if ("Recording Template".equals(model.recordRule.type))
-                        bar.setTitle(R.string.recrule_RecordingTemplate);
-                    else
-                        bar.setTitle(R.string.menu_schedule);
-                    bar.setSubtitle(null);
+                    ActionBar bar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
+                    if (bar != null) {
+                        if (model.isOverride)
+                            bar.setTitle(R.string.menu_override);
+                        else if ("Recording Template".equals(model.recordRule.type))
+                            bar.setTitle(R.string.recrule_RecordingTemplate);
+                        else
+                            bar.setTitle(R.string.menu_schedule);
+                        bar.setSubtitle(null);
+                    }
                     setupViews();
                     break;
                 case ScheduleViewModel.INIT_SAVED:
@@ -236,8 +233,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         Bundle args = getArguments();
         model.init(args);
         binding = FragmentScheduleBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        return root;
+        return binding.getRoot();
     }
 
     @Override
@@ -259,11 +255,11 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         binding.dttime.setOnClickListener((v) -> {
             GregorianCalendar cal = new GregorianCalendar();
             cal.setTime(model.manualStartTime);
-            DatePickerDialog dlgDate = new DatePickerDialog(getContext(), (dpView, yy, mm, dd) -> {
+            DatePickerDialog dlgDate = new DatePickerDialog(requireContext(), (dpView, yy, mm, dd) -> {
                 cal.set(Calendar.YEAR, yy);
                 cal.set(Calendar.MONTH, mm);
                 cal.set(Calendar.DAY_OF_MONTH, dd);
-                TimePickerDialog dlgTime = new TimePickerDialog(getContext(), (tpView, hh, min) -> {
+                TimePickerDialog dlgTime = new TimePickerDialog(requireContext(), (tpView, hh, min) -> {
                     cal.set(Calendar.HOUR_OF_DAY, hh);
                     cal.set(Calendar.MINUTE, min);
                     model.manualStartTime.setTime(cal.getTimeInMillis());
@@ -282,15 +278,16 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         });
     }
 
+    @SuppressLint("RtlHardcoded")
     @Override
     public void onResume() {
         super.onResume();
         if (bpCallback != null)
             bpCallback.setEnabled(true);
-        ((MainActivity) getActivity()).myFragment = this;
+        ((MainActivity) requireActivity()).myFragment = this;
         if (menuProvider != null)
-            getActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
-        View v = ((MainActivity) getActivity()).mainView;
+            requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
+        View v = ((MainActivity) requireActivity()).mainView;
         View nav = v.findViewById(R.id.bottom_nav_view);
         if (nav != null) {
             if (nav.getVisibility() == View.VISIBLE) {
@@ -310,12 +307,12 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
 
     @Override
     public void onPause() {
-        ((MainActivity) getActivity()).myFragment = null;
+        ((MainActivity) requireActivity()).myFragment = null;
         if (menuProvider != null) {
-            getActivity().removeMenuProvider(menuProvider);
-            getActivity().invalidateMenu();
+            requireActivity().removeMenuProvider(menuProvider);
+            requireActivity().invalidateMenu();
         }
-        View v = ((MainActivity) getActivity()).mainView;
+        View v = ((MainActivity) requireActivity()).mainView;
         if (hideNav) {
             View nav = v.findViewById(R.id.bottom_nav_view);
             if (nav != null)
@@ -370,7 +367,6 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         binding.searchType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String oldType = model.recordRule.searchType;
                 model.recordRule.searchType = searchValues[position];
                 // Schedule Type changes based on search type
                 setupScheduleType();
@@ -578,7 +574,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         binding.autoExpire.setChecked(model.recordRule.autoExpire);
         // post Processing
         int ppVal = 0;
-        ppVal |= model.recordRule.autoCommflag ? 1 << 0 : 0;
+        ppVal |= model.recordRule.autoCommflag ? 1 : 0;
         ppVal |= model.recordRule.autoMetaLookup ? 1 << 1 : 0;
         ppVal |= model.recordRule.autoTranscode ? 1 << 2 : 0;
         ppVal |= model.recordRule.autoUserJob1 ? 1 << 3 : 0;
@@ -605,9 +601,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
                 task = AsyncRemoteCall.ACTION_LOOKUP_MOVIE;
             else
                 return;
-            AsyncRemoteCall call = new AsyncRemoteCall(getActivity(), taskRunner -> {
-                selectMetaResult(taskRunner);
-            });
+            AsyncRemoteCall call = new AsyncRemoteCall(requireActivity(), this::selectMetaResult);
             call.stringParameter = binding.searchPhrase.getText().toString();
             call.execute(task);
         };
@@ -616,17 +610,13 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         binding.searchTmdbTvBn.setOnClickListener(mdSrchListener);
         binding.searchTmdbMvBn.setOnClickListener(mdSrchListener);
         // Save Button
-        binding.saveButton.setOnClickListener((v -> {
-            save(false);
-        }));
+        binding.saveButton.setOnClickListener((v -> save(false)));
         // Close Button
-        binding.closeButton.setOnClickListener((v -> {
-            close();
-        }));
+        binding.closeButton.setOnClickListener((v -> close()));
     }
 
     void selectMetaResult(AsyncRemoteCall taskRunner) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(requireContext());
         final AsyncRemoteCall.Parser parser;
         int task = taskRunner.tasks[0];
         switch (task) {
@@ -663,7 +653,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
             }
             if (paren)
                 stringBuilder.append("]");
-            if (entry.overview != null && entry.overview.length() > 0) {
+            if (entry.overview != null && !entry.overview.isEmpty()) {
                 String desc = entry.overview.trim();
                 if (desc.length() > 300)
                     desc = desc.substring(0,300) + " ...";
@@ -675,7 +665,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
 //            stringBuilder.append('\n');
             prompts.add(stringBuilder.toString());
         }
-        if (prompts.size() > 0)
+        if (!prompts.isEmpty())
             alertBuilder.setTitle(R.string.sched_metadata_select_prompt);
         else
             alertBuilder.setTitle(R.string.sched_metadata_select_none);
@@ -727,6 +717,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private void initText(TextView view, Date time, Date endTime) {
         if (mTimeFormatter == null) {
             Context context = MyApplication.getAppContext();
@@ -734,7 +725,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
             mDateFormatter = android.text.format.DateFormat.getDateFormat(context);
             mDayFormatter = new SimpleDateFormat("EEE ");
         }
-        String result = new String();
+        String result = "";
         if (time != null) {
             result = mDayFormatter.format(time)
                             + mDateFormatter.format(time)
@@ -760,7 +751,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
 
     private void setupSpinner(Spinner spin, String[] list) {
         ArrayAdapter<String> ad = new ArrayAdapter<>(
-                getContext(),
+                requireContext(),
                 android.R.layout.simple_spinner_item,
                 list);
         ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -770,7 +761,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
 
     private ArrayList<String> makeStrings(int[] resources) {
         ArrayList<String> list = new ArrayList<>();
-        Context context = getContext();
+        Context context = requireContext();
         for (int res : resources) {
             list.add(context.getString(res));
         }
@@ -875,7 +866,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
     }
 
     private void dynamicSetups(int position) {
-        if (model.schedReason == model.SCHED_NEWRULE) {
+        if (model.schedReason == ScheduleViewModel.SCHED_NEWRULE) {
             binding.title.setText(null);
             binding.subtitle.setText(null);
             binding.description.setText(null);
@@ -971,7 +962,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
             if (model.recordRule.findDay == 7)
                 model.recordRule.findDay = 0;
             // findtime
-            final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+            @SuppressLint("SimpleDateFormat") final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
             model.recordRule.findTime = timeFormat.format(model.recordRule.startTime);
             // End Time
             String sVal = binding.duration.getText().toString();
@@ -1115,7 +1106,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
                 prompts = R.array.prompt_save_changes;
             else
                 prompts = R.array.prompt_cannot_save;
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
             builder
                     .setTitle(R.string.menu_changes)
                     .setItems(prompts,
@@ -1141,7 +1132,7 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
     }
 
     private void close() {
-        getActivity().getOnBackPressedDispatcher().onBackPressed();
+        requireActivity().getOnBackPressedDispatcher().onBackPressed();
     }
 
     // Save is disabled for deleting a non-existent record

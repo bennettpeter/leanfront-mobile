@@ -1,7 +1,6 @@
 package org.mythtv.lfmobile.ui.playback;
 
 import androidx.annotation.OptIn;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.util.UnstableApi;
 
@@ -9,12 +8,13 @@ import android.os.Bundle;
 
 import org.mythtv.lfmobile.R;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class PlaybackActivity extends AppCompatActivity {
     public static final String VIDEO = "Video";
     public static final String BOOKMARK = "bookmark";
-    public static final String POSBOOKMARK = "posbookmark";
     public static final String FRAMERATE = "framerate";
 
+    @SuppressWarnings("CommentedOutCode")
     @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onCreate(Bundle savedInstanceState) {

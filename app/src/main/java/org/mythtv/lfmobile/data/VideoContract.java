@@ -1,26 +1,14 @@
 package org.mythtv.lfmobile.data;
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
  * VideoContract represents the contract for storing videos in the SQLite database.
  */
+@SuppressWarnings("SpellCheckingInspection")
 public final class VideoContract {
-    // The name for the entire content provider.
-    public static final String CONTENT_AUTHORITY = "org.mythtv.leanfront";
-    // Base of all URIs that will be used to contact the content provider.
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-    // The content paths.
-    public static final String PATH_VIDEO = "video";
 
     public static final class VideoEntry implements BaseColumns {
-        public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_VIDEO).build();
-        public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "." + PATH_VIDEO;
         // Name of the video table.
         public static final String TABLE_NAME = "video";
         // View that joins this with videostatus
@@ -76,10 +64,6 @@ public final class VideoContract {
         public static final String COLUMN_PLAYGROUP = "playgroup";
         public static final String COLUMN_SEASON = "season";
         public static final String COLUMN_EPISODE = "episode";
-        // Returns the Uri referencing a video with the specified id.
-        public static Uri buildVideoUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
         // see libmyth/programtypes.h for list of values.
         public static final String COLUMN_PROGFLAGS = "progflags";
         // see libmyth/programtypes.h for list of values.

@@ -18,7 +18,7 @@ public class ProgramListModel extends ViewModel {
     public static final int TYPE_GUIDE_SEARCH = 2;
     public int type = TYPE_UPCOMING;
     String search;
-    volatile int callId;
+    int callId;
 
     public void startFetch() {
         AsyncBackendCall call = new AsyncBackendCall((caller) -> {
@@ -54,7 +54,9 @@ public class ProgramListModel extends ViewModel {
             }
             refreshScreen();
         });
-        call.id = ++callId;
+        synchronized (this) {
+            call.id = ++callId;
+        }
         if (type == TYPE_UPCOMING) {
             call.args.put("SHOWALL",showAll);
             call.execute(Action.GETUPCOMINGLIST);

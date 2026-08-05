@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile.ui.guide;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import org.mythtv.lfmobile.data.XmlNode;
@@ -8,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Program {
+    @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'Z");
     private static final String TAG = "lfe";
     private static final String CLASS = "Program";

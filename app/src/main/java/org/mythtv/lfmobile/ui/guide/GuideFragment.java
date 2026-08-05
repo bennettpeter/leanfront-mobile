@@ -3,14 +3,18 @@ package org.mythtv.lfmobile.ui.guide;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,6 +60,7 @@ import org.mythtv.lfmobile.ui.schedule.ScheduleViewModel;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     private static final String TAG = "lfm";
     private static final String CLASS = "GuideFragment";
@@ -63,28 +69,30 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     private boolean internalScroll;
     private MenuProvider menuProvider;
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         model = new ViewModelProvider(this).get(GuideViewModel.class);
         binding = FragmentGuideBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        Context context = binding.datelist.getContext();
         DividerItemDecoration dec1 = new DividerItemDecoration(binding.datelist.getContext(), DividerItemDecoration.HORIZONTAL);
-        dec1.setDrawable(binding.datelist.getContext().getDrawable(R.drawable.vert_divider));
+        Drawable vertDivider = AppCompatResources.getDrawable(context,R.drawable.vert_divider);
+        if (vertDivider != null)
+            dec1.setDrawable(vertDivider);
         DividerItemDecoration dec2 = new DividerItemDecoration(binding.datelist.getContext(), DividerItemDecoration.VERTICAL);
-        dec2.setDrawable(binding.datelist.getContext().getDrawable(R.drawable.horz_divider));
+        Drawable horzDivider = AppCompatResources.getDrawable(context,R.drawable.horz_divider);
+        if (horzDivider != null)
+            dec2.setDrawable(horzDivider);
 
-        // Setup Date / Time lost along the top
-        final RecyclerView.Adapter dateAdapter = new TimeslotListAdapter(this);
+        // Setup Date / Time list along the top
+        final RecyclerView.Adapter<TimeslotViewHolder> dateAdapter = new TimeslotListAdapter(this);
         binding.datelist.setAdapter(dateAdapter);
-        model.dateLiveData.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized (model) {
-                dateAdapter.notifyDataSetChanged();
-            }
-        });
+        model.dateLiveData.observe(getViewLifecycleOwner(), (list) -> dateAdapter.notifyDataSetChanged());
         binding.datelist.addItemDecoration(dec1);
         binding.datelist.addItemDecoration(dec2);
-        GridLayoutManager mgr1 = new GridLayoutManager(getContext(), model.TIMESLOTS);
+        GridLayoutManager mgr1 = new GridLayoutManager(getContext(), GuideViewModel.TIMESLOTS);
         binding.datelist.setLayoutManager(mgr1);
 
         binding.dateScrollView.setOnScrollChangeListener((View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
@@ -99,13 +107,12 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
 
 
         // Set up Channel list  along the left
-        final RecyclerView.Adapter chanAdapter = new ChannelListAdapter(this);
+        final RecyclerView.Adapter<ChannelViewHolder> chanAdapter = new ChannelListAdapter(this);
         binding.chanlist.setAdapter(chanAdapter);
         model.chanLiveData.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized (model) {
-                chanAdapter.notifyDataSetChanged();
+            chanAdapter.notifyDataSetChanged();
+            if (binding.proglist.getAdapter() != null)
                 binding.proglist.getAdapter().notifyDataSetChanged();
-            }
         });
         binding.chanlist.addItemDecoration(dec1);
         binding.chanlist.addItemDecoration(dec2);
@@ -123,17 +130,15 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
         });
 
         // Set up Program list grid at center
-        final RecyclerView.Adapter progAdapter = new ProgListAdapter(this);
+        final RecyclerView.Adapter<ProgViewHolder> progAdapter = new ProgListAdapter(this);
         binding.proglist.setAdapter(progAdapter);
         model.progLiveData.observe(getViewLifecycleOwner(), (list) -> {
-            synchronized (model) {
-                progAdapter.notifyDataSetChanged();
-                binding.progressBar.setVisibility(View.GONE);
-            }
+            progAdapter.notifyDataSetChanged();
+            binding.progressBar.setVisibility(View.GONE);
         });
         binding.proglist.addItemDecoration(dec1);
         binding.proglist.addItemDecoration(dec2);
-        GridLayoutManager mgr = new GridLayoutManager(getContext(), model.TIMESLOTS);
+        GridLayoutManager mgr = new GridLayoutManager(getContext(), GuideViewModel.TIMESLOTS);
         binding.proglist.setLayoutManager(mgr);
 
         binding.proglist.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -199,11 +204,15 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 }
                 if (menuItem.getItemId() == R.id.search) {
                     NavHostFragment navHostFragment =
-                        (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-                    NavController navController = navHostFragment.getNavController();
+                        (NavHostFragment) requireActivity().getSupportFragmentManager()
+                                .findFragmentById(R.id.nav_host_fragment_content_main);
+                    NavController navController = null;
+                    if (navHostFragment != null)
+                        navController = navHostFragment.getNavController();
                     Bundle args = new Bundle();
                     args.putInt("type", ProgramListModel.TYPE_GUIDE_SEARCH);
-                    navController.navigate(R.id.nav_search, args);
+                    if (navController != null)
+                        navController.navigate(R.id.nav_search, args);
                 }
                 return false;
             }
@@ -214,7 +223,8 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
             // We prefer to use the current date every time, to make it
             // easier to get back to the default view.
 //            cal.setTime(model.guideStartTime);
-            DatePickerDialog dlgDate = new DatePickerDialog(getContext(), (dpView, yy, mm, dd) -> {
+            DatePickerDialog dlgDate = new DatePickerDialog(requireContext(),
+                    (dpView, yy, mm, dd) -> {
                 cal.set(Calendar.YEAR, yy);
                 cal.set(Calendar.MONTH, mm);
                 cal.set(Calendar.DAY_OF_MONTH, dd);
@@ -226,7 +236,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
                 dlgTime.show();
             }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            // This would add a reset butto to select current date. However it displays
+            // This would add a reset button to select current date. However, it displays
             // funny on some phones
 //            dlgDate.setButton(DialogInterface.BUTTON_NEUTRAL,getString(R.string.button_reset) ,
 //                    (dialog, which) ->
@@ -237,8 +247,8 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
 //                    }
 //                });
             DatePicker picker = dlgDate.getDatePicker();
-            picker.setMinDate(System.currentTimeMillis() - 28l * 24 * 60 * 60000);
-            picker.setMaxDate(System.currentTimeMillis() + 28l * 24 * 60 * 60000);
+            picker.setMinDate(System.currentTimeMillis() - 28L * 24 * 60 * 60000);
+            picker.setMaxDate(System.currentTimeMillis() + 28L * 24 * 60 * 60000);
             dlgDate.show();
         });
     }
@@ -246,15 +256,16 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).myFragment = this;
+        ((MainActivity) requireActivity()).myFragment = this;
         if (menuProvider != null) {
-            getActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
+            requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
         }
-        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar bar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
         String group = Settings.getString("chan_group");
         if (group.isEmpty())
             group = MyApplication.getAppContext().getString(R.string.all_title) + "\t";
-        bar.setSubtitle(group);
+        if (bar != null)
+            bar.setSubtitle(group);
         // We will refresh everything here
         if (model.timeslotList.isEmpty()) {
             refresh(true, true, 'L');
@@ -266,10 +277,10 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
 
     @Override
     public void onPause() {
-        ((MainActivity) getActivity()).myFragment = null;
+        ((MainActivity) requireActivity()).myFragment = null;
         if (menuProvider != null) {
-            getActivity().removeMenuProvider(menuProvider);
-            getActivity().invalidateMenu();
+            requireActivity().removeMenuProvider(menuProvider);
+            requireActivity().invalidateMenu();
         }
         super.onPause();
     }
@@ -278,12 +289,13 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     void refresh(boolean resetTimeslots, boolean progressbar, char scrollDir) {
         if (progressbar)
             binding.progressBar.setVisibility(View.VISIBLE);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) requireActivity();
         ActionBar bar = activity.getSupportActionBar();
         String group = Settings.getString("chan_group");
         if (group.isEmpty())
             group = MyApplication.getAppContext().getString(R.string.all_title) + "\t";
-        bar.setSubtitle(group);
+        if (bar != null)
+            bar.setSubtitle(group);
         switch (scrollDir) {
             case 'L':
                 binding.dateScrollView.fullScroll(View.FOCUS_LEFT);
@@ -301,7 +313,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     }
 
     private static class TimeslotListAdapter extends RecyclerView.Adapter<TimeslotViewHolder> {
-        private GuideFragment fragment;
+        private final GuideFragment fragment;
 
         protected TimeslotListAdapter(GuideFragment fragment) {
             this.fragment = fragment;
@@ -345,7 +357,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
 
         @Override
         public int getItemCount() {
-            return fragment.model.TIMESLOTS;
+            return GuideViewModel.TIMESLOTS;
         }
     }
 
@@ -354,7 +366,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
         private final TextView leftText;
         private final TextView rightText;
 
-        public TimeslotViewHolder(ItemTimeslotBinding binding, GuideFragment fragment) {
+        public TimeslotViewHolder(ItemTimeslotBinding binding, GuideFragment ignoredFragment) {
             super(binding.getRoot());
             timeText = binding.timeText;
             leftText = binding.leftText;
@@ -363,7 +375,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     }
 
     private static class ChannelListAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
-        private GuideFragment fragment;
+        private final GuideFragment fragment;
 
         protected ChannelListAdapter(GuideFragment fragment) {
             this.fragment = fragment;
@@ -377,6 +389,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
             return new ChannelViewHolder(binding, fragment);
         }
 
+        @SuppressLint({"CheckResult", "SetTextI18n"})
         @Override
         public void onBindViewHolder(@NonNull ChannelViewHolder holder, int position) {
             ChannelSlot slot = fragment.model.chanList.get(position);
@@ -389,12 +402,12 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                     options.timeout(5000);
                     String auth = BackendCache.getInstance().authorization;
                     LazyHeaders.Builder lzhb = new LazyHeaders.Builder();
-                    if (auth != null && auth.length() > 0) lzhb.addHeader("Authorization", auth);
+                    if (auth != null && !auth.isEmpty()) lzhb.addHeader("Authorization", auth);
                     GlideUrl url = new GlideUrl(imageUrl, lzhb.build());
 
-                    Glide.with(fragment.getContext()).load(url).apply(options).into(holder.channelImage);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Glide.with(fragment.requireContext()).load(url).apply(options).into(holder.channelImage);
+                } catch (Exception e) {
+                    Log.e(TAG, CLASS + " Exception ", e);
                     holder.channelImage.setImageDrawable(null);
                 }
             }
@@ -411,7 +424,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
         private final ImageView channelImage;
         private final TextView channelText;
 
-        public ChannelViewHolder(ItemChannelBinding binding, GuideFragment fragment) {
+        public ChannelViewHolder(ItemChannelBinding binding, GuideFragment ignoredFragment) {
             super(binding.getRoot());
             channelImage = binding.channelImage;
             channelText = binding.channelText;
@@ -419,7 +432,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     }
 
     private static class ProgListAdapter extends RecyclerView.Adapter<ProgViewHolder> {
-        private GuideFragment fragment;
+        private final GuideFragment fragment;
 
         protected ProgListAdapter(GuideFragment fragment) {
             this.fragment = fragment;
@@ -454,7 +467,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
 
         @Override
         public int getItemCount() {
-            return fragment.model.chanList.size() * fragment.model.TIMESLOTS;
+            return fragment.model.chanList.size() * GuideViewModel.TIMESLOTS;
         }
     }
 
@@ -473,24 +486,20 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 }
                 String[] prompts = new String[2];
                 int counter = 0;
-                if (item.program != null) {
-                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule, item.program.title);
-                    ++counter;
-                }
+                prompts[counter] = fragment.requireContext().getString(R.string.msg_edit_schedule, item.program.title);
+                ++counter;
                 if (item.program2 != null) {
-                    prompts[counter] = fragment.getContext().getString(R.string.msg_edit_schedule2, item.program2.title);
+                    prompts[counter] = fragment.requireContext().getString(R.string.msg_edit_schedule2, item.program2.title);
                     ++counter;
                 }
                 if (counter == 1) {
                     actionRequest(fragment,1, v);
-                } else if (counter > 1) {
+                } else {
                     final String[] finalPrompts = new String[counter];
-                    for (int i = 0; i < counter; i++) {
-                        finalPrompts[i] = prompts[i];
-                    }
-                    String alertTitle = fragment.getContext().getString(R.string.title_program_guide);
+                    System.arraycopy(prompts, 0, finalPrompts, 0, counter);
+                    String alertTitle = fragment.requireContext().getString(R.string.title_program_guide);
                     // Theme_AppCompat_Light_Dialog_Alert or Theme_AppCompat_Dialog_Alert
-                    AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(fragment.requireActivity());
                     builder .setTitle(alertTitle)
                             .setItems(finalPrompts,
                                     (dialog, which) -> {
@@ -525,9 +534,12 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 args.putBoolean(ScheduleViewModel.ISOVERRIDE, true);
             args.putInt(ScheduleViewModel.SCHEDREASON, ScheduleViewModel.SCHED_GUIDE);
             NavHostFragment navHostFragment =
-                    (NavHostFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-            NavController navController = navHostFragment.getNavController();
-            navController.navigate(R.id.nav_schedule, args);
+                    (NavHostFragment) fragment.requireActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+            NavController navController = null;
+            if (navHostFragment != null)
+                navController = navHostFragment.getNavController();
+            if (navController != null)
+                navController.navigate(R.id.nav_schedule, args);
         }
 
     }

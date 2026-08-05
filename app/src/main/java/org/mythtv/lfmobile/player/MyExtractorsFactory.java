@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("SpellCheckingInspection")
 @UnstableApi
 public class MyExtractorsFactory implements ExtractorsFactory {
 
-    private DefaultExtractorsFactory defaultFactory;
+    private final DefaultExtractorsFactory defaultFactory;
 
     public MyExtractorsFactory() {
         this.defaultFactory = new DefaultExtractorsFactory();

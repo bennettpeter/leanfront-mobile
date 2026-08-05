@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile.data;
 
+@SuppressWarnings({"SpellCheckingInspection","unused"})
 public class Action {
     public static final int PLAY                   =  1;
     public static final int PLAY_FROM_BOOKMARK     =  2;

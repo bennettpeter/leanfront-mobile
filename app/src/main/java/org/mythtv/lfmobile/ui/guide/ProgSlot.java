@@ -2,6 +2,7 @@ package org.mythtv.lfmobile.ui.guide;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import org.mythtv.lfmobile.R;
 
@@ -21,7 +22,9 @@ public class ProgSlot extends RowSlot {
     public Program program;
     public Program program2;    // In case of 15 minute programs
     // position in grid.
-    public int position = 0;
+    public int position;
+    private static final String TAG = "lfm";
+    private static final String CLASS = "ProgSlot";
 
     public ProgSlot(int cellType, int position, Date timeSlot) {
         super(cellType);
@@ -64,7 +67,7 @@ public class ProgSlot extends RowSlot {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
         }
         return build.toString();
     }

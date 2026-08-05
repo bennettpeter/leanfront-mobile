@@ -48,6 +48,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -69,6 +70,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 
+@SuppressWarnings({"ExtractMethodRecommender", "SpellCheckingInspection"})
 @UnstableApi
 public class PlaybackFragment extends Fragment {
 
@@ -81,27 +83,27 @@ public class PlaybackFragment extends Fragment {
     static final String CLASS = "PlaybackFragment";
     private long mTimeLastError = 0;
     AlertDialog dialog;
-    private DialogDismiss dialogDismiss = new DialogDismiss();
+    private final DialogDismiss dialogDismiss = new DialogDismiss();
     private AspectRatioFrameLayout contentFrame;
     private StringBuilder formatBuilder;
     private Formatter formatter;
     private View contentView;
     private GestureDetector gestureDetector;
-    private GestureProcess gestureProcess = new GestureProcess();
-    private int skipBack = Settings.getInt("pref_skip_back");
-    private int skipFwd = Settings.getInt("pref_skip_fwd");
+    private final GestureProcess gestureProcess = new GestureProcess();
+    private final int skipBack = Settings.getInt("pref_skip_back");
+    private final int skipFwd = Settings.getInt("pref_skip_fwd");
     private float downXPos;
     private int screenDPI;
     private long downPlayPos;
     private boolean dragInProgress;
-    private float seekRange = Settings.getFloat("pref_drag_range") * 60000f;
-    private float seekAccel = Settings.getFloat("pref_drag_accel");
-    private int prefTextSize = Settings.getInt("pref_duration_textsize");
+    private final float seekRange = Settings.getFloat("pref_drag_range") * 60000f;
+    private final float seekAccel = Settings.getFloat("pref_drag_accel");
+    private final int prefTextSize = Settings.getInt("pref_duration_textsize");
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
-    private String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
+    private final String [] subtExtens = {"srt", "ssa", "ass", "vtt", "ttml"};
+    private final String [] subtMimes = {MimeTypes.APPLICATION_SUBRIP, MimeTypes.TEXT_SSA,
             MimeTypes.TEXT_SSA, MimeTypes.TEXT_VTT, MimeTypes.APPLICATION_TTML};
-    private boolean [] subtFound = new boolean[subtExtens.length];
+    private final boolean [] subtFound = new boolean[subtExtens.length];
     private int subtChecked = -1;
 
     public static PlaybackFragment newInstance() {
@@ -115,9 +117,9 @@ public class PlaybackFragment extends Fragment {
         formatter = new Formatter(formatBuilder, Locale.getDefault());
 
         viewModel = new ViewModelProvider(this).get(PlaybackViewModel.class);
-        Intent intent =  getActivity().getIntent();
+        Intent intent =  requireActivity().getIntent();
         viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
-        viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0l);
+        viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0L);
         viewModel.frameRate = intent.getFloatExtra(PlaybackActivity.FRAMERATE, 30f);
     }
 
@@ -125,52 +127,46 @@ public class PlaybackFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        setObservers();
         binding = FragmentPlaybackBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        return root;
+        View v=binding.getRoot();
+        setObservers(v);
+        return v;
     }
 
-    private void setObservers() {
-        viewModel.commSkipToast.observe(getViewLifecycleOwner(), (long[] markrange) -> {
-            commskipToast(markrange);
-        });
-        viewModel.commBreakDlg.observe(getViewLifecycleOwner(), (Long newPosition) -> commBreakDlg(newPosition));
+    private void setObservers(View v) {
+        viewModel.commSkipToast.observe(getViewLifecycleOwner(), this::commskipToast);
+        viewModel.commBreakDlg.observe(getViewLifecycleOwner(), this::commBreakDlg);
         viewModel.durationLive.observe(getViewLifecycleOwner(), (Long duration) -> {
-            TextView durationView = getView().findViewById(R.id.my_duration);
+            TextView durationView = v.findViewById(R.id.my_duration);
             if (durationView != null) {
                 durationView.setText(Util.getStringForTime(formatBuilder, formatter, duration));
             }
-            DefaultTimeBar defaultTimeBar = getView().findViewById(androidx.media3.ui.R.id.exo_progress);
+            DefaultTimeBar defaultTimeBar = v.findViewById(androidx.media3.ui.R.id.exo_progress);
             defaultTimeBar.setDuration(duration);
         });
-        viewModel.playerErrorLive.observe(getViewLifecycleOwner(), (Object[] parm)-> {
-            handlePlayerError((Exception) parm[0], (Integer)parm[1]);
-        });
-        viewModel.overlayDone.observe(getViewLifecycleOwner(), (Boolean aBoolean)-> {
-            handler.postDelayed(new Runnable() {
-                boolean olaySetupDone = false;
-                @Override
-                public void run() {
-                    if (!olaySetupDone && viewModel.getDuration() > 0) {
-                        SeekbarOverlay olay = getView().findViewById(R.id.ad_overlay);
-                        if (olay != null) {
-                            olay.setup(viewModel.commBreakTable, viewModel);
-                            olay.invalidate();
-                        }
-                        olaySetupDone = true;
+        viewModel.playerErrorLive.observe(getViewLifecycleOwner(),
+                (Object[] parm)-> handlePlayerError((Exception) parm[0], (Integer)parm[1]));
+        viewModel.overlayDone.observe(getViewLifecycleOwner(),
+                (Boolean aBoolean)-> handler.postDelayed(new Runnable() {
+            boolean olaySetupDone = false;
+            @Override
+            public void run() {
+                if (!olaySetupDone && viewModel.getDuration() > 0) {
+                    SeekbarOverlay olay = v.findViewById(R.id.ad_overlay);
+                    if (olay != null) {
+                        olay.setup(viewModel.commBreakTable, viewModel);
+                        olay.invalidate();
                     }
-                    if (!olaySetupDone)
-                        handler.postDelayed(this, 500);
+                    olaySetupDone = true;
                 }
-            }, 500);
-        });
-        viewModel.setBookmark.observe(getViewLifecycleOwner(), (Boolean aBoolean)-> {
-            setBookmark();
-        });
+                if (!olaySetupDone)
+                    handler.postDelayed(this, 500);
+            }
+        }, 500));
+        viewModel.setBookmark.observe(getViewLifecycleOwner(), (Boolean aBoolean)-> setBookmark());
     }
 
-    @SuppressLint("StringFormatInvalid")
+    @SuppressLint({"StringFormatInvalid", "DefaultLocale"})
     private void commskipToast(long[] markrange) {
         int mark = (int) markrange[0];
         long range = markrange[1];
@@ -185,11 +181,11 @@ public class PlaybackFragment extends Fragment {
             case -5:                            msgnum = R.string.msg_commskip_none; break;
             default: return;
         }
-        range = range / 1000l;
-        long mins = range/60l;
-        long secs = Math.abs(range%60l);
+        range = range / 1000L;
+        long mins = range / 60L;
+        long secs = Math.abs(range % 60L);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         String time;
         if (msgnum == R.string.msg_commskip_none)
             time = "";
@@ -203,40 +199,41 @@ public class PlaybackFragment extends Fragment {
     }
 
     // pass in 0 to dismiss dialog
+    @SuppressLint("RtlHardcoded")
     private void commBreakDlg(long newPosition) {
         dismissDialog();
         if (newPosition == 0)
             return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.title_comm_playing)
                 .setItems(R.array.menu_commplaying,
                         (dialog, which) -> {
                             // The 'which' argument contains the index position
                             // of the selected item
-                            switch (which) {
-                                // 0 = skip commercial
-                                case 0:
-                                    if (viewModel.player.getCurrentPosition()
-                                            < newPosition) {
-                                        viewModel.player.seekTo(newPosition);
-                                    }
-                                    break;
+                            // 0 = skip commercial
+                            if (which == 0) {
+                                if (viewModel.player.getCurrentPosition()
+                                        < newPosition) {
+                                    viewModel.player.seekTo(newPosition);
+                                }
                                 // 1 = do not skip commercial. Defaults to doing nothing
                             }
                         })
                 .setOnDismissListener(dialogDismiss);
         dialog = builder.create();
         dialog.show();
-        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-        lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-        lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
-        lp.x=0;
-        lp.y=0;
-        lp.width= Resources.getSystem().getDisplayMetrics().widthPixels / 4;
-        lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-        dialog.getWindow().setAttributes(lp);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(192,192,192,192)));
-
+        Window window = dialog.getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams lp = window.getAttributes();
+            lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+            lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+            lp.x = 0;
+            lp.y = 0;
+            lp.width = Resources.getSystem().getDisplayMetrics().widthPixels / 4;
+            lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
+            window.setAttributes(lp);
+            window.setBackgroundDrawable(new ColorDrawable(Color.argb(192, 192, 192, 192)));
+        }
     }
 
     public void dismissDialog() {
@@ -246,6 +243,7 @@ public class PlaybackFragment extends Fragment {
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onStart() {
         super.onStart();
@@ -254,9 +252,9 @@ public class PlaybackFragment extends Fragment {
             viewModel.maybePlaying = true;
         }
         setupControls();
-        contentView = getView().findViewById(R.id.player_view);
+        contentView = requireView().findViewById(R.id.player_view);
         if (contentView != null) {
-            gestureDetector = new GestureDetector(getContext(),gestureProcess);
+            gestureDetector = new GestureDetector(requireContext(),gestureProcess);
             contentView.setOnTouchListener((View vv, MotionEvent event) -> {
                 gestureDetector.onTouchEvent(event);
                 int action = event.getAction();
@@ -269,7 +267,7 @@ public class PlaybackFragment extends Fragment {
             });
         }
         setConfig(requireActivity().getResources().getConfiguration());
-        screenDPI = getContext().getResources().getDisplayMetrics().densityDpi;
+        screenDPI = requireContext().getResources().getDisplayMetrics().densityDpi;
     }
 
     public void onResume() {
@@ -285,10 +283,8 @@ public class PlaybackFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (Build.VERSION.SDK_INT <= 23) {
-            if (binding.playerView != null) {
-                binding.playerView.onPause();
-                viewModel.maybePlaying = false;
-            }
+            binding.playerView.onPause();
+            viewModel.maybePlaying = false;
             setBookmark();
             viewModel.speed = viewModel.player.getPlaybackParameters().speed;
             releasePlayer();
@@ -300,10 +296,8 @@ public class PlaybackFragment extends Fragment {
     public void onStop() {
         super.onStop();
         if (Build.VERSION.SDK_INT > 23) {
-            if (binding.playerView != null) {
-                binding.playerView.onPause();
-                viewModel.maybePlaying = false;
-            }
+            binding.playerView.onPause();
+            viewModel.maybePlaying = false;
             setBookmark();
             viewModel.speed = viewModel.player.getPlaybackParameters().speed;
             releasePlayer();
@@ -317,15 +311,15 @@ public class PlaybackFragment extends Fragment {
     }
 
     void setConfig(Configuration newConfig) {
-        TextView position = getView().findViewById(androidx.media3.ui.R.id.exo_position);
-        TextView duration = getView().findViewById(R.id.my_duration);
-        TextView skipDuration = getView().findViewById(R.id.my_skip_duration);
-        TextView skipSep = getView().findViewById(R.id.my_skip_sep);
-        TextView durSep = getView().findViewById(R.id.my_dur_sep);
+        View view = requireView();
+        TextView position = view.findViewById(androidx.media3.ui.R.id.exo_position);
+        TextView duration = view.findViewById(R.id.my_duration);
+        TextView skipDuration = view.findViewById(R.id.my_skip_duration);
+        TextView skipSep = view.findViewById(R.id.my_skip_sep);
+        TextView durSep = view.findViewById(R.id.my_dur_sep);
         int textSize = 14;
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
             textSize = prefTextSize;
-        ;
         position.setTextSize(textSize);
         duration.setTextSize(textSize);
         skipSep.setTextSize(textSize);
@@ -341,6 +335,8 @@ public class PlaybackFragment extends Fragment {
 
     @OptIn(markerClass = UnstableApi.class)
     private void initializePlayer() {
+        if (viewModel.video.videoUrl == null)
+            return;
         // Check for external subtitles
         if (subtChecked == -1) {
             subtChecked = 0;
@@ -362,15 +358,13 @@ public class PlaybackFragment extends Fragment {
         }
         if (subtChecked < subtExtens.length) {
             Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed( () -> {
-                initializePlayer();
-            }, 100);
+            handler.postDelayed(this::initializePlayer, 100);
             return;
         }
-        TextView durationView = getView().findViewById(R.id.my_duration);
+        TextView durationView = requireView().findViewById(R.id.my_duration);
         durationView.setText(null);
         viewModel.fileLength = 0;
-        MyRenderersFactory rFactory = new MyRenderersFactory(getContext());
+        MyRenderersFactory rFactory = new MyRenderersFactory(requireContext());
         int extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON;
         if ("mediacodec".equals(prefAudio))
             extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
@@ -384,9 +378,9 @@ public class PlaybackFragment extends Fragment {
             extMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
         rFactory.setVideoExtensionRendererMode(extMode);
         rFactory.setEnableDecoderFallback(true);
-        ExoPlayer.Builder builder = new ExoPlayer.Builder(getContext(), rFactory);
-        builder.setSeekBackIncrementMs(viewModel.seekBack * 1000);
-        builder.setSeekForwardIncrementMs(viewModel.seekFwd * 1000);
+        ExoPlayer.Builder builder = new ExoPlayer.Builder(requireContext(), rFactory);
+        builder.setSeekBackIncrementMs(viewModel.seekBack * 1000L);
+        builder.setSeekForwardIncrementMs(viewModel.seekFwd * 1000L);
         // 12 hours to cater for playback of recordings in progress
         builder.setStuckPlayingNotEndingTimeoutMs(12*60*60*1000);
         viewModel.player = builder.build();
@@ -397,23 +391,25 @@ public class PlaybackFragment extends Fragment {
         MediaItem mediaItem = MediaItem.fromUri(viewModel.video.videoUrl);
         MyExtractorsFactory extFactory = new MyExtractorsFactory();
         viewModel.fillTables();
-        String userAgent = Util.getUserAgent(getActivity(), "PlaybackViewModel");
+        String userAgent = Util.getUserAgent(requireActivity(), "PlaybackViewModel");
         DataSource.Factory dsFactory = new MythHttpDataSource.Factory(userAgent);
         DefaultMediaSourceFactory pmf = new DefaultMediaSourceFactory
                 (dsFactory, extFactory);
+        //noinspection deprecation
         pmf.experimentalParseSubtitlesDuringExtraction(false);
         viewModel.mediaSource = (ProgressiveMediaSource) pmf.createMediaSource(mediaItem);
         viewModel.mediaSource.setPossibleEmptyTrack(viewModel.possibleEmptyTrack);
         // see DefaultMediaSourceFactory for non-deprecated code. Must be done
         // in conjunction with abve call to experimentalParseSubtitlesDuringExtraction
+        @SuppressWarnings("deprecation")
         SingleSampleMediaSource.Factory singleSampleMediaSourceFactory =
                 new SingleSampleMediaSource.Factory(dsFactory);
         ArrayList<MediaSource> msList = new ArrayList<>();
         msList.add(viewModel.mediaSource);
         for (int ix = 0 ; ix < subtExtens.length; ix++) {
             if (subtFound[ix]) {
-                int dot = viewModel.video.videoUrl.toString().lastIndexOf('.');
-                Uri subtitleUri = Uri.parse(viewModel.video.videoUrl.toString()
+                int dot = viewModel.video.videoUrl.lastIndexOf('.');
+                Uri subtitleUri = Uri.parse(viewModel.video.videoUrl
                         .substring(0, dot+1) + subtExtens[ix]);
                 MediaItem.SubtitleConfiguration subtitle =
                         new MediaItem.SubtitleConfiguration.Builder(subtitleUri)
@@ -452,7 +448,8 @@ public class PlaybackFragment extends Fragment {
         boolean found = false;
         SampleQueue[] sampleQueues = viewModel.mediaSource.getSampleQueues();
         for (SampleQueue sampleQueue : sampleQueues) {
-            if (MimeTypes.isAudio(sampleQueue.getUpstreamFormat().sampleMimeType)) {
+            if (sampleQueue.getUpstreamFormat() != null
+                    && MimeTypes.isAudio(sampleQueue.getUpstreamFormat().sampleMimeType)) {
                 sampleQueue.setSampleOffsetUs(viewModel.sampleOffsetUs);
                 found = true;
             }
@@ -490,8 +487,8 @@ public class PlaybackFragment extends Fragment {
         }
     }
     public void hideNavigation () {
-        if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
-            View view = getView();
+        if (requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
+            View view = requireView();
             view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
@@ -509,38 +506,26 @@ public class PlaybackFragment extends Fragment {
             viewModel.bookmark = 0;
             action2 = Action.SET_WATCHED;
         }
-//        long params[] = new long[2];
-//        params[0] = viewModel.bookmark;
-//        params[1] =  (long) (viewModel.frameRate * 100.0f) * params[0] / 100000;
         AsyncBackendCall call = new AsyncBackendCall(null);
         call.videos.add(viewModel.video);
-//        call.params = params;
         call.args.put("BOOKMARK", viewModel.bookmark);
         call.args.put("POSBOOKMARK", (long) (viewModel.frameRate * 100.0f) * viewModel.bookmark / 100000);
         call.execute(Action.SET_BOOKMARK, action2);
     }
 
-    public void markWatched(boolean watched) {
+    public void markWatched() {
         AsyncBackendCall call = new AsyncBackendCall(null);
         call.videos.add(viewModel.video);
-//        call.params = new Boolean(watched);
         call.execute(Action.SET_WATCHED);
     }
 
     void seekTo(long position) {
         if (position < 0)
             position = 100;
-        boolean doReset = false;
-        long newPosition;
-        if (viewModel.getDuration() > viewModel.player.getDuration()
-                && position > viewModel.player.getDuration())
-            doReset = true;
-        if (position == -1)
-            newPosition = viewModel.player.getCurrentPosition();
-        else
-            newPosition = position;
-        if (newPosition > viewModel.getDuration() - 5000) {
-            newPosition = viewModel.getDuration() - 5000;
+        boolean doReset = (viewModel.getDuration() > viewModel.player.getDuration()
+                && position > viewModel.player.getDuration());
+        if (position > viewModel.getDuration() - 5000) {
+            position = viewModel.getDuration() - 5000;
             if (viewModel.player.getPlaybackParameters().speed > 1.0f) {
                 if (viewModel.player.getCurrentPosition() > viewModel.getDuration() - 10000) {
                     viewModel.speed = 1.0f;
@@ -549,19 +534,19 @@ public class PlaybackFragment extends Fragment {
             }
         }
         if (!doReset) {
-            if (position != -1)
-                viewModel.player.seekTo(newPosition);
+            viewModel.player.seekTo(position);
         }
         else {
-            viewModel.bookmark = newPosition;
+            viewModel.bookmark = position;
             viewModel.speed = viewModel.player.getPlaybackParameters().speed;
             viewModel.player.stop();
             initializePlayer();
         }
     }
 
+    @SuppressLint("RtlHardcoded")
     private void setupControls() {
-        View previousButton = getView().findViewById(R.id.my_exo_prev);
+        View previousButton = requireView().findViewById(R.id.my_exo_prev);
         if (previousButton != null) {
             previousButton.setOnClickListener((View v) -> {
                 long ret = 0;
@@ -570,15 +555,15 @@ public class PlaybackFragment extends Fragment {
                 }
                 if (ret == 0) {
                     viewModel.prevnextOption = null;
-                    long pos = viewModel.player.getCurrentPosition() - viewModel.jump * 60000;
-                    if (pos < 0l)
-                        pos = 100l;
+                    long pos = viewModel.player.getCurrentPosition() - viewModel.jump * 60000L;
+                    if (pos < 0L)
+                        pos = 100L;
                     seekTo(pos);
                 }
                 binding.playerView.showController();
             });
         }
-        View nextButton = getView().findViewById(R.id.my_exo_next);
+        View nextButton = requireView().findViewById(R.id.my_exo_next);
         if (nextButton != null) {
             nextButton.setOnClickListener((View v) -> {
                 long ret = 0;
@@ -587,33 +572,33 @@ public class PlaybackFragment extends Fragment {
                 }
                 if (ret == 0) {
                     viewModel.prevnextOption = null;
-                    long pos = viewModel.player.getCurrentPosition() + viewModel.jump * 60000l;
+                    long pos = viewModel.player.getCurrentPosition() + viewModel.jump * 60000L;
                     seekTo(pos);
                 }
                 binding.playerView.showController();
             });
         }
-        View rewButton = getView().findViewById(androidx.media3.ui.R.id.exo_rew_with_amount);
+        View rewButton = requireView().findViewById(androidx.media3.ui.R.id.exo_rew_with_amount);
         if (rewButton != null) {
             rewButton.setOnClickListener((View v) -> {
-                long pos = viewModel.player.getCurrentPosition() - viewModel.seekBack * 1000;
-                if (pos < 0l)
-                    pos = 100l;
+                long pos = viewModel.player.getCurrentPosition() - viewModel.seekBack * 1000L;
+                if (pos < 0L)
+                    pos = 100L;
                 seekTo(pos);
                 binding.playerView.showController();
             });
         }
-        View ffwdButton = getView().findViewById(androidx.media3.ui.R.id.exo_ffwd_with_amount);
+        View ffwdButton = requireView().findViewById(androidx.media3.ui.R.id.exo_ffwd_with_amount);
         if (ffwdButton != null) {
             ffwdButton.setOnClickListener((View v) -> {
-                long pos = viewModel.player.getCurrentPosition() + viewModel.seekFwd * 1000;
-                if (pos < 0l)
-                    pos = 100l;
+                long pos = viewModel.player.getCurrentPosition() + viewModel.seekFwd * 1000L;
+                if (pos < 0L)
+                    pos = 100L;
                 seekTo(pos);
                 binding.playerView.showController();
             });
         }
-        ImageView aspectButton = getView().findViewById(R.id.my_aspect);
+        ImageView aspectButton = requireView().findViewById(R.id.my_aspect);
         if (aspectButton != null) {
             aspectButton.setOnClickListener((View v) -> {
                 viewModel.currentAspectIx++;
@@ -621,53 +606,61 @@ public class PlaybackFragment extends Fragment {
                     viewModel.currentAspectIx = 0;
                 viewModel.currentAspect = viewModel.aspectValues[viewModel.currentAspectIx];
                 if (contentFrame == null)
-                    contentFrame = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+                    contentFrame = requireView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
                 contentFrame.setAspectRatio(viewModel.currentAspect);
-                aspectButton.setImageResource(viewModel.ASPECT_DRAWABLES[viewModel.currentAspectIx]);
+                aspectButton.setImageResource(PlaybackViewModel.ASPECT_DRAWABLES[viewModel.currentAspectIx]);
                 binding.playerView.showController();
             });
         }
-        ImageView zoomButton = getView().findViewById(R.id.my_zoom);
+        ImageView zoomButton = requireView().findViewById(R.id.my_zoom);
         if (zoomButton != null) {
             zoomButton.setOnClickListener((View v) -> {
                 viewModel.currentResizeIx++;
-                if (viewModel.currentResizeIx >= viewModel.RESIZE_MODES.length)
+                if (viewModel.currentResizeIx >= PlaybackViewModel.RESIZE_MODES.length)
                     viewModel.currentResizeIx = 0;
-                viewModel.currentResizeMode = viewModel.RESIZE_MODES[viewModel.currentResizeIx];
+                viewModel.currentResizeMode = PlaybackViewModel.RESIZE_MODES[viewModel.currentResizeIx];
                 if (contentFrame == null)
-                    contentFrame = getView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
+                    contentFrame = requireView().findViewById(androidx.media3.ui.R.id.exo_content_frame);
                 contentFrame.setResizeMode(viewModel.currentResizeMode);
-                zoomButton.setImageResource(viewModel.RESIZE_DRAWABLES[viewModel.currentResizeIx]);
+                zoomButton.setImageResource(PlaybackViewModel.RESIZE_DRAWABLES[viewModel.currentResizeIx]);
                 binding.playerView.showController();
             });
         }
-        ImageView syncButton = getView().findViewById(R.id.my_sync);
+        ImageView syncButton = requireView().findViewById(R.id.my_sync);
         if (syncButton != null) {
             syncButton.setOnClickListener((vsb ) -> {
                 binding.playerView.hideController();
-                AlertDialog.Builder dlgBuilder = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder dlgBuilder = new AlertDialog.Builder(requireContext());
 //                        R.style.Theme_AppCompat_Dialog_Alert);
                 dlgBuilder.setTitle(R.string.title_select_audiosync)
                         .setView(R.layout.player_seekbar)
                         .setOnDismissListener(dialogDismiss);
                 dialog = dlgBuilder.create();
                 dialog.show();
-
-                WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                Window window = dialog.getWindow();
+                if (window == null)
+                    return;
+                WindowManager.LayoutParams lp = window.getAttributes();
                 lp.dimAmount = 0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
                 lp.x=0;
                 lp.y=0;
                 lp.width= Resources.getSystem().getDisplayMetrics().widthPixels / 2;
                 lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                dialog.getWindow().setAttributes(lp);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(192,192,192,192)));
+                window.setAttributes(lp);
+                window.setBackgroundDrawable(new ColorDrawable(Color.argb(192,192,192,192)));
                 SeekBar seekBar = dialog.findViewById(R.id.seekbar);
+                if (seekBar == null)
+                    return;
                 seekBar.setMax(5000); // --2500ms to +2500ms
                 seekBar.setProgress((int)(viewModel.sampleOffsetUs/1000 + 2500));
                 TextView seekValue = dialog.findViewById(R.id.seekbar_value);
-                String text = String.format("%+d",viewModel.sampleOffsetUs / 1000);
+                if (seekValue == null)
+                    return;
+                String text = String.format(Locale.ROOT, "%+d",viewModel.sampleOffsetUs / 1000);
                 seekValue.setText(text);
                 TextView textMinus = dialog.findViewById(R.id.textminus);
+                if (textMinus == null)
+                    return;
                 textMinus.setOnClickListener((vtm )-> {
                     int value = (int)(viewModel.sampleOffsetUs/1000 + 2500);
                     if (value > 50)
@@ -675,6 +668,8 @@ public class PlaybackFragment extends Fragment {
                     seekBar.setProgress(value);
                 });
                 TextView textPlus = dialog.findViewById(R.id.textplus);
+                if (textPlus == null)
+                    return;
                 textPlus.setOnClickListener((vtp )-> {
                     int value = (int)(viewModel.sampleOffsetUs/1000 + 2500);
                     if (value <= 4950)
@@ -687,7 +682,7 @@ public class PlaybackFragment extends Fragment {
                             public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
                                 value = value / 50 * 50;
                                 viewModel.sampleOffsetUs = ((long)value - 2500) * 1000;
-                                String text1 = String.format("%+d",viewModel.sampleOffsetUs / 1000);
+                                String text1 = String.format(Locale.ROOT, "%+d",viewModel.sampleOffsetUs / 1000);
                                 seekValue.setText(text1);
                                 setAudioSync();
                             }
@@ -699,30 +694,26 @@ public class PlaybackFragment extends Fragment {
                 );
             });
         }
-        handler.postDelayed(() ->{
-            enableControls();
-        }, 2000);
+        handler.postDelayed(this::enableControls, 2000);
 
     }
 
     void enableControls() {
-        Resources resources = getContext().getResources();
+        Resources resources = requireContext().getResources();
         float buttonAlphaEnabled =
                 (float) resources.getInteger(androidx.media3.ui.R.integer.exo_media_button_opacity_percentage_enabled) / 100;
         float buttonAlphaDisabled =
                 (float) resources.getInteger(androidx.media3.ui.R.integer.exo_media_button_opacity_percentage_disabled) / 100;
         if (viewModel.player == null) {
-            handler.postDelayed(() ->{
-                enableControls();
-            }, 2000);
+            handler.postDelayed(this::enableControls, 2000);
         } else {
             boolean canSeek = viewModel.player.isCurrentMediaItemSeekable();
-            View previousButton = getView().findViewById(R.id.my_exo_prev);
+            View previousButton = requireView().findViewById(R.id.my_exo_prev);
             if (previousButton != null) {
                 previousButton.setEnabled(canSeek);
                 previousButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
             }
-            View nextButton = getView().findViewById(R.id.my_exo_next);
+            View nextButton = requireView().findViewById(R.id.my_exo_next);
             if (nextButton != null) {
                 nextButton.setEnabled(canSeek);
                 nextButton.setAlpha(canSeek ? buttonAlphaEnabled : buttonAlphaDisabled);
@@ -746,12 +737,11 @@ public class PlaybackFragment extends Fragment {
         long now = System.currentTimeMillis();
         int recommendation = 0;
         boolean setPossibleEmptyTrack = false;
-        if (ex != null && ex instanceof ExoPlaybackException) {
+        if (ex instanceof ExoPlaybackException) {
             ExoPlaybackException error = (ExoPlaybackException) ex;
             switch (error.type) {
                 case ExoPlaybackException.TYPE_REMOTE:
                     msgNum = R.string.pberror_remote;
-                    cause = null;
                     break;
                 case ExoPlaybackException.TYPE_RENDERER:
                     msgNum = R.string.pberror_renderer;
@@ -765,9 +755,11 @@ public class PlaybackFragment extends Fragment {
                     }
                     break;
                 case ExoPlaybackException.TYPE_SOURCE:
-                    msgNum = R.string.pberror_source;
                     cause = error.getSourceException();
-                    if (cause != null && cause.getMessage().startsWith("Unexpected ArrayIndexOutOfBoundsException")) {
+                    String message = cause.getMessage();
+                    if (message == null)
+                        message = "";
+                    if (message.startsWith("Unexpected ArrayIndexOutOfBoundsException")) {
                         msgNum = R.string.pberror_extractor_array;
                         break;
                     } else {
@@ -787,7 +779,6 @@ public class PlaybackFragment extends Fragment {
                     break;
                 default:
                     msgNum = R.string.pberror_default;
-                    cause = null;
                     break;
             }
         }
@@ -813,13 +804,13 @@ public class PlaybackFragment extends Fragment {
                 // try to recover from error by playing on.
                 if (failAtEnd
                         || mTimeLastError < now - 30000) {
-                    Toast.makeText(getActivity(),
-                                    getActivity().getString(msgNum),
+                    Toast.makeText(requireActivity(),
+                                    requireActivity().getString(msgNum),
                                     Toast.LENGTH_LONG)
                             .show();
                     // if we are at the end - just end playback
                     if (failAtEnd)
-                        markWatched(true);
+                        markWatched();
                     else {
                         // Try to continue playback
                         if (currPos > 0)
@@ -847,7 +838,7 @@ public class PlaybackFragment extends Fragment {
                     builder.setOnDismissListener(
                             dialog -> {
                                 if (mDialogStatus != DIALOG_RETRY)
-                                    getActivity().finish();
+                                    requireActivity().finish();
                                 mDialogStatus = DIALOG_NONE;
                             });
                     builder.show();
@@ -861,8 +852,8 @@ public class PlaybackFragment extends Fragment {
     void dragAction(MotionEvent event) {
         if(!viewModel.player.isCurrentMediaItemSeekable())
             return;
-        TextView skipDuration = getView().findViewById(R.id.my_skip_duration);
-        TextView skipSeparator = getView().findViewById(R.id.my_skip_sep);
+        TextView skipDuration = requireView().findViewById(R.id.my_skip_duration);
+        TextView skipSeparator = requireView().findViewById(R.id.my_skip_sep);
         if (dragInProgress && event.getAction() == MotionEvent.ACTION_UP) {
             skipDuration.setVisibility(View.GONE);
             skipSeparator.setVisibility(View.GONE);

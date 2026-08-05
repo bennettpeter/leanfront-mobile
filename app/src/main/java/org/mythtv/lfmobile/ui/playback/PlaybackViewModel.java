@@ -26,6 +26,7 @@ import org.mythtv.lfmobile.data.CommBreakTable;
 import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.data.Video;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGetter {
     Video video;
     ExoPlayer player;
@@ -35,7 +36,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     long savedDuration;
     boolean possibleEmptyTrack;
     boolean maybePlaying;
-    CommBreakTable commBreakTable = new CommBreakTable();
+    final CommBreakTable commBreakTable = new CommBreakTable();
     long priorCommBreak = -1;
     long nextCommBreakMs = Long.MAX_VALUE;
     long endCommBreakMs = Long.MAX_VALUE;
@@ -93,6 +94,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
 
 
 
+    @NonNull
     @OptIn(markerClass = UnstableApi.class)
     @Override
     public VideoSize getVideoSize() {
@@ -103,6 +105,8 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             if (renderer.getState() != Renderer.STATE_DISABLED) {
                 if ("ExperimentalFfmpegVideoRenderer".equals(renderer.getName())) {
                     Format format = player.getVideoFormat();
+                    if (format == null)
+                        return vs;
                     if (vs.width == format.width && vs.height == format.height
                             && vs.pixelWidthHeightRatio != format.pixelWidthHeightRatio) {
                         vs = new VideoSize(vs.width, vs.height, format.pixelWidthHeightRatio);
@@ -146,7 +150,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
                         startEntry = entry;
                         startOffsetMs = commBreakTable.getOffsetMs(startEntry);
                     } else {
-                        long possible = startOffsetMs + Settings.getInt("pref_commskip_start") * 1000;
+                        long possible = startOffsetMs + Settings.getInt("pref_commskip_start") * 1000L;
                         if (position <= offsetMs && entry.mark == CommBreakTable.MARK_CUT_END
                                 && startEntry != null && possible != priorCommBreak) {
                             nextCommBreak = possible;
@@ -203,7 +207,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
      * @param multiCheck indicates to check up to 5 times to see if it changed
      */
     public void getFileLength(boolean multiCheck) {
-        long priorFileLeng = 0;
+        long priorFileLeng;
         if (multiCheck)
             priorFileLeng = fileLength;
         else
@@ -215,10 +219,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             if (newLength == -1) {
                 playerErrorLive.postValue(new Object[] {null, R.string.pberror_file_length_fail});
             }
-            if (fileLength > 0 && newLength > fileLength)
-                isIncreasing = true;
-            else
-                isIncreasing = false;
+            isIncreasing = (fileLength > 0 && newLength > fileLength);
             fileLength = newLength;
             startStatusMonitor();
         });
@@ -233,7 +234,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         // Periodically save the last play position in case of a network failure
         statusMonitorTime = System.currentTimeMillis();
         handler.postDelayed(new Runnable() {
-            long timeCheck = statusMonitorTime;
+            final long timeCheck = statusMonitorTime;
             @Override
             public void run() {
                 // discard any tasks that  are from a prior player
@@ -304,69 +305,31 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
     }
 
     long skipComBack() {
-        if (!commSkipCheck())
-            return 0;
-        long position = player.getCurrentPosition();
-        if (lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
-            player.seekTo(lastSeekFrom);
-            commSkipToast.postValue(new long[]{-3, lastSeekFrom - position});
-            lastSeekTime = 0;
-            return lastSeekFrom;
-        }
-        long newPosition = 0;
-        int mark = 0;
-        synchronized (commBreakTable) {
-            // Get the last entry that satisfies offset < position
-            for (CommBreakTable.Entry entry : commBreakTable.entries) {
-                long offsetMs = commBreakTable.getOffsetMs(entry);
-                if (offsetMs < position - 20000) {
-                    newPosition = offsetMs;
-                    mark = entry.mark;
-                } else
-                    break;
+        if (commSkipCheck()) {
+            long position = player.getCurrentPosition();
+            if (lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000L) {
+                player.seekTo(lastSeekFrom);
+                commSkipToast.postValue(new long[]{-3, lastSeekFrom - position});
+                lastSeekTime = 0;
+                return lastSeekFrom;
             }
-        }
-        if (newPosition == 0) {
-            newPosition = 100;
-            mark = -4;
-        }
-        setNextCommBreak(Long.MAX_VALUE);
-        // If this is a start point, prevent it from immediately skipping
-        if (mark == CommBreakTable.MARK_CUT_START)
-            priorCommBreak = newPosition
-                    + (long) Settings.getInt("pref_commskip_start") * 1000;
-        player.seekTo(newPosition);
-        commSkipToast.postValue(new long[]{mark, newPosition - position});
-        lastSeekFrom = position;
-        lastSeekIsFwd = false;
-        lastSeekTime = System.currentTimeMillis();
-        return newPosition;
-    }
-
-    long skipComForward() {
-        if (!commSkipCheck())
-            return 0;
-        long position = player.getCurrentPosition();
-        if (!lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000l) {
-            player.seekTo(lastSeekFrom);
-            commSkipToast.postValue(new long[]{-3, lastSeekFrom - position});
-            lastSeekTime = 0;
-            return lastSeekFrom;
-        }
-        long newPosition = 0;
-        int mark = 0;
-        synchronized (commBreakTable) {
-            // Get the first entry that satisfies offset > position
-            for (CommBreakTable.Entry entry : commBreakTable.entries) {
-                long offsetMs = commBreakTable.getOffsetMs(entry);
-                if (offsetMs > position + 5000) {
-                    newPosition = offsetMs;
-                    mark = entry.mark;
-                    break;
+            long newPosition = 0;
+            int mark = 0;
+            synchronized (commBreakTable) {
+                // Get the last entry that satisfies offset < position
+                for (CommBreakTable.Entry entry : commBreakTable.entries) {
+                    long offsetMs = commBreakTable.getOffsetMs(entry);
+                    if (offsetMs < position - 20000) {
+                        newPosition = offsetMs;
+                        mark = entry.mark;
+                    } else
+                        break;
                 }
             }
-        }
-        if (newPosition > 0) {
+            if (newPosition == 0) {
+                newPosition = 100;
+                mark = -4;
+            }
             setNextCommBreak(Long.MAX_VALUE);
             // If this is a start point, prevent it from immediately skipping
             if (mark == CommBreakTable.MARK_CUT_START)
@@ -375,11 +338,53 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
             player.seekTo(newPosition);
             commSkipToast.postValue(new long[]{mark, newPosition - position});
             lastSeekFrom = position;
-            lastSeekIsFwd = true;
+            lastSeekIsFwd = false;
             lastSeekTime = System.currentTimeMillis();
-        } else
-            commSkipToast.postValue(new long[]{-1, 0});
-        return newPosition;
+            return newPosition;
+        } else {
+            return 0;
+        }
+    }
+
+    long skipComForward() {
+        if (commSkipCheck()) {
+            long position = player.getCurrentPosition();
+            if (!lastSeekIsFwd && System.currentTimeMillis() - lastSeekTime < 10000L) {
+                player.seekTo(lastSeekFrom);
+                commSkipToast.postValue(new long[]{-3, lastSeekFrom - position});
+                lastSeekTime = 0;
+                return lastSeekFrom;
+            }
+            long newPosition = 0;
+            int mark = 0;
+            synchronized (commBreakTable) {
+                // Get the first entry that satisfies offset > position
+                for (CommBreakTable.Entry entry : commBreakTable.entries) {
+                    long offsetMs = commBreakTable.getOffsetMs(entry);
+                    if (offsetMs > position + 5000) {
+                        newPosition = offsetMs;
+                        mark = entry.mark;
+                        break;
+                    }
+                }
+            }
+            if (newPosition > 0) {
+                setNextCommBreak(Long.MAX_VALUE);
+                // If this is a start point, prevent it from immediately skipping
+                if (mark == CommBreakTable.MARK_CUT_START)
+                    priorCommBreak = newPosition
+                            + (long) Settings.getInt("pref_commskip_start") * 1000;
+                player.seekTo(newPosition);
+                commSkipToast.postValue(new long[]{mark, newPosition - position});
+                lastSeekFrom = position;
+                lastSeekIsFwd = true;
+                lastSeekTime = System.currentTimeMillis();
+            } else
+                commSkipToast.postValue(new long[]{-1, 0});
+            return newPosition;
+        } else {
+            return 0;
+        }
     }
 
     public void onEndCommBreak() {
@@ -402,7 +407,7 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
                     onUpdateProgress();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
             } finally {
                 handler.postDelayed(this, 1000);
             }

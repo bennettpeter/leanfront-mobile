@@ -4,6 +4,7 @@
 
 package org.mythtv.lfmobile.ui;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +19,7 @@ import org.mythtv.lfmobile.R;
 /**
  * Inspired by: http://stackoverflow.com/a/6022474/1521064
  */
+@SuppressWarnings("JavadocLinkAsPlainText")
 public class MultiSpinner extends AppCompatSpinner {
 
     private CharSequence[] entries;
@@ -27,22 +29,22 @@ public class MultiSpinner extends AppCompatSpinner {
     public MultiSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MultiSpinner);
-        entries = a.getTextArray(R.styleable.MultiSpinner_android_entries);
-        if (entries != null) {
-            selected = new boolean[entries.length]; // false-filled by default
+        try (TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MultiSpinner)) {
+            entries = a.getTextArray(R.styleable.MultiSpinner_android_entries);
+            if (entries != null) {
+                selected = new boolean[entries.length]; // false-filled by default
+            }
         }
-        a.recycle();
     }
 
-    private OnMultiChoiceClickListener mOnMultiChoiceClickListener = new OnMultiChoiceClickListener() {
+    private final OnMultiChoiceClickListener mOnMultiChoiceClickListener = new OnMultiChoiceClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which, boolean isChecked) {
             selected[which] = isChecked;
         }
     };
 
-    private DialogInterface.OnDismissListener mOnDismissListener = new DialogInterface.OnDismissListener() {
+    private final DialogInterface.OnDismissListener mOnDismissListener = new DialogInterface.OnDismissListener() {
         @Override
         public void onDismiss(DialogInterface dialog) {
 
@@ -59,7 +61,7 @@ public class MultiSpinner extends AppCompatSpinner {
 
     private void updateSelection() {
         // build new spinner text & delimiter management
-        StringBuffer spinnerBuffer = new StringBuffer();
+        StringBuilder spinnerBuffer = new StringBuilder();
         for (int i = 0; i < entries.length; i++) {
             if (selected[i]) {
                 spinnerBuffer.append(entries[i]);
@@ -79,6 +81,7 @@ public class MultiSpinner extends AppCompatSpinner {
         setAdapter(adapter);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean performClick() {
         new AlertDialog.Builder(getContext())
@@ -89,6 +92,7 @@ public class MultiSpinner extends AppCompatSpinner {
         return true;
     }
 
+    @SuppressWarnings("unused")
     public void setMultiSpinnerListener(MultiSpinnerListener listener) {
         this.listener = listener;
     }
@@ -111,6 +115,6 @@ public class MultiSpinner extends AppCompatSpinner {
     }
 
     public interface MultiSpinnerListener {
-        public void onItemsSelected(boolean[] selected);
+        void onItemsSelected(boolean[] selected);
     }
 }

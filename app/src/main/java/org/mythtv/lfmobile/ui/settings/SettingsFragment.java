@@ -3,11 +3,13 @@ package org.mythtv.lfmobile.ui.settings;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.mythtv.lfmobile.MainActivity;
@@ -17,6 +19,7 @@ import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class SettingsFragment extends PreferenceFragmentCompat implements MainActivity.MyFragment
 {
 
@@ -26,7 +29,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setPreferencesFromResource(R.xml.preferences,null);
-        findPreference("pref_backend")
+        myFindPreference ("pref_backend")
                 .setOnPreferenceChangeListener((pref,action) -> {
                 String newVal = action.toString();
                 // strip any '[' or ']' characters, which are invalid and will
@@ -38,14 +41,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                 reloadDB = true;
                 return false;
             });
-        findPreference("pref_http_port")
+        myFindPreference ("pref_http_port")
             .setOnPreferenceChangeListener((pref,action) -> {
                 ((EditTextPreference)pref).setText(validateNumber(action, 1, 65535, 6544));
                 reloadDB = true;
                 return false;
             });
 
-        findPreference("pref_backend_userid")
+        myFindPreference ("pref_backend_userid")
                 .setOnPreferenceChangeListener((pref, action) -> {
                     ((EditTextPreference) pref).setText(action.toString().trim());
                     BackendCache.getInstance().authorization = null;
@@ -53,7 +56,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                     return false;
                 });
 
-        findPreference("pref_backend_passwd")
+        myFindPreference ("pref_backend_passwd")
                 .setOnPreferenceChangeListener((pref, action) -> {
                     ((EditTextPreference) pref).setText(action.toString().trim());
                     BackendCache.getInstance().authorization = null;
@@ -61,7 +64,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                     return false;
                 });
 
-        findPreference("pref_max_vids")
+        myFindPreference ("pref_max_vids")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, 1000, 90000, 10000));
                     reloadDB = true;
@@ -69,113 +72,116 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                 });
 
 
-        findPreference("pref_skip_back")
+        myFindPreference ("pref_skip_back")
             .setOnPreferenceChangeListener((pref,action) -> {
                 ((EditTextPreference)pref).setText(validateNumber(action, 1, 3600, 10));
                 return false;
             });
 
-        findPreference("pref_skip_fwd")
+        myFindPreference ("pref_skip_fwd")
             .setOnPreferenceChangeListener((pref,action) -> {
                 ((EditTextPreference)pref).setText(validateNumber(action, 1, 3600, 60));
                 return false;
             });
 
-        findPreference("pref_commskip_start")
+        myFindPreference ("pref_commskip_start")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, -10, 10, 0));
                     return false;
                 });
 
-        findPreference("pref_commskip_end")
+        myFindPreference ("pref_commskip_end")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, -10, 10, 0));
                     return false;
                 });
 
-        findPreference("pref_num_cc_chans")
+        myFindPreference ("pref_num_cc_chans")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, -0, 4, 2));
                     return false;
                 });
 
-        findPreference("pref_jump")
+        myFindPreference ("pref_jump")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, -1, 60, 5));
                     return false;
                 });
-        findPreference("pref_tweak_ts_search_pkts")
+        myFindPreference ("pref_tweak_ts_search_pkts")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, 600, 100000, 2600));
                     return false;
                 });
-        findPreference("pref_drag_range")
+        myFindPreference ("pref_drag_range")
                 .setOnPreferenceChangeListener((pref,action) -> {
             ((EditTextPreference)pref).setText(validateNumber(action, 5, 60, 20));
             return false;
         });
-        findPreference("pref_drag_accel")
+        myFindPreference ("pref_drag_accel")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateFloat(action, 1f, 10f, 3.5f));
                     return false;
                 });
 
-        findPreference("pref_duration_textsize")
+        myFindPreference ("pref_duration_textsize")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, 14, 50, 14));
                     return false;
                 });
 
-        findPreference("pref_land_bottomnav")
+        myFindPreference ("pref_land_bottomnav")
                 .setOnPreferenceChangeListener((pref,action) -> {
-                    getActivity().recreate();
+                    requireActivity().recreate();
                     return true;
                 });
-        findPreference("pref_startview")
+        myFindPreference ("pref_startview")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     if (!Settings.getString("pref_startview").equals(action.toString())) {
-                        getActivity().finish();
-                        Intent i = getContext().getPackageManager()
-                                .getLaunchIntentForPackage(getContext().getPackageName());
+                        requireActivity().finish();
+                        Intent i = requireContext().getPackageManager()
+                                .getLaunchIntentForPackage(requireContext().getPackageName());
+                        if (i == null)
+                            return false;
                         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        getContext().startActivity(i);
+                        requireContext().startActivity(i);
                         return true;
                     }
                     return false;
                 });
         if (!BackendCache.getInstance().loginNeeded) {
-            findPreference("pref_backend_userid").setVisible(false);
-            findPreference("pref_backend_passwd").setVisible(false);
+            myFindPreference ("pref_backend_userid").setVisible(false);
+            myFindPreference ("pref_backend_passwd").setVisible(false);
         }
     }
 
     @Override
     public void onResume() {
-        ((MainActivity)getActivity()).myFragment = this;
+        ((MainActivity)requireActivity()).myFragment = this;
         isActive = true;
         reloadDB = false;
         super.onResume();
-        ActionBar bar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        bar.setSubtitle(null);
+        ActionBar bar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
+        if (bar != null)
+            bar.setSubtitle(null);
         if (BackendCache.getInstance().loginNeeded) {
-            findPreference("pref_backend_userid").setVisible(true);
-            findPreference("pref_backend_passwd").setVisible(true);
+            myFindPreference ("pref_backend_userid").setVisible(true);
+            myFindPreference ("pref_backend_passwd").setVisible(true);
         } else {
-            findPreference("pref_backend_userid").setVisible(false);
-            findPreference("pref_backend_passwd").setVisible(false);
+            myFindPreference ("pref_backend_userid").setVisible(false);
+            myFindPreference ("pref_backend_passwd").setVisible(false);
         }
     }
 
     @Override
     public void onPause() {
-        ((MainActivity)getActivity()).myFragment = null;
+        ((MainActivity)requireActivity()).myFragment = null;
         if (reloadDB && VideoListModel.getInstance() != null)
             VideoListModel.getInstance().startFetch();
         reloadDB = false;
         isActive = false;
         super.onPause();
-        MainActivityModel viewModel = new ViewModelProvider(getActivity()).get(MainActivityModel.class);
+        MainActivityModel viewModel = new ViewModelProvider(requireActivity()).get(MainActivityModel.class);
         if (BackendCache.getInstance().authorization == null)
             viewModel.restartMythTask();
     }
@@ -197,6 +203,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
         return s;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static String validateFloat(Object action, float min, float max, float defValue) {
         String s;
         float f;
@@ -214,5 +221,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
         return s;
     }
 
-
+    @NonNull Preference myFindPreference(CharSequence key) {
+        Preference ret = findPreference (key);
+        if (ret == null)
+            ret = new Preference(requireContext());
+        return ret;
+    }
 }

@@ -25,14 +25,13 @@ import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.data.XmlNode;
 import org.mythtv.lfmobile.databinding.ActivityMainBinding;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class MainActivity extends AppCompatActivity {
     private MainActivityModel viewModel;
-    private ActivityMainBinding binding;
 
     private AppBarConfiguration mAppBarConfiguration;
     private NavController navController;
     public MyFragment myFragment;
-    public static MainActivity mainActivity;
     public View mainView;
     public boolean bottomNavEnabled;
     // Important - these must correspond to items in
@@ -47,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
     public static int startupView;
     static String[] views;
 
-    private static final String TAG = "lfm";
-    static final String CLASS = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         views = res.getStringArray(R.array.startview_pref_values);
         viewModel = new ViewModelProvider(this).get(MainActivityModel.class);
         MainActivityModel.instance = viewModel;
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mainView = binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
@@ -88,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = binding.appBarMain.contentMain.bottomNavView;
 
-        if (bottomNavigationView != null && !bottomNavEnabled) {
+        if (!bottomNavEnabled) {
             bottomNavigationView.setVisibility(View.GONE);
             bottomNavigationView = null;
         }
@@ -113,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
             navController.navigate(dest.intValue());
             viewModel.navigate.setValue(0);
         });
-        mainActivity = this;
         binding.appBarMain.toolbar.setTitleTextAppearance(this,R.style.ToolbarTitleText);
         binding.appBarMain.toolbar.setSubtitleTextAppearance(this,R.style.ToolbarSubtitleText);
     }
@@ -162,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         String backendIP = Settings.getString("pref_backend");
         backendIP = XmlNode.fixIpAddress(backendIP);
-        if (backendIP.length() == 0) {
+        if (backendIP.isEmpty()) {
             navController.navigate(R.id.nav_settings);
         }
         viewModel.startMythTask();

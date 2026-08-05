@@ -27,10 +27,9 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivityModel extends ViewModel {
 
-    private MythTask mythTask = new MythTask();
-    private static int TASK_INTERVAL = 240;
+    private final MythTask mythTask = new MythTask();
+    private static final int TASK_INTERVAL = 240;
     private ScheduledExecutorService executor = null;
-    private static boolean mWasInBackground = true;
     private static final String TAG = "lfm";
     static final String CLASS = "MainActivityModel";
     final MutableLiveData<Integer> navigate = new MutableLiveData<>();
@@ -64,6 +63,7 @@ public class MainActivityModel extends ViewModel {
         executor.scheduleWithFixedDelay(mythTask, 0, TASK_INTERVAL, TimeUnit.SECONDS);
     }
 
+    @SuppressWarnings({"CharsetObjectCanBeUsed", "SpellCheckingInspection"})
     private class MythTask implements Runnable {
         boolean mVersionMessageShown = false;
 
@@ -75,7 +75,7 @@ public class MainActivityModel extends ViewModel {
                 boolean connection = false;
                 String backendIP = Settings.getString("pref_backend");
                 backendIP = XmlNode.fixIpAddress(backendIP);
-                if (backendIP.length() == 0)
+                if (backendIP.isEmpty())
                     return;
                 while (!connection) {
                     boolean connectionfail = false;
@@ -89,7 +89,6 @@ public class MainActivityModel extends ViewModel {
                     if (ProcessLifecycleOwner.get().getLifecycle().getCurrentState()
                             == Lifecycle.State.CREATED) {
                         // process is now in the background
-                        mWasInBackground = true;
                         if (executor != null)
                             executor.shutdown();
                         executor = null;
@@ -102,18 +101,17 @@ public class MainActivityModel extends ViewModel {
                     if (loginNeededNow) {
                         bCache.loginNeeded = true;
                         try {
-                            String result = null;
-                            StringBuilder urlBuilder = new StringBuilder
-                                    (XmlNode.mythApiUrl(null,
-                                            "/Myth/LoginUser"))
-                                    .append("?UserName=")
-                                    .append(URLEncoder.encode(Settings.getString("pref_backend_userid").trim(), "UTF-8"))
-                                    .append("&Password=")
-                                    .append(URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8"));
-                            XmlNode loginXml = XmlNode.fetch(urlBuilder.toString(), "POST");
+                            String result;
+                            String urlBuilder = XmlNode.mythApiUrl(null,
+                                    "/Myth/LoginUser") +
+                                    "?UserName=" +
+                                    URLEncoder.encode(Settings.getString("pref_backend_userid").trim(), "UTF-8") +
+                                    "&Password=" +
+                                    URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8");
+                            XmlNode loginXml = XmlNode.fetch(urlBuilder, "POST");
                             result = loginXml.getString();
                             connection = true;
-                            if (result.length() == 0) {
+                            if (result.isEmpty()) {
                                 Log.e(TAG, CLASS + " MythTask empty response from LoginUser");
                                 bCache.authorization = null;
                             } else {
@@ -131,7 +129,7 @@ public class MainActivityModel extends ViewModel {
                     }
 
                     try {
-                        String result = null;
+                        String result;
                         String url = XmlNode.mythApiUrl(null,
                                 "/Myth/DelayShutdown");
                         if (url == null)
@@ -150,8 +148,8 @@ public class MainActivityModel extends ViewModel {
                         Log.e(TAG, CLASS + " MythTask DelayShutdown Exception ", ex);
                     } catch (IOException e) {
                         if ("Unauthorized: 401".equals(e.getMessage())) {
-                            if (Settings.getString("pref_backend_userid").length() == 0
-                                    || Settings.getString("pref_backend_passwd").length() == 0
+                            if (Settings.getString("pref_backend_userid").isEmpty()
+                                    || Settings.getString("pref_backend_passwd").isEmpty()
                                     || loginTried) {
                                 BackendCache.getInstance().loginNeeded = true;
                                 toastMsg = R.string.msg_backend_login_req;
@@ -159,7 +157,7 @@ public class MainActivityModel extends ViewModel {
                             } else
                                 loginNeededNow = true;
                         } else {
-                            e.printStackTrace();
+                            Log.e(TAG, CLASS + " Exception ", e);
                             toastMsg = R.string.msg_no_connection;
                         }
                         connectionfail = true;
@@ -190,11 +188,11 @@ public class MainActivityModel extends ViewModel {
             if (context == null)
                 return false;
             String backendMac = Settings.getString("pref_backend_mac");
-            if (backendMac.length() == 0)
+            if (backendMac.isEmpty())
                 return false;
 
             // The magic packet is a broadcast frame containing anywhere within its payload
-            // 6 bytes of all 255 (FF FF FF FF FF FF in hexadecimal), followed by sixteen
+            // 6 bytes of all 255 (FF_FF_FF_FF_FF_FF in hexadecimal), followed by sixteen
             // repetitions of the target computer's 48-bit MAC address, for a total of 102 bytes.
 
             byte[] msg = new byte[102];
@@ -227,12 +225,11 @@ public class MainActivityModel extends ViewModel {
 
             Log.i(TAG, CLASS + " wakeBackend WakeOnLan(): Sending WOL packet to " + backendMac);
 
-            try {
+            try (DatagramSocket ds = new DatagramSocket()) {
                 DatagramPacket DpSend = new DatagramPacket(msg, msg.length, InetAddress.getByName("255.255.255.255"), 9);
-                DatagramSocket ds = new DatagramSocket();
                 ds.send(DpSend);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, CLASS + " Exception ", e);
                 return false;
             }
             return true;

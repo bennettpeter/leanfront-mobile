@@ -14,6 +14,7 @@ import org.mythtv.lfmobile.data.VideoContract.StatusEntry;
 /**
  * VideoDbHelper manages the creation and upgrade of the database used in this sample.
  */
+@SuppressWarnings({"SpellCheckingInspection"})
 public class VideoDbHelper extends SQLiteOpenHelper {
 
     private static VideoDbHelper mInstance = null;
@@ -23,8 +24,7 @@ public class VideoDbHelper extends SQLiteOpenHelper {
     // The name of our database.
     private static final String DATABASE_NAME = "lfmobile.db";
 
-    private static int usageCount = 0;
-    private static boolean dbLocked = false;
+    private static final boolean dbLocked = false;
     private static final Object sync = new Object();
 
     private VideoDbHelper(Context context) {
@@ -48,54 +48,27 @@ public class VideoDbHelper extends SQLiteOpenHelper {
 
     @Override
     public SQLiteDatabase getReadableDatabase() {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db;
         synchronized (sync) {
             if (dbLocked)
                 return null;
             db = super.getReadableDatabase();
-            usageCount++;
         }
         return db;
     }
 
     @Override
     public SQLiteDatabase getWritableDatabase() {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db;
         synchronized (sync) {
             if (dbLocked)
                 return null;
             db = super.getWritableDatabase();
-            usageCount++;
         }
         return db;
     }
 
-    public static void releaseDatabase() {
-        synchronized (sync) {
-            usageCount--;
-        }
-    }
-
-    public boolean lockDatabase() {
-        synchronized (sync) {
-            if (usageCount != 0)
-                return false;
-            if (dbLocked)
-                return true;
-            SQLiteDatabase db = super.getWritableDatabase();
-            db.execSQL("vacuum");
-            close();
-            dbLocked = true;
-        }
-        return true;
-    }
-
-    public static void unlockDatabase() {
-        synchronized (sync) {
-            dbLocked = false;
-        }
-    }
-
+    @SuppressWarnings("ExtractMethodRecommender")
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < DATABASE_VERSION) {

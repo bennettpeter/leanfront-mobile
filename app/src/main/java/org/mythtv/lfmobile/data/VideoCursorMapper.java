@@ -7,6 +7,7 @@ import android.database.Cursor;
  * This can be used with video or videoview. With video,
  * lastUsed will be set to 0.
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class VideoCursorMapper  {
 
     //    private int idIndex;
@@ -167,14 +168,4 @@ public class VideoCursorMapper  {
                 .build();
     }
 
-//    private Cursor myCursor;
-//    public void changeCursor(Cursor cursor) {
-//        myCursor = cursor;
-//    }
-
-//    public Object get(int index) {
-//        if (index >= 0)
-//            myCursor.moveToPosition(index);
-//        return convert(myCursor);
-//    }
 }

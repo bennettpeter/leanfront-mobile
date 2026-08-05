@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 // Singleton class to cache frequently used backend data
+@SuppressWarnings("SpellCheckingInspection")
 public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     private static BackendCache singleton;
     // Values from settings
@@ -30,8 +31,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     // Authorization token
     public String authorization;
     public boolean loginNeeded;
-    static private String TAG = "lfm";
-    static private String CLASS = "BackendCache";
 
 
     private BackendCache() {
@@ -69,38 +68,33 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
         int [] tasks = taskRunner.getTasks();
         ArrayList<XmlNode> resultsList = taskRunner.getXmlResults();
         XmlNode xml = taskRunner.getXmlResult();
-        switch (tasks[0]) {
-            case Action.DVR_WSDL:
-                wsdlDone = false;
-                canUpdateRecGroup = false;
-                canForgetHistory = false;
-                if (xml == null)
-                    break;
-                XmlNode schemaNode = xml.getNode(new String[]{"types", "schema"}, 1);
-                XmlNode parameterNode;
-                if (schemaNode != null) {
-                    wsdlDone = true;
-                    // Check if the UpdateRecordedMetadata method takes the RecGroup parameter
-                    parameterNode = schemaNode.getNode
-                            (new String[]{"UpdateRecordedMetadata", "complexType", "sequence", "RecGroup"}, 0);
-                    if (parameterNode != null)
-                        canUpdateRecGroup = true;
-                    // Check if AllowReRecord supports Forget History
-                    parameterNode = null;
-                    if (schemaNode != null)
-                        parameterNode = schemaNode.getNode
-                                (new String[]{"AllowReRecord", "complexType", "sequence", "ChanId"}, 0);
-                    if (parameterNode != null)
-                        canForgetHistory = true;
-                }
-                xml = resultsList.get(2);
-                if (xml == null)
-                    break;
-                sHostName = xml.getString();
-                if (sHostName != null && sBackendIP != null && sMainPort != null)
-                    sHostMap.put(sHostName, sBackendIP + ":" + sMainPort);
-                break;
+        if (tasks[0] == Action.DVR_WSDL) {
+            wsdlDone = false;
+            canUpdateRecGroup = false;
+            canForgetHistory = false;
+            if (xml == null)
+                return;
+            XmlNode schemaNode = xml.getNode(new String[]{"types", "schema"}, 1);
+            XmlNode parameterNode;
+            if (schemaNode != null) {
+                wsdlDone = true;
+                // Check if the UpdateRecordedMetadata method takes the RecGroup parameter
+                parameterNode = schemaNode.getNode
+                        (new String[]{"UpdateRecordedMetadata", "complexType", "sequence", "RecGroup"}, 0);
+                if (parameterNode != null)
+                    canUpdateRecGroup = true;
+                // Check if AllowReRecord supports Forget History
+                parameterNode = schemaNode.getNode
+                        (new String[]{"AllowReRecord", "complexType", "sequence", "ChanId"}, 0);
+                if (parameterNode != null)
+                    canForgetHistory = true;
+            }
+            xml = resultsList.get(2);
+            if (xml == null)
+                return;
+            sHostName = xml.getString();
+            if (sHostName != null && sBackendIP != null && sMainPort != null)
+                sHostMap.put(sHostName, sBackendIP + ":" + sMainPort);
         }
     }
-
 }

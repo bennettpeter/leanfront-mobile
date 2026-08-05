@@ -1,17 +1,15 @@
 package org.mythtv.lfmobile.ui.schedule;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 
-import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.XmlNode;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+@SuppressWarnings("SpellCheckingInspection")
 @SuppressLint("SimpleDateFormat")
 public class RecordRule {
 
@@ -72,14 +70,7 @@ public class RecordRule {
     public boolean isFromProgram;
     public boolean isFromSchedule;
 
-    private static final String TAG = "lfe";
-    private static final String CLASS = "RecordSchedule";
     private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-
-    private static DateFormat timeFormatter;
-    private static DateFormat dateFormatter;
-    private static DateFormat shortDateFormatter;
-    private static DateFormat dayFormatter;
 
     private static final SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -196,6 +187,7 @@ public class RecordRule {
         return this;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public RecordRule mergeProgram(RecordRule program) {
         // In searches, these fields contain search and additional tables
         // so do not fill in the subtitle and description
@@ -251,52 +243,6 @@ public class RecordRule {
             transcoder = template.transcoder;
         }
         return this;
-    }
-
-
-    public String getCardText(Context context) {
-        StringBuilder build = new StringBuilder();
-        if (isFromSchedule) {
-            int statusRes;
-            if (inactive)
-                statusRes = R.string.sched_inactive;
-            else
-                statusRes = R.string.sched_active;
-            build.append(title).append("\n")
-                    .append(type).append(" - ")
-                    .append(context.getString(statusRes));
-        }
-        if (isFromProgram) {
-            if (timeFormatter == null) {
-                timeFormatter = android.text.format.DateFormat.getTimeFormat(context);
-                dateFormatter = android.text.format.DateFormat.getLongDateFormat(context);
-                shortDateFormatter = android.text.format.DateFormat.getDateFormat(context);
-                dayFormatter = new SimpleDateFormat("EEE ");
-            }
-            build.append(dayFormatter.format(startTime))
-                    .append(dateFormatter.format(startTime)).append(' ')
-                    .append(timeFormatter.format(startTime)).append(" - ")
-                    .append(timeFormatter.format(endTime)).append(" : ");
-            if (encoderName != null)
-
-
-                build.append(encoderName).append(" : ");
-
-            String chanDetails = chanNum + " " + channelName + " " + station;
-            build.append(chanDetails).append("\n");
-            build.append(title).append("  ");
-            if (season > 0 && episode > 0)
-                build.append("S").append(season).append("E").append(episode).append(" ");
-            if (subtitle != null)
-                build.append(subtitle);
-            if (repeat) {
-                if (airDate != null)
-                    build.append(" [").append(shortDateFormatter.format(airDate)).append("]");
-            }
-            else
-                build.append(" [new]");
-        }
-        return build.toString();
     }
 
 }

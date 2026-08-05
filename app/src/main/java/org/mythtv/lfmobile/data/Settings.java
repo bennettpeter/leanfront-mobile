@@ -23,13 +23,18 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import org.mythtv.lfmobile.MyApplication;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class Settings {
+
+    private static final String TAG = "lfm";
+    private static final String CLASS = "Settings";
 
     private Settings() {
     }
@@ -37,11 +42,10 @@ public class Settings {
     public static SharedPreferences.Editor getEditor() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences
                 (MyApplication.getAppContext());
-        SharedPreferences.Editor editor = prefs.edit();
-        return editor;
+        return prefs.edit();
     }
 
-    // Omit the "pref_" prefix when calling this
+    // Omit the "pref_" prefix when calling this.
     // This adds prefxxxx_ to string where xxxx is the group
     // null group or "Default" = empty string
     // If group value not found return default value.
@@ -78,24 +82,24 @@ public class Settings {
 
     public static int getInt(String key, @Nullable String group) {
         String str = getString(key, group).trim();
-        if (str.length() == 0)
+        if (str.isEmpty())
             return 0;
         try {
             return Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
             return 0;
         }
     }
 
     public static float getFloat(String key, @Nullable String group) {
         String str = getString(key, group).trim();
-        if (str.length() == 0)
+        if (str.isEmpty())
             return 0f;
         try {
             return Float.parseFloat(str);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            Log.e(TAG, CLASS + " Exception ", e);
             return 0f;
         }
     }
