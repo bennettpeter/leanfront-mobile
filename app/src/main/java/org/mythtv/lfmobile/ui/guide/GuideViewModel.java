@@ -24,7 +24,6 @@ import java.util.GregorianCalendar;
 public class GuideViewModel extends ViewModel {
     public static final int TIMESLOT_SIZE = 30; //minutes
     // 8 time slots = 4 hours of guide data at a time
-    public static final int TIMESLOTS = 8;
     private static DateFormat mTimeFormatter;
     private static DateFormat mDateFormatter;
     private static DateFormat mDayFormatter;
@@ -41,12 +40,22 @@ public class GuideViewModel extends ViewModel {
     ArrayList<ProgSlot> progList = new ArrayList<>();
     MutableLiveData<ArrayList<ProgSlot>> progLiveData = new MutableLiveData<>();
     String allTitle;
+    public int timeSlots;
 
     public GuideViewModel() {
         Context context = MyApplication.getAppContext();
         allTitle = context.getString(R.string.all_title) + "\t";
         chanGroupIx = 0;
+        timeSlots = Settings.getInt("pref_guide_timeslots");
         loadDefaultGroup();
+    }
+
+    void reset() {
+        timeSlots = Settings.getInt("pref_guide_timeslots");
+        timeslotList.clear();
+        progList.clear();
+        dateLiveData.postValue(timeslotList);
+        progLiveData.postValue(progList);
     }
 
     void refresh(boolean resetTimeslots) {
@@ -75,7 +84,7 @@ public class GuideViewModel extends ViewModel {
         }
         Date time = new Date(guideStartTime.getTime());
         timeslotList.clear();
-        for (int ix = 0; ix < TIMESLOTS; ix++) {
+        for (int ix = 0; ix < timeSlots; ix++) {
             timeslotList.add(mDayFormatter.format(time) + mDateFormatter.format(time) + " " + mTimeFormatter.format(time));
             time.setTime(time.getTime() + TIMESLOT_SIZE * 60 * 1000);
         }
@@ -120,7 +129,7 @@ public class GuideViewModel extends ViewModel {
             chanLiveData.postValue(chanList);
             progLiveData.postValue(progList);
         });
-        Date guideEndTime = new Date(guideStartTime.getTime() + TIMESLOT_SIZE * TIMESLOTS * 60000);
+        Date guideEndTime = new Date(guideStartTime.getTime() + TIMESLOT_SIZE * timeSlots * 60000L);
 //        call.params = new Object[]{Integer.valueOf(chanGroupId), guideStartTime, guideEndTime};
         call.args.put("CHANGROUPID", chanGroupId);
         call.args.put("STARTTIME", guideStartTime);
@@ -151,11 +160,11 @@ public class GuideViewModel extends ViewModel {
             int adapterPos = progList.size();
             // Add an empty row to the progList
             Date timeSlot = new Date(guideStartTime.getTime());
-            for (int count = 0; count < TIMESLOTS; count++) {
+            for (int count = 0; count < timeSlots; count++) {
                 int pos;
                 if (count == 0)
                     pos = ProgSlot.POS_LEFT;
-                else if (count == TIMESLOTS - 1)
+                else if (count == timeSlots - 1)
                     pos = ProgSlot.POS_RIGHT;
                 else
                     pos = ProgSlot.POS_MIDDLE;
@@ -175,7 +184,7 @@ public class GuideViewModel extends ViewModel {
                 float fPos = (float) lPos / 1000.0f;
                 // Start position is the slot wherein the show starts.
                 int startPos = (int) (fPos);
-                if (startPos >= TIMESLOTS) continue;
+                if (startPos >= timeSlots) continue;
                 if (startPos < 0) startPos = 0;
 
                 lPos = (program.endTime.getTime() - guideStartTime.getTime()) / (TIMESLOT_SIZE * 60);
@@ -184,7 +193,7 @@ public class GuideViewModel extends ViewModel {
                 // unless it ends in the same slot as it starts.
                 int endPos = (int) (fPos);
                 if (endPos <= 0) continue;
-                if (endPos >= TIMESLOTS) endPos = TIMESLOTS;
+                if (endPos >= timeSlots) endPos = timeSlots;
                 if (endPos == startPos) ++endPos;
 
                 for (int ix = adapterPos + startPos; ix < adapterPos + endPos; ix++) {

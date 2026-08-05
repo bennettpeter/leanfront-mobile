@@ -129,6 +129,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                     return false;
                 });
 
+        myFindPreference ("pref_guide_timeslots")
+                .setOnPreferenceChangeListener((pref,action) -> {
+                    ((EditTextPreference)pref).setText(validateNumber(action, 1, 16, 8));
+                    return false;
+                });
+
         myFindPreference ("pref_land_bottomnav")
                 .setOnPreferenceChangeListener((pref,action) -> {
                     requireActivity().recreate();

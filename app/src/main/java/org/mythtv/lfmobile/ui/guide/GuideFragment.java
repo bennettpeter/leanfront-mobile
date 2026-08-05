@@ -69,6 +69,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     private boolean internalScroll;
     private MenuProvider menuProvider;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private int timeSlots;
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
@@ -76,7 +77,11 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
         model = new ViewModelProvider(this).get(GuideViewModel.class);
         binding = FragmentGuideBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
+        int timeSlots = Settings.getInt("pref_guide_timeslots");
+        if (timeSlots != this.timeSlots) {
+            model.reset();
+            this.timeSlots = timeSlots;
+        }
         Context context = binding.datelist.getContext();
         DividerItemDecoration dec1 = new DividerItemDecoration(binding.datelist.getContext(), DividerItemDecoration.HORIZONTAL);
         Drawable vertDivider = AppCompatResources.getDrawable(context,R.drawable.vert_divider);
@@ -93,7 +98,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
         model.dateLiveData.observe(getViewLifecycleOwner(), (list) -> dateAdapter.notifyDataSetChanged());
         binding.datelist.addItemDecoration(dec1);
         binding.datelist.addItemDecoration(dec2);
-        GridLayoutManager mgr1 = new GridLayoutManager(getContext(), GuideViewModel.TIMESLOTS);
+        GridLayoutManager mgr1 = new GridLayoutManager(getContext(), model.timeSlots);
         binding.datelist.setLayoutManager(mgr1);
 
         binding.dateScrollView.setOnScrollChangeListener((View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> {
@@ -139,7 +144,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
         });
         binding.proglist.addItemDecoration(dec1);
         binding.proglist.addItemDecoration(dec2);
-        GridLayoutManager mgr = new GridLayoutManager(getContext(), GuideViewModel.TIMESLOTS);
+        GridLayoutManager mgr = new GridLayoutManager(getContext(), model.timeSlots);
         binding.proglist.setLayoutManager(mgr);
 
         binding.proglist.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -335,28 +340,28 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 holder.timeText.setText(item);
                 if (position == 0) {
                     holder.leftText.setText("<<");
-                    holder.leftText.setOnClickListener((v) -> {
-                        fragment.handler.postDelayed(() -> {
-                            fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() - GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
-                            fragment.refresh(false, true, 'R');
-                        }, 100);
-                    });
+                    holder.leftText.setOnClickListener((v)
+                            -> fragment.handler.postDelayed(() -> {
+                        fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime()
+                                - fragment.model.timeSlots * GuideViewModel.TIMESLOT_SIZE * 60000L);
+                        fragment.refresh(false, true, 'R');
+                    }, 100));
                 } else holder.leftText.setText(null);
                 if (position == fragment.model.timeslotList.size() - 1) {
                     holder.rightText.setText(">>");
-                    holder.rightText.setOnClickListener((v) -> {
-                        fragment.handler.postDelayed(() -> {
-                            fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() + GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
-                            fragment.refresh(false, true, 'L');
-                        }, 100);
-                    });
+                    holder.rightText.setOnClickListener((v)
+                            -> fragment.handler.postDelayed(() -> {
+                        fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime()
+                                + fragment.model.timeSlots * GuideViewModel.TIMESLOT_SIZE * 60000L);
+                        fragment.refresh(false, true, 'L');
+                    }, 100));
                 } else holder.rightText.setText(null);
             } else holder.timeText.setText("");
         }
 
         @Override
         public int getItemCount() {
-            return GuideViewModel.TIMESLOTS;
+            return fragment.model.timeSlots;
         }
     }
 
@@ -455,18 +460,18 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 if (holder.item.program2 != null && holder.item.program2.recordingStatus != null)
                     status = (status == null ? "(2)" : status + '/') + holder.item.program2.recordingStatus;
                 holder.binding.progStatus.setText(status);
-            }
 
-            if (holder.item.program == null || holder.item.program.recordingStatus == null) {
-                holder.binding.itemPaperclip.setVisibility(View.GONE);
-            } else {
-                holder.binding.itemPaperclip.setVisibility(View.VISIBLE);
+                if (holder.item.program == null || holder.item.program.recordingStatus == null) {
+                    holder.binding.itemPaperclip.setVisibility(View.GONE);
+                } else {
+                    holder.binding.itemPaperclip.setVisibility(View.VISIBLE);
+                }
             }
         }
 
         @Override
         public int getItemCount() {
-            return fragment.model.chanList.size() * GuideViewModel.TIMESLOTS;
+            return fragment.model.chanList.size() * fragment.model.timeSlots;
         }
     }
 

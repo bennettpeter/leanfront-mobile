@@ -177,6 +177,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/pref_guide_title">
+
+    <EditTextPreference
+        android:key="pref_guide_timeslots"
+        android:title="@string/pref_guide_timeslots"
+        app:useSimpleSummaryProvider="true"
+        android:dialogTitle="@string/pref_guide_timeslots"
+        android:defaultValue="8"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/pref_tweaks_title">
 
         <EditTextPreference
