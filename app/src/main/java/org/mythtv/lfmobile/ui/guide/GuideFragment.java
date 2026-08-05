@@ -68,6 +68,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     private GuideViewModel model;
     private boolean internalScroll;
     private MenuProvider menuProvider;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
@@ -335,8 +336,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 if (position == 0) {
                     holder.leftText.setText("<<");
                     holder.leftText.setOnClickListener((v) -> {
-                        Handler h = new Handler(Looper.getMainLooper());
-                        h.postDelayed(() -> {
+                        fragment.handler.postDelayed(() -> {
                             fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() - GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
                             fragment.refresh(false, true, 'R');
                         }, 100);
@@ -345,8 +345,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 if (position == fragment.model.timeslotList.size() - 1) {
                     holder.rightText.setText(">>");
                     holder.rightText.setOnClickListener((v) -> {
-                        Handler h = new Handler(Looper.getMainLooper());
-                        h.postDelayed(() -> {
+                        fragment.handler.postDelayed(() -> {
                             fragment.model.guideStartTime.setTime(fragment.model.guideStartTime.getTime() + GuideViewModel.TIMESLOTS * GuideViewModel.TIMESLOT_SIZE * 60000);
                             fragment.refresh(false, true, 'L');
                         }, 100);

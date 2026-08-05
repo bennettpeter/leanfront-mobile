@@ -48,6 +48,8 @@ public class AsyncBackendCall implements Runnable {
     private final static ExecutorService executor = Executors.newCachedThreadPool();
     private static final String TAG = "lfm";
     private static final String CLASS = "AsyncBackendCall";
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
 
     public AsyncBackendCall(@Nullable OnBackendCallListener listener) {
         this.listener = listener;
@@ -93,7 +95,6 @@ public class AsyncBackendCall implements Runnable {
         } finally {
             if (listener != null) {
                 if (mainThread) {
-                    Handler handler = new Handler(Looper.getMainLooper());
                     handler.post(() -> listener.onPostExecute(this));
                 }
                 else

@@ -357,7 +357,6 @@ public class PlaybackFragment extends Fragment {
             }
         }
         if (subtChecked < subtExtens.length) {
-            Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(this::initializePlayer, 100);
             return;
         }

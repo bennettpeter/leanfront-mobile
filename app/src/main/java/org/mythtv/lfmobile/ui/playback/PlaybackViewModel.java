@@ -225,7 +225,6 @@ public class PlaybackViewModel extends ViewModel implements PlayerView.SizeGette
         });
         call.mainThread = false;
         call.videos.add(video);
-//        call.params = priorFileLeng;
         call.args.put("PRIORLENG", priorFileLeng);
         call.execute(Action.FILELENGTH);
     }
