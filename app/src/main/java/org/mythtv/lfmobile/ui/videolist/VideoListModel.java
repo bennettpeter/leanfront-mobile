@@ -99,10 +99,13 @@ public class VideoListModel extends ViewModel {
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
             return;
-        final String sql = "SELECT recgroup FROM video "
-                + "WHERE rectype = 1 "
-                + "GROUP BY recgroup ORDER BY recgroup";
-        Cursor csr = db.rawQuery(sql, null);
+        boolean hideWatched = Settings.getBoolean("pref_hide_watched");
+        final StringBuilder sql = new StringBuilder("SELECT recgroup FROM video "
+                + "WHERE rectype = 1 ");
+        if (hideWatched)
+            sql.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
+        sql.append("GROUP BY recgroup ORDER BY recgroup");
+        Cursor csr = db.rawQuery(sql.toString(), null);
         if (csr.moveToFirst()) {
             while (!csr.isAfterLast()) {
                 String recgroup = csr.getString(0);
@@ -112,10 +115,12 @@ public class VideoListModel extends ViewModel {
         }
         csr.close();
         categories.clear();
-        final String sql2 = "SELECT category FROM video "
-                + "WHERE rectype = 1 and recgroup != 'Deleted' "
-                + "GROUP BY category ORDER BY category";
-        csr = db.rawQuery(sql2, null);
+        final StringBuilder sql2 = new StringBuilder("SELECT category FROM video "
+                + "WHERE rectype = 1 and recgroup != 'Deleted' ");
+        if (hideWatched)
+            sql2.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
+        sql2.append("GROUP BY category ORDER BY category");
+        csr = db.rawQuery(sql2.toString(), null);
         if (csr.moveToFirst()) {
             while (!csr.isAfterLast()) {
                 if (!csr.isNull(0)) {
@@ -127,7 +132,6 @@ public class VideoListModel extends ViewModel {
         }
         csr.close();
     }
-
 
     void setRecGroup(String recGroup) {
         this.recGroup = recGroup;
@@ -141,6 +145,8 @@ public class VideoListModel extends ViewModel {
             pageType = TYPE_RECGROUP;
         this.title = recGroup;
     }
+
+    @SuppressWarnings("ExtractMethodRecommender")
     private void loadRecGroup(String recGroup) {
         videoList.clear();
         // Add an "All" entry at the top to represent all series together
@@ -159,9 +165,12 @@ public class VideoListModel extends ViewModel {
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
             return;
+        boolean hideWatched = Settings.getBoolean("pref_hide_watched");
         StringBuilder sql = new StringBuilder("SELECT title, MIN(bg_image_url), MIN(card_image) FROM video "
             + "WHERE rectype = 1 ");
         String [] parms;
+        if (hideWatched)
+            sql.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
         if (allTitle.equals(recGroup)) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
             parms = new String[0];
@@ -208,9 +217,12 @@ public class VideoListModel extends ViewModel {
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
             return;
+        boolean hideWatched = Settings.getBoolean("pref_hide_watched");
         StringBuilder sql = new StringBuilder("SELECT * FROM video "
                 + "WHERE rectype = 1 ");
         ArrayList <String> parms = new ArrayList<>();
+        if (hideWatched)
+            sql.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
         if (allTitle.equals(recGroup)) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
         } else if (listingGroup == R.id.category_group) {
@@ -285,18 +297,19 @@ public class VideoListModel extends ViewModel {
         SQLiteDatabase db = dbh.getReadableDatabase();
         if (db == null)
             return;
+        boolean hideWatched = Settings.getBoolean("pref_hide_watched");
         String fnSort = makeTitleSort("filename", '/').toString();
-        String sql = "SELECT * FROM videoview "
-                + "WHERE rectype = 2 "
-                + "AND  filename like ? "
-                + "ORDER BY "
-                + fnSort;
+        StringBuilder sql = new StringBuilder("SELECT * FROM videoview "
+                + "WHERE rectype = 2 ");
+        if (hideWatched)
+            sql.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
+        sql.append("AND  filename like ? ORDER BY ").append(fnSort);
         String [] parms;
         if (!videoPath.isEmpty())
             parms = new String[]{videoPath + "/%"};
         else
             parms = new String[]{"%"};
-        Cursor csr = db.rawQuery(sql, parms);
+        Cursor csr = db.rawQuery(sql.toString(), parms);
         VideoCursorMapper mapper = new VideoCursorMapper();
         String cursubdir = "";
         int startPoint = videoPath.length();
