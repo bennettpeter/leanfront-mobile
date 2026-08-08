@@ -33,7 +33,6 @@
         Afkode, vælg ffmpeg.</string>
   <string name="pberror_recommend_audio">Ikke -understøttet lyd: i leanfront -indstillinger -&gt; Audio Decode,
         Vælg Auto eller FFMPEG, ellers skal du ændre dine Android -lydindstillinger.</string>
-  <string name="pberror_recommend_ignoreextra">Malformet fil: I LeaningFront -indstillinger -&gt; Afspilningsgruppe -&gt; Sæt ignorere ekstra spor.</string>
   <string name="pberror_extractor_array">Fejl: OutofBoundSeException i BundlextractorsAdapter.</string>
   <string name="pberror_button_continue">Fortsætte</string>
   <string name="pberror_button_exit">Udgang</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Sorter ordre</string>
   <string name="pref_seq_ascending">Sorterer stigende</string>
   <string name="pref_seq_descending">Sorter faldende</string>
+  <string name="pref_hide_watched">Skjul overvågede udsendelser</string>
   <string name="pref_tweaks_title">Fremskreden</string>
   <string name="pref_tweaks_desc">Læs dokumentationen, inden du ændrer TS -søgepakker.</string>
   <string name="pref_tweak_ts_search_pkts">TS -søgningspakker (standard 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Afspilningens fremskridt Tekststørrelse i landskabsorientering</string>
   <string name="pref_land_bottomnav">Vis bundnavigation i liggende tilstand.</string>
   <string name="pref_startview_title">Visning af appstart</string>
+  <string name="pref_guide_title">Programguide</string>
+  <string name="pref_guide_timeslots">Antallet af halvtimes tidsrum på hver guideside</string>
   <string name="resume_last">Spil fra sidste legeposition</string>
   <string name="play">Spil fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>

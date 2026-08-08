@@ -33,7 +33,6 @@
         Dekódování, vyberte FFMPEG.</string>
   <string name="pberror_recommend_audio">Nepodporovaný zvuk: v nastavení LeanFront -&gt; Audio Decode,
         Vyberte Auto nebo FFMPEG nebo jinak změnit nastavení zvuku Android.</string>
-  <string name="pberror_recommend_ignoreextra">Malformovaný soubor: V nastavení LeanFront -&gt; Skupina přehrávání -&gt; Nastavit další stopu.</string>
   <string name="pberror_extractor_array">Chyba: OutOfBoundSexception in BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Pokračovat</string>
   <string name="pberror_button_exit">Výstup</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Sřídněte pořadí</string>
   <string name="pref_seq_ascending">Třídit vzestup</string>
   <string name="pref_seq_descending">Třídit klesání</string>
+  <string name="pref_hide_watched">Skrýt sledované pořady</string>
   <string name="pref_tweaks_title">Moderní</string>
   <string name="pref_tweaks_desc">Před změnou paketů vyhledávání TS si prosím přečtěte dokumentaci.</string>
   <string name="pref_tweak_ts_search_pkts">TS vyhledávací pakety (výchozí 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Velikost textu přehrávání v orientaci na krajinu</string>
   <string name="pref_land_bottomnav">Zobrazit spodní navigaci v režimu na šířku.</string>
   <string name="pref_startview_title">Zobrazení při spuštění aplikace</string>
+  <string name="pref_guide_title">Programový průvodce</string>
+  <string name="pref_guide_timeslots">Počet půlhodinových časových úseků na každé stránce průvodce</string>
   <string name="resume_last">Hrajte z poslední hry</string>
   <string name="play">Hrajte od začátku</string>
   <string name="menu_mark_unwatched">Mark As Unhethed</string>

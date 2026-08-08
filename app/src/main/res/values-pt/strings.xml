@@ -33,7 +33,6 @@
         Decode, selecione FFMPEG.</string>
   <string name="pberror_recommend_audio">Áudio não suportado: em configurações de Leanfront -&gt; decodificação de áudio,
         Selecione Auto ou FFMPEG ou altere suas configurações de áudio Android.</string>
-  <string name="pberror_recommend_ignoreextra">Arquivo malformado: nas configurações do Leanfront -&gt; Grupo de reprodução -&gt; Set Ignore Track Extra.</string>
   <string name="pberror_extractor_array">Erro: O outOfBoundSexception no BundledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Continuar</string>
   <string name="pberror_button_exit">Saída</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Ordem de classificação</string>
   <string name="pref_seq_ascending">Classificar ascendente</string>
   <string name="pref_seq_descending">Classificar descendo</string>
+  <string name="pref_hide_watched">Ocultar programas assistidos</string>
   <string name="pref_tweaks_title">Avançado</string>
   <string name="pref_tweaks_desc">Leia a documentação antes de alterar os pacotes de pesquisa do TS.</string>
   <string name="pref_tweak_ts_search_pkts">Pacotes de pesquisa TS (padrão 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Tamanho do texto do progresso da reprodução na orientação da paisagem</string>
   <string name="pref_land_bottomnav">Mostrar navegação inferior no modo paisagem.</string>
   <string name="pref_startview_title">Visualização de inicialização do aplicativo</string>
+  <string name="pref_guide_title">Guia do Programa</string>
+  <string name="pref_guide_timeslots">Número de intervalos de meia hora em cada página do guia</string>
   <string name="resume_last">Jogue da última posição de jogo</string>
   <string name="play">Jogue desde o início</string>
   <string name="menu_mark_unwatched">Marque como não acumulado</string>

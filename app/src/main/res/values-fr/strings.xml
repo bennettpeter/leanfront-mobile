@@ -33,7 +33,6 @@
         Decode, sélectionnez ffmpeg.</string>
   <string name="pberror_recommend_audio">Audio non pris en charge: dans les paramètres Leanfront -&gt; Audio Decode,
         Sélectionnez Auto ou FFMPEG ou modifiez vos paramètres audio Android.</string>
-  <string name="pberror_recommend_ignoreextra">Fichier malformé: dans les paramètres Leanfront -&gt; Group de lecture -&gt; Set Ignore Extra Track.</string>
   <string name="pberror_extractor_array">Erreur: outofboundSexception dans BundledExtractorSAdapter.</string>
   <string name="pberror_button_continue">Continuer</string>
   <string name="pberror_button_exit">Sortie</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Tri</string>
   <string name="pref_seq_ascending">Tri ascendant</string>
   <string name="pref_seq_descending">Trier descendant</string>
+  <string name="pref_hide_watched">Masquer les émissions regardées</string>
   <string name="pref_tweaks_title">Avancé</string>
   <string name="pref_tweaks_desc">Veuillez lire la documentation avant de modifier les paquets de recherche TS.</string>
   <string name="pref_tweak_ts_search_pkts">Paquets de recherche TS (par défaut 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">La lecture de la lecture Taille du texte dans l\'orientation du paysage</string>
   <string name="pref_land_bottomnav">Afficher la navigation inférieure en mode paysage.</string>
   <string name="pref_startview_title">Vue de démarrage de l\'application</string>
+  <string name="pref_guide_title">Guide du programme</string>
+  <string name="pref_guide_timeslots">Nombre de plages horaires d\'une demi-heure dans chaque page du guide</string>
   <string name="resume_last">Jouer de la dernière position de jeu</string>
   <string name="play">Jouer depuis le début</string>
   <string name="menu_mark_unwatched">Marquez comme non fixé</string>

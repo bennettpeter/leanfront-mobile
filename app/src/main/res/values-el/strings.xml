@@ -33,7 +33,6 @@
         Αποκωδικοποίηση, επιλέξτε FFMPEG.</string>
   <string name="pberror_recommend_audio">Μη υποστηριζόμενη ήχο: Στις ρυθμίσεις Leanfront -&gt; Αποκάλυψη ήχου,
         Επιλέξτε Auto ή FFMPEG ή αλλιώς αλλάξτε τις ρυθμίσεις ήχου Android.</string>
-  <string name="pberror_recommend_ignoreextra">Μικρολογημένο αρχείο: Στις ρυθμίσεις LeAnfront -&gt; Ομάδα αναπαραγωγής -&gt; Set Ignore Extra Track.</string>
   <string name="pberror_extractor_array">Σφάλμα: OutOfBoundSexception στο BundledExtractorSAdapter.</string>
   <string name="pberror_button_continue">Συνεχίζω</string>
   <string name="pberror_button_exit">Εξοδος</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Ταξινόμηση</string>
   <string name="pref_seq_ascending">Ταξινόμηση</string>
   <string name="pref_seq_descending">Ταξινόμηση φθίνουσας</string>
+  <string name="pref_hide_watched">Απόκρυψη προβολών</string>
   <string name="pref_tweaks_title">Προχωρημένος</string>
   <string name="pref_tweaks_desc">Διαβάστε την τεκμηρίωση πριν αλλάξετε τα πακέτα αναζήτησης TS.</string>
   <string name="pref_tweak_ts_search_pkts">Πακέτα αναζήτησης TS (προεπιλογή 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Μέγεθος κειμένου προόδου αναπαραγωγής στον προσανατολισμό του τοπίου</string>
   <string name="pref_land_bottomnav">Εμφάνιση της κάτω πλοήγησης σε οριζόντια λειτουργία.</string>
   <string name="pref_startview_title">Προβολή εκκίνησης εφαρμογής</string>
+  <string name="pref_guide_title">Οδηγός προγράμματος</string>
+  <string name="pref_guide_timeslots">Αριθμός χρονοθυρίδων μισής ώρας σε κάθε σελίδα οδηγού</string>
   <string name="resume_last">Παίξτε από την τελευταία θέση παιχνιδιού</string>
   <string name="play">Παίξτε από την αρχή</string>
   <string name="menu_mark_unwatched">Σηματοδοτείται ως ακατέργαστο</string>

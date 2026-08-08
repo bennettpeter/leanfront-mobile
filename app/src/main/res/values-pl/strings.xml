@@ -33,7 +33,6 @@
         Dekoduj, wybierz FFMPEG.</string>
   <string name="pberror_recommend_audio">Nieobsługiwany dźwięk: w ustawieniach pochylenia -&gt; Dekodę audio,
         Wybierz Auto lub FFMPEG lub zmień ustawienia audio z Androidem.</string>
-  <string name="pberror_recommend_ignoreextra">Zadowolony plik: W ustawieniach leanfront -&gt; Grupa odtwarzania -&gt; Ustaw ignoruj dodatkowy utwór.</string>
   <string name="pberror_extractor_array">Błąd: OutofBoundSexception w BundleDextractractorsAtapter.</string>
   <string name="pberror_button_continue">Kontynuować</string>
   <string name="pberror_button_exit">Wyjście</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Sortować zamówienie</string>
   <string name="pref_seq_ascending">Sortować rosnące</string>
   <string name="pref_seq_descending">Sortować schodzenie</string>
+  <string name="pref_hide_watched">Ukryj oglądane programy</string>
   <string name="pref_tweaks_title">Zaawansowany</string>
   <string name="pref_tweaks_desc">Przeczytaj dokumentację przed zmianą pakietów wyszukiwania TS.</string>
   <string name="pref_tweak_ts_search_pkts">Pakiety wyszukiwania TS (domyślnie 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Odtwarzanie rozmiar tekstu w orientacji krajobrazu</string>
   <string name="pref_land_bottomnav">Pokaż dolną nawigację w trybie poziomym.</string>
   <string name="pref_startview_title">Widok uruchamiania aplikacji</string>
+  <string name="pref_guide_title">Przewodnik po programie</string>
+  <string name="pref_guide_timeslots">Liczba półgodzinnych przedziałów czasowych na każdej stronie przewodnika</string>
   <string name="resume_last">Graj z ostatniej pozycji gry</string>
   <string name="play">Grać od początku</string>
   <string name="menu_mark_unwatched">Znak jako nieuczciony</string>

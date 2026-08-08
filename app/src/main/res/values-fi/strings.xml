@@ -33,7 +33,6 @@
         Decode, valitse FFMPEG.</string>
   <string name="pberror_recommend_audio">Tuettu ääni: LeanFront -asetukset -&gt; Audio Decode,
         Valitse auto tai ffmpeg tai muuta muuten Android -ääniasetuksiasi.</string>
-  <string name="pberror_recommend_ignoreextra">Väärin muotoiltu tiedosto: LeanFront -asetuksissa -&gt; Toistoryhmä -&gt; Set Ohita ylimääräinen kappale.</string>
   <string name="pberror_extractor_array">VIRHE: Outfoundsexception bundledExtractorsadapter.</string>
   <string name="pberror_button_continue">Jatkaa</string>
   <string name="pberror_button_exit">Poistuminen</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Lajitella järjestys</string>
   <string name="pref_seq_ascending">Lajitella nouseva</string>
   <string name="pref_seq_descending">Lajitella</string>
+  <string name="pref_hide_watched">Piilota katsotut ohjelmat</string>
   <string name="pref_tweaks_title">Edistynyt</string>
   <string name="pref_tweaks_desc">Lue asiakirjat ennen TS -hakupakettien vaihtamista.</string>
   <string name="pref_tweak_ts_search_pkts">TS -hakupaketit (oletus 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Toiston edistymisen tekstin koko maisemasuunnassa</string>
   <string name="pref_land_bottomnav">Näytä pohjanavigointi vaakatilassa.</string>
   <string name="pref_startview_title">Sovelluksen käynnistysnäkymä</string>
+  <string name="pref_guide_title">Ohjelmaopas</string>
+  <string name="pref_guide_timeslots">Puolen tunnin aikavälit kullakin opassivulla</string>
   <string name="resume_last">Pelata viimeisimmästä pelialueesta</string>
   <string name="play">Pelaaminen alusta alkaen</string>
   <string name="menu_mark_unwatched">Merkitä</string>

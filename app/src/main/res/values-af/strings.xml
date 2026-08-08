@@ -33,7 +33,6 @@
         Dekodeer, kies ffmpeg.</string>
   <string name="pberror_recommend_audio">Onondersteunde klank: in instellings in Leanfront -&gt; klankdekode
         Kies Auto of FFMPEG of verander u Android -klankinstellings anders.</string>
-  <string name="pberror_recommend_ignoreextra">Misvormde lêer: in Leanfront Instellings -&gt; Playback Group -&gt; Set Ignoreer Extra Track.</string>
   <string name="pberror_extractor_array">Fout: OutOfBoundSexception in BundeLextractorsAdapter.</string>
   <string name="pberror_button_continue">Aanhou</string>
   <string name="pberror_button_exit">Uitgaan</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Sorteer bestelling</string>
   <string name="pref_seq_ascending">Sorteer stygend</string>
   <string name="pref_seq_descending">Sorteer dalend</string>
+  <string name="pref_hide_watched">Versteek gekykte programme</string>
   <string name="pref_tweaks_title">Gevorderd</string>
   <string name="pref_tweaks_desc">Lees die dokumentasie voordat u TS -soekpakkies verander.</string>
   <string name="pref_tweak_ts_search_pkts">TS -soekpakkies (standaard 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Afspeel vordering teksgrootte in landskapsoriëntasie</string>
   <string name="pref_land_bottomnav">Wys ondernavigasie in landskapmodus.</string>
   <string name="pref_startview_title">App opstart-aansig</string>
+  <string name="pref_guide_title">Programgids</string>
+  <string name="pref_guide_timeslots">Aantal halfuur-tydgleuwe in elke gidsbladsy</string>
   <string name="resume_last">Speel uit die laaste speelposisie</string>
   <string name="play">Speel van die begin af</string>
   <string name="menu_mark_unwatched">Merk so onbewustelik</string>

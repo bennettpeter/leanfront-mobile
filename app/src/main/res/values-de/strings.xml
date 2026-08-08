@@ -33,7 +33,6 @@
         Dekodieren Sie, wählen Sie FFMPEG.</string>
   <string name="pberror_recommend_audio">Nicht unterstützter Audio: In Leanfront -Einstellungen -&gt; Audio Decodo,,
         Wählen Sie Auto oder FFMPEG oder ändern Sie Ihre Android -Audioeinstellungen.</string>
-  <string name="pberror_recommend_ignoreextra">Fehlformierte Datei: In Leanfront -Einstellungen -&gt; Wiedergabegruppe -&gt; Ignorieren Sie den zusätzlichen Track.</string>
   <string name="pberror_extractor_array">Fehler: OutofboundSexception in BundledextractorsAdapter.</string>
   <string name="pberror_button_continue">Weitermachen</string>
   <string name="pberror_button_exit">Ausfahrt</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Sortieren Sie die Reihenfolge</string>
   <string name="pref_seq_ascending">Sortieren aufsteigend</string>
   <string name="pref_seq_descending">Sortieren absteigend</string>
+  <string name="pref_hide_watched">Gesehene Sendungen ausblenden</string>
   <string name="pref_tweaks_title">Fortschrittlich</string>
   <string name="pref_tweaks_desc">Bitte lesen Sie die Dokumentation, bevor Sie die TS -Suchpakete ändern.</string>
   <string name="pref_tweak_ts_search_pkts">TS -Suchpakete (Standard 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Wiedergabe Fortschritt Textgröße in der Landschaftsorientierung</string>
   <string name="pref_land_bottomnav">Untere Navigation im Querformat anzeigen.</string>
   <string name="pref_startview_title">App-Startansicht</string>
+  <string name="pref_guide_title">Programm</string>
+  <string name="pref_guide_timeslots">Anzahl der halbstündigen Zeitfenster auf jeder Leitfadenseite</string>
   <string name="resume_last">Spielen Sie von der letzten Spielposition ab</string>
   <string name="play">Von Anfang an spielen</string>
   <string name="menu_mark_unwatched">Markieren Sie als ungefolgt</string>

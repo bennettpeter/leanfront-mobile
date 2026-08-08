@@ -33,7 +33,6 @@
         Decoderen, selecteer FFMPEG.</string>
   <string name="pberror_recommend_audio">Niet -ondersteunde audio: in Leanfront -instellingen -&gt; Audiocode,
         Selecteer Auto of FFMPEG of wijzig uw Android -audio -instellingen anders.</string>
-  <string name="pberror_recommend_ignoreextra">Misvormd bestand: in Leanfront -instellingen -&gt; afspeelgroep -&gt; Set Agneer Extra Track negeren.</string>
   <string name="pberror_extractor_array">Fout: OutofBoundsException in BundledExractorsAdapter.</string>
   <string name="pberror_button_continue">Doorgaan</string>
   <string name="pberror_button_exit">Uitgang</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Sorteer volgorde</string>
   <string name="pref_seq_ascending">Sorteer stijgende</string>
   <string name="pref_seq_descending">Sorteren dalen</string>
+  <string name="pref_hide_watched">Verberg bekeken programma\'s</string>
   <string name="pref_tweaks_title">Geavanceerd</string>
   <string name="pref_tweaks_desc">Lees de documentatie voordat u TS -zoekpakketten wijzigt.</string>
   <string name="pref_tweak_ts_search_pkts">Ts zoekpakketten (standaard 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Afspeel voortgangstekstgrootte in landschapsoriëntatie</string>
   <string name="pref_land_bottomnav">Toon navigatie onderaan in liggende modus.</string>
   <string name="pref_startview_title">App-opstartweergave</string>
+  <string name="pref_guide_title">Programmagids</string>
+  <string name="pref_guide_timeslots">Aantal tijdvakken van een half uur op elke gidspagina</string>
   <string name="resume_last">Speel vanuit de laatste speelpositie</string>
   <string name="play">Speel vanaf het begin</string>
   <string name="menu_mark_unwatched">Markeer als niet -uitgesproken</string>

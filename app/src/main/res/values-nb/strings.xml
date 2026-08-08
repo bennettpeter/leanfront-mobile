@@ -33,7 +33,6 @@
         Avkode, velg FFMPEG.</string>
   <string name="pberror_recommend_audio">Usupport lyd: I Leanfront -innstillinger -&gt; Audio Decode,
         Velg Auto eller FFMPEG eller ellers endre Android -lydinnstillingene.</string>
-  <string name="pberror_recommend_ignoreextra">Malforded File: I LeanFront Innstillinger -&gt; Playback Group -&gt; Sett ignorerer ekstra spor.</string>
   <string name="pberror_extractor_array">Feil: OutofBoundSexception i BackledExtractorsAdapter.</string>
   <string name="pberror_button_continue">Fortsette</string>
   <string name="pberror_button_exit">Gå</string>
@@ -111,6 +110,7 @@
   <string name="pref_seq_ascdesc">Sorter ordre</string>
   <string name="pref_seq_ascending">Sorter stigende</string>
   <string name="pref_seq_descending">Sorter nedover</string>
+  <string name="pref_hide_watched">Skjul sett programmer</string>
   <string name="pref_tweaks_title">Avansert</string>
   <string name="pref_tweaks_desc">Les dokumentasjonen før du endrer TS -søkepakker.</string>
   <string name="pref_tweak_ts_search_pkts">TS -søkepakker (standard 2600)</string>
@@ -121,6 +121,8 @@
   <string name="pref_duration_textsize">Avspilling Fremgangstekststørrelse i landskapsorientering</string>
   <string name="pref_land_bottomnav">Vis bunnnavigering i liggende modus.</string>
   <string name="pref_startview_title">Appoppstartsvisning</string>
+  <string name="pref_guide_title">Programguide</string>
+  <string name="pref_guide_timeslots">Antall halvtimes tidsluker på hver guideside</string>
   <string name="resume_last">Spill fra siste lekestilling</string>
   <string name="play">Spill fra start</string>
   <string name="menu_mark_unwatched">Mark som uovertruffen</string>
