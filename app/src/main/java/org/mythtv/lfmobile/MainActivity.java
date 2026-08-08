@@ -1,5 +1,6 @@
 package org.mythtv.lfmobile;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
@@ -24,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.data.XmlNode;
 import org.mythtv.lfmobile.databinding.ActivityMainBinding;
+import org.mythtv.lfmobile.ui.settings.SettingsFragment;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     // StringArray(R.array.startview_pref_values)
     static int[] navItems = {
             R.id.nav_videolist,
-            R.id.nav_settings,
+//            R.id.nav_settings,
             R.id.nav_guide,
             R.id.nav_recrules,
             R.id.nav_upcoming
@@ -140,6 +143,26 @@ public class MainActivity extends AppCompatActivity {
             myFragment.startFetch();
             return true;
         }
+        if (item.getItemId() == R.id.nav_settings) {
+            NavHostFragment navHostFragment =
+                    (NavHostFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.nav_host_fragment_content_main);
+            NavController navController = null;
+            if (navHostFragment != null)
+                navController = navHostFragment.getNavController();
+            if (navController != null)
+                navController.navigate(R.id.nav_settings);
+            return true;
+        }
+        if (item.getItemId() == android.R.id.home && myFragment instanceof SettingsFragment) {
+            ActionBar bar = getSupportActionBar();
+            if (bar != null)
+                bar.setDisplayOptions(0);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

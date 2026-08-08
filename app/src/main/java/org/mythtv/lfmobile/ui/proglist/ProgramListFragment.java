@@ -156,6 +156,9 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
                     MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
                     if (refreshItem != null)
                         refreshItem.setVisible(false);
+                    MenuItem settingsItem = menu.findItem(R.id.nav_settings);
+                    if (settingsItem != null)
+                        settingsItem.setVisible(false);
                 }
                 if (model.type == ProgramListModel.TYPE_UPCOMING) {
                     MenuItem item = menu.add(R.id.upcoming_group, R.id.id_show_all, Menu.NONE, R.string.menu_show_all);

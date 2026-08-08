@@ -245,6 +245,9 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
                 MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
                 if (refreshItem != null)
                     refreshItem.setVisible(false);
+                MenuItem settingsItem = menu.findItem(R.id.nav_settings);
+                if (settingsItem != null)
+                    settingsItem.setVisible(false);
             }
 
             @Override
