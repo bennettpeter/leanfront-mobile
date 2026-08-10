@@ -27,6 +27,7 @@ import org.mythtv.lfmobile.data.Settings;
 import org.mythtv.lfmobile.data.XmlNode;
 import org.mythtv.lfmobile.databinding.ActivityMainBinding;
 import org.mythtv.lfmobile.ui.settings.SettingsFragment;
+import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
     };
     public static int startupView;
     static String[] views;
+
+    public static final String LIST_PAGETYPE = "LIST_PAGETYPE";
+    public static final String LIST_RECGROUP = "LIST_RECGROUP";
+    public static final String LIST_TITLE = "LIST_TITLE";
+    public static final String LIST_VIDEOPATH = "LIST_VIDEOPATH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,12 +164,22 @@ public class MainActivity extends AppCompatActivity {
             ActionBar bar = getSupportActionBar();
             if (bar != null)
                 bar.setDisplayOptions(0);
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            resetApp();
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public void resetApp() {
+        Intent intent = new Intent(this, MainActivity.class);
+        VideoListModel vlm = VideoListModel.getInstance();
+        if (vlm != null) {
+            intent.putExtra(LIST_PAGETYPE,vlm.getPageType());
+            intent.putExtra(LIST_RECGROUP, vlm.getRecGroup());
+            intent.putExtra(LIST_TITLE,vlm.getTitle());
+            intent.putExtra(LIST_VIDEOPATH,vlm.getVideoPath());
+        }
+        startActivity(intent);
+        finish();
     }
 
     @Override

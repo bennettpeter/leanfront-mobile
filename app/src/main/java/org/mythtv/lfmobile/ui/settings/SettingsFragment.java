@@ -1,8 +1,6 @@
 package org.mythtv.lfmobile.ui.settings;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -239,10 +237,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
     }
 
         public void onBack() {
-        Activity activity = requireActivity();
-        Intent intent = new Intent(activity, MainActivity.class);
-        activity.startActivity(intent);
-        activity.finish();
+        ((MainActivity)requireActivity()).resetApp();
     }
 
     public static String validateNumber(Object action, int min, int max, int defValue) {

@@ -41,9 +41,13 @@ public class VideoListModel extends ViewModel {
     String videoPath = "";
     // R.id.recgroup_group, R.id.all_group, R.id.video_group, R.id.category_group
     int listingGroup;
+    boolean restored;
 
     public VideoListModel() {
-        addCloseable(() -> instance = null);
+        addCloseable(() -> {
+            if (instance == this)
+                instance = null;
+        });
         instance = this;
         videos = new MutableLiveData<>();
         pageType = TYPE_RECGROUP;
@@ -376,6 +380,22 @@ public class VideoListModel extends ViewModel {
             }
         }
         return titleSort;
+    }
+
+    public int getPageType() {
+        return pageType;
+    }
+
+    public String getRecGroup() {
+        return recGroup;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
     }
 
 }

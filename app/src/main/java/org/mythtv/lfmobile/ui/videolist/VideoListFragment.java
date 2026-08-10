@@ -3,6 +3,7 @@ package org.mythtv.lfmobile.ui.videolist;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -106,6 +107,16 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         videoListModel =
                 new ViewModelProvider(this).get(VideoListModel.class);
 
+        Intent intent = requireActivity().getIntent();
+        int pageType = intent.getIntExtra(MainActivity.LIST_PAGETYPE,0);
+        if (pageType != 0 && !videoListModel.restored) {
+            videoListModel.pageType = pageType;
+            videoListModel.recGroup = intent.getStringExtra(MainActivity.LIST_RECGROUP);
+            videoListModel.title = intent.getStringExtra(MainActivity.LIST_TITLE);
+            videoListModel.videoPath = intent.getStringExtra(MainActivity.LIST_VIDEOPATH);
+            videoListModel.restored = true;
+        }
+
         binding = FragmentVideolistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -191,9 +202,8 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     public boolean navigateUp() {
-        View v = ((MainActivity) requireActivity()).mainView;
-        DrawerLayout drawer = v.findViewById(R.id.drawer_layout);
-        if (drawer == null) {
+        int orientation = requireActivity().getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             requireActivity().getOnBackPressedDispatcher().onBackPressed();
             return true;
         }
