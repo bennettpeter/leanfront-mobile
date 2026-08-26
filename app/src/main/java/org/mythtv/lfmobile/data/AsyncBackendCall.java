@@ -509,6 +509,7 @@ public class AsyncBackendCall implements Runnable {
                             if (task == Action.FILELENGTH) {
                                 Log.e(TAG, CLASS + " Exception getting file length.", e);
                             }
+                            break;
                         } finally {
                             if (response != null)
                                 response.close();
