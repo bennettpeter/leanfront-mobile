@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
+    <org.mythtv.lfmobile.ui.videolist.ImageOverlay
         android:id="@+id/item_image"
         android:layout_width="284dp"
         android:layout_height="160dp"
         android:maxWidth="284dp"
         android:maxHeight="160dp"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

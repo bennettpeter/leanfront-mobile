@@ -110,7 +110,7 @@ public class VideoCursorMapper  {
         String airdate = cursor.getString(airdateIndex);
         String starttime = cursor.getString(starttimeIndex);
         String endtime = cursor.getString(endtimeIndex);
-        String duration = cursor.getString(durationIndex);
+        int duration = cursor.getInt(durationIndex);
         String prodyear = cursor.getString(prodyearIndex);
         String filename = cursor.getString(filenameIndex);
         long filesize = cursor.getLong(filesizeIndex);
@@ -165,6 +165,8 @@ public class VideoCursorMapper  {
                 .storageGroup(storageGroup)
                 .lastUsed(lastUsed)
                 .showRecent(showRecent)
+                .frameRate(-1)
+                .lastPlayed(-1)
                 .build();
     }
 

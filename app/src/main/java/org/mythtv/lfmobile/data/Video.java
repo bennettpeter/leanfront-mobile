@@ -39,7 +39,7 @@ public final class Video implements Parcelable {
     // Format yyyy-mm-ddThh:mm:ssZ
     public final String starttime;
     public String endtime;
-    public final String duration;
+    public int duration;
     public final String prodyear;
     public final String filename;
     public final long filesize;
@@ -48,11 +48,11 @@ public final class Video implements Parcelable {
     // From MythTV libmyth/programtypes.h
     // This flag is also set for videos as needed.
     public static final int FL_WATCHED = 0x00000200;
-    public static final int FL_BOOKMARK = 0x00000010;
+//    public static final int FL_BOOKMARK = 0x00000010;
     public String videoProps;
     // These values changed between V31 and V32 of MythTV
-    public static final int V31_VID_DAMAGED = 0x00000020;
-    public static final int V32_VID_DAMAGED = 0x00000400;
+//    public static final int V31_VID_DAMAGED = 0x00000020;
+//    public static final int V32_VID_DAMAGED = 0x00000400;
     public String videoPropNames;
     public String category;
     // Channel values
@@ -63,9 +63,10 @@ public final class Video implements Parcelable {
     // From status table
     public final long lastUsed;
     public boolean showRecent;
-
-    // Actions used by multiple classes
-
+    // Not in DB
+    public float frameRate;
+    // last Play pos in seconds
+    public long lastPlay;
 
     private Video(
             final long id,
@@ -87,7 +88,7 @@ public final class Video implements Parcelable {
             final String airdate,
             final String starttime,
             final String endtime,
-            final String duration,
+            final int duration,
             final String prodyear,
             final String filename,
             final long   filesize,
@@ -101,7 +102,9 @@ public final class Video implements Parcelable {
             final String category,
             final String storageGroup,
             final long lastUsed,
-            final boolean showRecent) {
+            final boolean showRecent,
+            final float frameRate,
+            final long lastPlay) {
         this.id = id;
         this.rectype = rectype;
         this.title = title;
@@ -136,6 +139,8 @@ public final class Video implements Parcelable {
         this.storageGroup = storageGroup;
         this.lastUsed = lastUsed;
         this.showRecent = showRecent;
+        this.frameRate = frameRate;
+        this.lastPlay = lastPlay;
     }
 
     private Video(Parcel in) {
@@ -158,7 +163,7 @@ public final class Video implements Parcelable {
         airdate = in.readString();
         starttime = in.readString();
         endtime = in.readString();
-        duration = in.readString();
+        duration = in.readInt();
         prodyear = in.readString();
         filename = in.readString();
         filesize = in.readLong();
@@ -173,6 +178,8 @@ public final class Video implements Parcelable {
         storageGroup = in.readString();
         lastUsed = in.readLong();
         showRecent = in.readInt() != 0;
+        frameRate = in.readFloat();
+        lastPlay = in.readLong();
     }
 
     public static final Creator<Video> CREATOR = new Creator<>() {
@@ -217,7 +224,7 @@ public final class Video implements Parcelable {
         dest.writeString(airdate);
         dest.writeString(starttime);
         dest.writeString(endtime);
-        dest.writeString(duration);
+        dest.writeInt(duration);
         dest.writeString(prodyear);
         dest.writeString(filename);
         dest.writeLong  (filesize);
@@ -235,6 +242,8 @@ public final class Video implements Parcelable {
         if (showRecent)
             showRecentInt = 1;
         dest.writeInt(showRecentInt);
+        dest.writeFloat(frameRate);
+        dest.writeLong(lastPlay);
     }
 
     @NonNull
@@ -327,7 +336,7 @@ public final class Video implements Parcelable {
         private String airdate;
         private String starttime;
         private String endtime;
-        private String duration;
+        private int duration;
         private String prodyear;
         private String filename;
         private long   filesize;
@@ -342,6 +351,8 @@ public final class Video implements Parcelable {
         private String storageGroup;
         private long lastUsed;
         private boolean showRecent;
+        private float frameRate;
+        private long lastPlay;
 
         public VideoBuilder id(long id) {
             this.id = id;
@@ -438,7 +449,7 @@ public final class Video implements Parcelable {
             return this;
         }
 
-        public VideoBuilder duration(String duration) {
+        public VideoBuilder duration(int duration) {
             this.duration = duration;
             return this;
         }
@@ -513,6 +524,15 @@ public final class Video implements Parcelable {
             return this;
         }
 
+        public VideoBuilder frameRate(float frameRate) {
+            this.frameRate = frameRate;
+            return this;
+        }
+
+        public VideoBuilder lastPlayed(long lastPlay) {
+            this.lastPlay = lastPlay;
+            return this;
+        }
         public Video build() {
             return new Video(
                     id,
@@ -548,7 +568,9 @@ public final class Video implements Parcelable {
                     category,
                     storageGroup,
                     lastUsed,
-                    showRecent
+                    showRecent,
+                    frameRate,
+                    lastPlay
             );
         }
     }

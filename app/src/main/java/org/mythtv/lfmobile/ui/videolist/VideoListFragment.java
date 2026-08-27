@@ -411,6 +411,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
 
     }
 
+    @SuppressWarnings("CommentedOutCode")
     static String getEpisodeSubtitle(Video video) {
         StringBuilder subtitle = new StringBuilder();
 //                if (video.isDamaged())
@@ -540,6 +541,14 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                 holder.playIconView.setVisibility(View.INVISIBLE);
             }
 
+            if (video.type == Video.TYPE_EPISODE
+                || video.type == Video.TYPE_VIDEO) {
+                holder.itemImageView.setVideo(video);
+                setupPlayPos(video, holder.itemImageView);
+            }
+            else
+                holder.itemImageView.setVideo(null);
+
             if (video.type == Video.TYPE_VIDEODIR) {
                 holder.itemImageView.setImageResource(R.drawable.ic_folder_24px);
             }
@@ -572,9 +581,58 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         }
     }
 
+    public static void setupPlayPos(Video video, View image) {
+        AsyncBackendCall call = new AsyncBackendCall((taskRunner) -> {
+            if (video.frameRate <= 0 && taskRunner.getTasks()[0] == Action.GET_STREAM_INFO) {
+                XmlNode streamInfo = taskRunner.getXmlResult();
+                float frameRate = 0.0f;
+                float avgFrameRate = 0.0f;
+                int duration = 0;
+                if (streamInfo != null) {
+                    try {
+                        XmlNode vsi = streamInfo.getNode("VideoStreamInfos");
+                        vsi = vsi.getNode("VideoStreamInfo");
+                        while (vsi != null && !"V".equals(vsi.getString("CodecType")))
+                            vsi = vsi.getNextSibling();
+                        frameRate = Float.parseFloat(vsi != null ? vsi.getString("FrameRate") : "0");
+                        avgFrameRate = Float.parseFloat(vsi != null ? vsi.getString("AvgFrameRate") : "0");
+                        duration = Integer.parseInt(vsi != null ? vsi.getString("Duration") : "0");
+                    } catch (Exception e) {
+                        Log.e(TAG, CLASS + " Exception", e);
+                    }
+                }
+                if (frameRate == 0.0)
+                    frameRate = avgFrameRate;
+                if (frameRate > 1.0)
+                    video.frameRate = frameRate;
+                if (duration > 0 && duration < 60*60*24)
+                    video.duration = duration;
+            }
+            long lastPlay = ((long[])taskRunner.response)[0];
+            long posLastPlayed = ((long[])taskRunner.response)[1];
+            if (lastPlay <= 0 && posLastPlayed >= 0 && video.frameRate > 0.0f) {
+                lastPlay = posLastPlayed * 100000 / (long) (video.frameRate * 100.0f);
+            }
+            if (lastPlay >= 0)
+                // convert to seconds
+                video.lastPlay = lastPlay / 1000;
+            if (image != null)
+                image.postInvalidate();
+        });
+        call.videos.add(video);
+        call.videos.add(video);
+        int task0;
+        if (video.frameRate < 0)
+            task0 = Action.GET_STREAM_INFO;
+        else
+            task0 = Action.DUMMY;
+        call.execute(task0, Action.GET_BOOKMARK);
+    }
+
+
     private static class VideoListViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView itemImageView;
+        private final ImageOverlay itemImageView;
         private final TextView itemTitleView;
         private final TextView itemDateView;
         private final TextView itemDescView;

@@ -54,6 +54,7 @@ import java.util.TimeZone;
  * to be placed into a local database
  */
 
+@SuppressWarnings({"CharsetObjectCanBeUsed", "SpellCheckingInspection"})
 @SuppressLint("SimpleDateFormat")
 public class VideoDbBuilder {
     public static final String[] XMLTAGS_PROGRAM = {"Programs", "Program"};
@@ -92,6 +93,7 @@ public class VideoDbBuilder {
     public static final String XMLTAG_RELEASEDATE = "ReleaseDate";
     public static final String XMLTAG_ID = "Id";
     public static final String XMLTAG_WATCHED = "Watched";
+    public static final String XMLTAG_LENGTH = "Length";
     public static final String VALUE_WATCHED = (Integer.valueOf(Video.FL_WATCHED)).toString();
 
     // Channels
@@ -211,7 +213,7 @@ public class VideoDbBuilder {
             String starttime = null;
             String endtime = null;
             String baseUrl;
-            long duration = 0;
+            int duration = 0;
             String progflags = "0";
             String videoProps = "0";
             String videoPropNames = null;
@@ -243,7 +245,7 @@ public class VideoDbBuilder {
                     Date dateStart = dateFormat.parse(startTS + "+0000");
                     Date dateEnd = dateFormat.parse(endtime + "+0000");
                     startTimeSecs = dateStart != null ? dateStart.getTime() : 0;
-                    duration = ((dateEnd != null ? dateEnd.getTime() : 0) - startTimeSecs);
+                    duration = (int)((dateEnd != null ? dateEnd.getTime() : 0) - startTimeSecs) / 1000;
                 } catch (ParseException e) {
                     Log.e(TAG, CLASS + " Exception ", e);
                 }
@@ -278,6 +280,9 @@ public class VideoDbBuilder {
                     progflags = VALUE_WATCHED;
                 else
                     progflags = "0";
+                String lengthStr = programNode.getString(XMLTAG_LENGTH);
+                if (lengthStr != null && !lengthStr.isEmpty())
+                    duration = Integer.parseInt(lengthStr) * 60;
             }
             String recordedid;
             String videoFileName;
