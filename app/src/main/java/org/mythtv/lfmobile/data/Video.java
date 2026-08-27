@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
+
 /**
  * Video is an object that holds the various metadata associated with a single video.
  */
@@ -196,7 +198,9 @@ public final class Video implements Parcelable {
 
     @Override
     public boolean equals(Object m) {
-        return m instanceof Video && id == ((Video) m).id;
+        return m instanceof Video
+                && rectype == ((Video) m).rectype
+                && Objects.equals(recordedid,(((Video) m).recordedid));
     }
 
     public int describeContents() {

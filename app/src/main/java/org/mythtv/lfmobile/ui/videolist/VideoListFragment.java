@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,6 +58,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -74,7 +77,9 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     private MenuProvider menuProvider;
     private ArrayList <Video> videoList = new ArrayList<>();
     private OnBackPressedCallback bpCallback;
-
+    private Video selectedVideo;
+    private VideoListAdapter adapter;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,7 +126,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         View root = binding.getRoot();
 
         RecyclerView recyclerView = binding.recyclerviewVideolist;
-        VideoListAdapter adapter = new VideoListAdapter(this);
+        adapter = new VideoListAdapter(this);
         recyclerView.setAdapter(adapter);
         videoListModel.videos.observe(getViewLifecycleOwner(), (list) -> {
             adapter.submitList(videoList = new ArrayList<>(list));
@@ -231,6 +236,17 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     || (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
                     && !videoListModel.videoPath.isEmpty()));
         }
+        if (selectedVideo != null) {
+            handler.postDelayed( () -> {
+                setupPlayPos(selectedVideo, getActivity(), () -> {
+                    List<Video> videos = adapter.getCurrentList();
+                    int ix = videos.indexOf(selectedVideo);
+                    if (ix >= 0)
+                        adapter.notifyItemChanged(ix);
+                    selectedVideo = null;
+                });
+            }, 1000);
+        }
         videoListModel.refresh();
     }
 
@@ -294,6 +310,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
 
     private void onItemMore(View v, int position) {
         Video video = videoList.get(position);
+        selectedVideo = video;
         if (video.rectype != VideoContract.VideoEntry.RECTYPE_RECORDING
             && video.rectype != VideoContract.VideoEntry.RECTYPE_VIDEO) {
             onItemClick(position);
@@ -347,7 +364,10 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                         case Action.DELETE:
                         case Action.DELETE_AND_RERECORD:
                         case Action.ALLOW_RERECORD:
-                            AsyncBackendCall call2 = new AsyncBackendCall(null);
+                            AsyncBackendCall call2 = new AsyncBackendCall
+                                (unused ->{
+                                refresh();
+                            });
                             call2.videos.add(video);
                             call2.execute(item.getItemId());
                             return true;
@@ -358,7 +378,6 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             });
         call.videos.add(video);
         call.execute(Action.GET_BOOKMARK);
-
     }
 
     private void play(Video video, boolean fromBookmark) {
@@ -404,11 +423,10 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             intent.putExtra(PlaybackActivity.BOOKMARK, bookmark[0]);
             intent.putExtra(PlaybackActivity.FRAMERATE, frameRate);
             activity.startActivity(intent);
-
         });
         call.videos.add(video);
         call.execute(Action.GET_STREAM_INFO, Action.GET_BOOKMARK);
-
+        selectedVideo = video;
     }
 
     @SuppressWarnings("CommentedOutCode")
@@ -444,15 +462,18 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             super(new DiffUtil.ItemCallback<>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
-                    if (oldItem.id == -1 && newItem.id == -1)
-                        return oldItem.title.equals(newItem.title);
-                    return oldItem.id == newItem.id;
+//                    if (oldItem.id == -1 && newItem.id == -1)
+//                        return oldItem.title.equals(newItem.title);
+//                    return oldItem.id == newItem.id;
+//                    return oldItem == newItem;
+                    return oldItem.rectype == newItem.rectype && Objects.equals(oldItem.recordedid,newItem.recordedid);
                 }
 
                 @Override
                 public boolean areContentsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
                     return Objects.equals(oldItem.cardImageUrl, newItem.cardImageUrl)
-                            && getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem));
+                            && getEpisodeSubtitle(oldItem).equals(getEpisodeSubtitle(newItem))
+                            && oldItem.lastPlay == newItem.lastPlay;
 
                 }
             });
@@ -544,7 +565,8 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             if (video.type == Video.TYPE_EPISODE
                 || video.type == Video.TYPE_VIDEO) {
                 holder.itemImageView.setVideo(video);
-                setupPlayPos(video, holder.itemImageView);
+                setupPlayPos(video, fragment.getActivity(),
+                        holder.itemImageView::invalidate);
             }
             else
                 holder.itemImageView.setVideo(null);
@@ -581,7 +603,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         }
     }
 
-    public static void setupPlayPos(Video video, View image) {
+    public static void setupPlayPos(Video video, Activity activity, Runnable refresher) {
         AsyncBackendCall call = new AsyncBackendCall((taskRunner) -> {
             if (video.frameRate <= 0 && taskRunner.getTasks()[0] == Action.GET_STREAM_INFO) {
                 XmlNode streamInfo = taskRunner.getXmlResult();
@@ -616,8 +638,12 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             if (lastPlay >= 0)
                 // convert to seconds
                 video.lastPlay = lastPlay / 1000;
-            if (image != null)
-                image.postInvalidate();
+            else
+                video.lastPlay = 0;
+            if (activity != null && refresher != null)
+                activity.runOnUiThread(refresher);
+//            if (image != null)
+//                image.postInvalidate();
         });
         call.videos.add(video);
         call.videos.add(video);
