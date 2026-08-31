@@ -204,7 +204,6 @@ public class VideoListModel extends ViewModel {
                 csr.moveToNext();
             }
         }
-        videos.postValue(videoList);
         csr.close();
     }
 
@@ -260,7 +259,6 @@ public class VideoListModel extends ViewModel {
                 csr.moveToNext();
             }
         }
-        videos.postValue(videoList);
         csr.close();
 
     }
@@ -351,7 +349,6 @@ public class VideoListModel extends ViewModel {
                 csr.moveToNext();
             }
         }
-        videos.postValue(videoList);
         csr.close();
     }
 

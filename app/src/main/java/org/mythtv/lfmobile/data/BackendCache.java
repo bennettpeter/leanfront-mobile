@@ -1,5 +1,10 @@
 package org.mythtv.lfmobile.data;
 
+import android.content.SharedPreferences;
+
+import org.mythtv.lfmobile.MyApplication;
+import org.mythtv.lfmobile.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,28 +30,27 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     // Values from XmlNode
     public HashMap<String, String> sHostMap;
     public boolean isConnected;
-    public boolean wsdlDone;
     // from GetHostName
     public String sHostName;
     // Authorization token
     public String authorization;
     public boolean loginNeeded;
+    private static final String demoName = MyApplication.getAppContext().getString(R.string.demo_name);
 
 
     private BackendCache() {
         init();
     }
 
-    public void init() {
+    public synchronized void init() {
         sBackendIP = Settings.getString("pref_backend");
-        sBackendIP = XmlNode.fixIpAddress((sBackendIP));
+        sBackendIP = fixIpAddress((sBackendIP));
         sMainPort = Settings.getString("pref_http_port");
         sHostMap = new HashMap<>();
-        wsdlDone = false;
         getWsdl();
     }
 
-    public void getWsdl() {
+    private void getWsdl() {
         AsyncBackendCall call = new AsyncBackendCall( this);
         call.execute(Action.DVR_WSDL, Action.BACKEND_INFO, Action.GET_HOSTNAME);
     }
@@ -59,17 +63,33 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
 
     public static void flush() {
         if (singleton != null)
-            singleton = null;
+            singleton.init();
     }
+
+    public String fixIpAddress(String ipAddress) {
+        if (ipAddress != null) {
+            ipAddress = ipAddress.replace(" ","");
+            if (ipAddress.indexOf(':') > -1 && ipAddress.charAt(0)!= '[')
+                ipAddress = "[" + ipAddress + "]";
+            if (ipAddress.equals(demoName)) {
+                ipAddress =  MyApplication.getAppContext().getString(R.string.demo_ip);
+                SharedPreferences.Editor editor = Settings.getEditor();
+                Settings.putString(editor,"pref_backend_userid", MyApplication.getAppContext().getString(R.string.demo_user));
+                Settings.putString(editor,"pref_backend_passwd", MyApplication.getAppContext().getString(R.string.demo_pswd));
+                editor.commit();
+            }
+        }
+        return ipAddress;
+    }
+
     @Override
-    public void onPostExecute(AsyncBackendCall taskRunner) {
+    public synchronized void onPostExecute(AsyncBackendCall taskRunner) {
         if (taskRunner == null)
             return;
         int [] tasks = taskRunner.getTasks();
         ArrayList<XmlNode> resultsList = taskRunner.getXmlResults();
         XmlNode xml = taskRunner.getXmlResult();
         if (tasks[0] == Action.DVR_WSDL) {
-            wsdlDone = false;
             canUpdateRecGroup = false;
             canForgetHistory = false;
             if (xml == null)
@@ -77,7 +97,6 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
             XmlNode schemaNode = xml.getNode(new String[]{"types", "schema"}, 1);
             XmlNode parameterNode;
             if (schemaNode != null) {
-                wsdlDone = true;
                 // Check if the UpdateRecordedMetadata method takes the RecGroup parameter
                 parameterNode = schemaNode.getNode
                         (new String[]{"UpdateRecordedMetadata", "complexType", "sequence", "RecGroup"}, 0);

@@ -23,8 +23,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.data.Settings;
-import org.mythtv.lfmobile.data.XmlNode;
 import org.mythtv.lfmobile.databinding.ActivityMainBinding;
 import org.mythtv.lfmobile.ui.settings.SettingsFragment;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     };
     public static int startupView;
     static String[] views;
+    public boolean reloadDB;
 
     public static final String LIST_PAGETYPE = "LIST_PAGETYPE";
     public static final String LIST_RECGROUP = "LIST_RECGROUP";
@@ -196,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         String backendIP = Settings.getString("pref_backend");
-        backendIP = XmlNode.fixIpAddress(backendIP);
+        backendIP = BackendCache.getInstance().fixIpAddress(backendIP);
         if (backendIP.isEmpty()) {
             navController.navigate(R.id.nav_settings);
         }

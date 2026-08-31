@@ -22,9 +22,10 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.mythtv.lfmobile.MainActivity;
 import org.mythtv.lfmobile.MainActivityModel;
+import org.mythtv.lfmobile.MyApplication;
 import org.mythtv.lfmobile.R;
 import org.mythtv.lfmobile.data.BackendCache;
-import org.mythtv.lfmobile.ui.videolist.VideoListModel;
+import org.mythtv.lfmobile.data.Settings;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements MainActivity.MyFragment
 {
@@ -36,6 +37,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setPreferencesFromResource(R.xml.preferences,null);
+        BackendCache bCache = BackendCache.getInstance();
         myFindPreference ("pref_backend")
                 .setOnPreferenceChangeListener((pref,action) -> {
                 String newVal = action.toString();
@@ -44,7 +46,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                 newVal = newVal.replace("[","");
                 newVal = newVal.replace("]","");
                 ((EditTextPreference)pref).setText(newVal);
-                BackendCache.getInstance().authorization = null;
+                bCache.authorization = null;
+                bCache.loginNeeded = false;
                 reloadDB = true;
                 return false;
             });
@@ -58,7 +61,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
         myFindPreference ("pref_backend_userid")
                 .setOnPreferenceChangeListener((pref, action) -> {
                     ((EditTextPreference) pref).setText(action.toString().trim());
-                    BackendCache.getInstance().authorization = null;
+                    bCache.authorization = null;
+                    bCache.loginNeeded = false;
                     reloadDB = true;
                     return false;
                 });
@@ -66,7 +70,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
         myFindPreference ("pref_backend_passwd")
                 .setOnPreferenceChangeListener((pref, action) -> {
                     ((EditTextPreference) pref).setText(action.toString().trim());
-                    BackendCache.getInstance().authorization = null;
+                    bCache.authorization = null;
+                    bCache.loginNeeded = false;
                     reloadDB = true;
                     return false;
                 });
@@ -75,6 +80,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                 .setOnPreferenceChangeListener((pref,action) -> {
                     ((EditTextPreference)pref).setText(validateNumber(action, 1000, 90000, 10000));
                     reloadDB = true;
+                    bCache.loginNeeded = false;
                     return false;
                 });
 
@@ -142,7 +148,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
                     return false;
                 });
 
-        if (!BackendCache.getInstance().loginNeeded) {
+        String user = Settings.getString("pref_backend_userid");
+        if (!bCache.loginNeeded || user.equals(getString(R.string.demo_user))) {
             myFindPreference ("pref_backend_userid").setVisible(false);
             myFindPreference ("pref_backend_passwd").setVisible(false);
         }
@@ -188,6 +195,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
         isActive = true;
         reloadDB = false;
         super.onResume();
+        BackendCache bCache = BackendCache.getInstance();
         if (menuProvider != null) {
             requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
         }
@@ -198,7 +206,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
             bar.setHomeAsUpIndicator(R.drawable.west_24px);
             bar.setHomeButtonEnabled(true);
         }
-        if (BackendCache.getInstance().loginNeeded) {
+        String user = Settings.getString("pref_backend_userid").trim();
+        if (bCache.loginNeeded && !user.equals(MyApplication.getAppContext()
+                .getString(R.string.demo_user))) {
             myFindPreference ("pref_backend_userid").setVisible(true);
             myFindPreference ("pref_backend_passwd").setVisible(true);
         } else {
@@ -226,14 +236,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements MainAc
             requireActivity().removeMenuProvider(menuProvider);
             requireActivity().invalidateMenu();
         }
-        if (reloadDB && VideoListModel.getInstance() != null)
-            VideoListModel.getInstance().startFetch();
+        ((MainActivity)requireActivity()).reloadDB = reloadDB;
+
         reloadDB = false;
-        isActive = false;
         super.onPause();
+        BackendCache.flush();
+        isActive = false;
         MainActivityModel viewModel = new ViewModelProvider(requireActivity()).get(MainActivityModel.class);
-        if (BackendCache.getInstance().authorization == null)
-            viewModel.restartMythTask();
+        viewModel.restartMythTask();
     }
 
         public void onBack() {

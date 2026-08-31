@@ -254,13 +254,14 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     @Override
     public void onResume() {
         super.onResume();
+        MainActivity activity = ((MainActivity)requireActivity());
         if (bpCallback != null)
             bpCallback.setEnabled(true);
-        ((MainActivity)requireActivity()).myFragment = this;
+        activity.myFragment = this;
         if (menuProvider != null) {
-            requireActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
+            activity.addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
-        ActionBar bar = ((AppCompatActivity)requireActivity()).getSupportActionBar();
+        ActionBar bar = activity.getSupportActionBar();
         if (bar != null) {
             bar.setTitle("MythTV");
             if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP)
@@ -268,7 +269,11 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             else if (videoListModel.pageType == VideoListModel.TYPE_SERIES)
                 bar.setSubtitle(videoListModel.title);
         }
-        refresh();
+        if (activity.reloadDB) {
+            videoListModel.startFetch();
+            activity.reloadDB = false;
+        } else
+            refresh();
     }
 
     @Override

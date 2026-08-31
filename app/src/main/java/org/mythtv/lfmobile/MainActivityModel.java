@@ -1,6 +1,7 @@
 package org.mythtv.lfmobile;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
@@ -38,6 +39,10 @@ public class MainActivityModel extends ViewModel {
     long lastRestartTime;
     boolean startupDone;
 
+    public MainActivityModel() {
+        instance = this;
+    }
+
     public static MainActivityModel getInstance() {
         return instance;
     }
@@ -70,11 +75,12 @@ public class MainActivityModel extends ViewModel {
         @Override
         public synchronized void run() {
             try {
+                BackendCache bCache =  BackendCache.getInstance();
                 boolean loginTried = false;
                 boolean loginNeededNow = false;
                 boolean connection = false;
                 String backendIP = Settings.getString("pref_backend");
-                backendIP = XmlNode.fixIpAddress(backendIP);
+                backendIP = bCache.fixIpAddress(backendIP);
                 if (backendIP.isEmpty())
                     return;
                 while (!connection) {
@@ -97,15 +103,16 @@ public class MainActivityModel extends ViewModel {
                         return;
 
                     int toastMsg = 0;
-                    BackendCache bCache =  BackendCache.getInstance();
+
                     if (loginNeededNow) {
                         bCache.loginNeeded = true;
+                        String user = Settings.getString("pref_backend_userid").trim();
                         try {
                             String result;
                             String urlBuilder = XmlNode.mythApiUrl(null,
                                     "/Myth/LoginUser") +
                                     "?UserName=" +
-                                    URLEncoder.encode(Settings.getString("pref_backend_userid").trim(), "UTF-8") +
+                                    URLEncoder.encode(user, "UTF-8") +
                                     "&Password=" +
                                     URLEncoder.encode(Settings.getString("pref_backend_passwd").trim(), "UTF-8");
                             XmlNode loginXml = XmlNode.fetch(urlBuilder, "POST");
@@ -116,14 +123,23 @@ public class MainActivityModel extends ViewModel {
                                 bCache.authorization = null;
                             } else {
                                 bCache.authorization = result;
-                                bCache.getWsdl();
+                                BackendCache.flush();
                                 VideoListModel model = VideoListModel.getInstance();
                                 if (model != null)
                                     model.startFetch();
                             }
                         } catch (Exception e) {
                             Log.e(TAG, CLASS + " Exception in LoginUser.", e);
-                            BackendCache.getInstance().authorization = null;
+                            bCache.authorization = null;
+                        }
+                        // If the demo user had been used but is no longer authorized, remove the demo
+                        // user and password so that the settings do not display it
+                        if (bCache.authorization == null && user.equals(MyApplication.getAppContext()
+                                .getString(R.string.demo_user))) {
+                            SharedPreferences.Editor editor = Settings.getEditor();
+                            Settings.putString(editor,"pref_backend_userid", "");
+                            Settings.putString(editor,"pref_backend_passwd", "");
+                            editor.commit();
                         }
                         loginTried = true;
                     }
@@ -151,7 +167,7 @@ public class MainActivityModel extends ViewModel {
                             if (Settings.getString("pref_backend_userid").isEmpty()
                                     || Settings.getString("pref_backend_passwd").isEmpty()
                                     || loginTried) {
-                                BackendCache.getInstance().loginNeeded = true;
+                                bCache.loginNeeded = true;
                                 toastMsg = R.string.msg_backend_login_req;
                                 navigate.postValue(R.id.nav_settings);
                             } else
@@ -175,9 +191,7 @@ public class MainActivityModel extends ViewModel {
                     }
                 }
                 // We now have a connection
-                BackendCache bCache =  BackendCache.getInstance();
-                if (!bCache.wsdlDone)
-                    bCache.getWsdl();
+                BackendCache.flush();
             } catch (Exception ex) {
                 Log.e(TAG, CLASS + " MythTask Exception ", ex);
             }
