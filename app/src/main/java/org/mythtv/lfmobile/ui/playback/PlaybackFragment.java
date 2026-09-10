@@ -2,9 +2,13 @@ package org.mythtv.lfmobile.ui.playback;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -61,6 +65,7 @@ import org.mythtv.lfmobile.data.AsyncBackendCall;
 import org.mythtv.lfmobile.data.CommBreakTable;
 import org.mythtv.lfmobile.data.MythHttpDataSource;
 import org.mythtv.lfmobile.data.Settings;
+import org.mythtv.lfmobile.data.Video;
 import org.mythtv.lfmobile.databinding.FragmentPlaybackBinding;
 import org.mythtv.lfmobile.player.MyExtractorsFactory;
 import org.mythtv.lfmobile.player.MyRenderersFactory;
@@ -118,7 +123,10 @@ public class PlaybackFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(PlaybackViewModel.class);
         Intent intent =  requireActivity().getIntent();
-        viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO, Video.class);
+        else
+            viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
         viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0L);
         viewModel.frameRate = intent.getFloatExtra(PlaybackActivity.FRAMERATE, 30f);
     }
@@ -486,11 +494,16 @@ public class PlaybackFragment extends Fragment {
         }
     }
     public void hideNavigation () {
-        if (requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
-            View view = requireView();
-            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+        if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
+            Window window = activity.getWindow();
+            WindowInsetsControllerCompat windowInsetsController =
+                    WindowCompat.getInsetsController(window, window.getDecorView());
+            windowInsetsController.setSystemBarsBehavior(
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
         }
     }
 
