@@ -25,9 +25,6 @@ tasks.withType(JavaCompile).configureEach {
 android {
     namespace 'org.mythtv.lfmobile'
     compileSdk = 36
-    lintOptions{
-        disable 'MissingTranslation'
-    }
 
     defaultConfig {
         applicationId "org.mythtv.leanfront"
@@ -65,6 +62,9 @@ android {
         viewBinding true
     }
     ndkVersion '28.2.13676358'
+    lint {
+        disable 'MissingTranslation'
+    }
 
 }
 
