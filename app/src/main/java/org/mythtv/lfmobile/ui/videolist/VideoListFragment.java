@@ -92,12 +92,20 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     videoListModel.setRecGroup(videoListModel.recGroup);
                     refresh();
                 }
-                else if (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR
-                    && !videoListModel.videoPath.isEmpty()) {
-                    videoListModel.setVideos("..");
+                else if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP
+                    && videoListModel.listingGroup != R.id.all_group) {
+                    videoListModel.listingGroup = R.id.all_group;
+                    videoListModel.setRecGroup(videoListModel.allTitle);
                     refresh();
-                }
-                else {
+                } else if (videoListModel.pageType == VideoListModel.TYPE_VIDEODIR) {
+                    if (videoListModel.videoPath.isEmpty()) {
+                        videoListModel.listingGroup = R.id.all_group;
+                        videoListModel.setRecGroup(videoListModel.allTitle);
+                    } else {
+                        videoListModel.setVideos("..");
+                    }
+                    refresh();
+                } else {
                     setEnabled(false);
                     requireActivity().getOnBackPressedDispatcher().onBackPressed();
                 }
@@ -108,19 +116,20 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
+        MainActivity activity = (MainActivity)requireActivity();
         videoListModel =
                 new ViewModelProvider(this).get(VideoListModel.class);
 
-        Intent intent = requireActivity().getIntent();
+        Intent intent = activity.getIntent();
         int pageType = intent.getIntExtra(MainActivity.LIST_PAGETYPE,0);
         if (pageType != 0 && !videoListModel.restored) {
             videoListModel.pageType = pageType;
             videoListModel.recGroup = intent.getStringExtra(MainActivity.LIST_RECGROUP);
             videoListModel.title = intent.getStringExtra(MainActivity.LIST_TITLE);
             videoListModel.videoPath = intent.getStringExtra(MainActivity.LIST_VIDEOPATH);
-            videoListModel.restored = true;
+            videoListModel.listingGroup = intent.getIntExtra(MainActivity.LIST_LISTGROUP,0);
         }
+        videoListModel.restored = true;
 
         binding = FragmentVideolistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -151,6 +160,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             public void onPrepareMenu(@NonNull Menu menu) {
                 menu.removeGroup(R.id.recgroup_group);
                 menu.removeGroup(R.id.all_group);
+                menu.removeGroup(R.id.recents_group);
                 menu.removeGroup(R.id.video_group);
                 menu.removeGroup(R.id.category_group);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -162,6 +172,12 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     item.setCheckable(true);
                     if (videoListModel.allTitle.equals(videoListModel.recGroup))
                         item.setChecked(true);
+
+                    item = menu.add(R.id.recents_group, 0, seq++, videoListModel.recentsTitle);
+                    item.setCheckable(true);
+                    if (videoListModel.recentsTitle.equals(videoListModel.recGroup))
+                        item.setChecked(true);
+
                     for (int ix = 0; ix < videoListModel.recGroups.size(); ix++) {
                         item = menu.add(R.id.recgroup_group, 0, seq++, videoListModel.recGroups.get(ix));
                         item.setCheckable(true);
@@ -189,6 +205,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                 int groupid = menuItem.getGroupId();
                 if (groupid == R.id.recgroup_group
                 || groupid == R.id.all_group
+                || groupid == R.id.recents_group
                 || groupid == R.id.video_group
                 || groupid == R.id.category_group ) {
                     int id = menuItem.getItemId();
@@ -237,15 +254,14 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     && !videoListModel.videoPath.isEmpty()));
         }
         if (selectedVideo != null) {
-            handler.postDelayed( () -> {
+            handler.postDelayed( () ->
                 setupPlayPos(selectedVideo, getActivity(), () -> {
                     List<Video> videos = adapter.getCurrentList();
                     int ix = videos.indexOf(selectedVideo);
                     if (ix >= 0)
                         adapter.notifyItemChanged(ix);
                     selectedVideo = null;
-                });
-            }, 1000);
+                }), 1000);
         }
         videoListModel.refresh();
     }
@@ -254,10 +270,11 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     @Override
     public void onResume() {
         super.onResume();
-        MainActivity activity = ((MainActivity)requireActivity());
         if (bpCallback != null)
             bpCallback.setEnabled(true);
+        MainActivity activity = ((MainActivity)requireActivity());
         activity.myFragment = this;
+        activity.model.currentNavItem = R.id.nav_videolist;
         if (menuProvider != null) {
             activity.addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
@@ -293,8 +310,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     private void onItemClick(int position) {
-        if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP
-        || videoListModel.pageType == VideoListModel.TYPE_CATEGORY) {
+        if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP) {
             videoListModel.pageType = VideoListModel.TYPE_SERIES;
             videoListModel.setTitle(videoList.get(position).title);
             refresh();
@@ -351,8 +367,11 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                             menu.add(Menu.NONE, Action.DELETE, ix++, R.string.menu_delete);
                         }
                     }
-                    //noinspection UnusedAssignment
                     menu.add(Menu.NONE, Action.ALLOW_RERECORD, ix++, R.string.menu_rerecord);
+                }
+                if (video.showRecent) {
+                    //noinspection UnusedAssignment
+                    menu.add(Menu.NONE, Action.REMOVE_RECENT, ix++, R.string.menu_remove_from_recent);
                 }
                 popup.setOnMenuItemClickListener( (MenuItem item) -> {
                     switch (item.getItemId()) {
@@ -369,10 +388,9 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                         case Action.DELETE:
                         case Action.DELETE_AND_RERECORD:
                         case Action.ALLOW_RERECORD:
+                        case Action.REMOVE_RECENT:
                             AsyncBackendCall call2 = new AsyncBackendCall
-                                (unused ->{
-                                refresh();
-                            });
+                                (unused -> refresh());
                             call2.videos.add(video);
                             call2.execute(item.getItemId());
                             return true;
@@ -467,10 +485,6 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             super(new DiffUtil.ItemCallback<>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull Video oldItem, @NonNull Video newItem) {
-//                    if (oldItem.id == -1 && newItem.id == -1)
-//                        return oldItem.title.equals(newItem.title);
-//                    return oldItem.id == newItem.id;
-//                    return oldItem == newItem;
                     return oldItem.rectype == newItem.rectype && Objects.equals(oldItem.recordedid,newItem.recordedid);
                 }
 
@@ -647,8 +661,6 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                 video.lastPlay = 0;
             if (activity != null && refresher != null)
                 activity.runOnUiThread(refresher);
-//            if (image != null)
-//                image.postInvalidate();
         });
         call.videos.add(video);
         call.videos.add(video);

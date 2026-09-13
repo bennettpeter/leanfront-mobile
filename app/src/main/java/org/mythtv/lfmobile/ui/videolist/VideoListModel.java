@@ -22,10 +22,10 @@ import java.util.List;
 public class VideoListModel extends ViewModel {
 
     MutableLiveData<List<Video>> videos;
+    // Note that TYPE_RECGROUP also covers category list and recents list
     static final int TYPE_RECGROUP = 1;
     static final int TYPE_SERIES = 2;
     static final int TYPE_VIDEODIR = 3;
-    static final int TYPE_CATEGORY = 4;
     int pageType;
     // Rec group being shown
     String recGroup;
@@ -36,10 +36,12 @@ public class VideoListModel extends ViewModel {
     ArrayList <String> categories = new ArrayList<>();
     private static VideoListModel instance;
     String allTitle;
+    String recentsTitle;
     String videosTitle;
     // videoPath must not have any leading or trailing slash
     String videoPath = "";
-    // R.id.recgroup_group, R.id.all_group, R.id.video_group, R.id.category_group
+    // listingGroup is one of R.id.recgroup_group, R.id.all_group, R.id.video_group,
+    // R.id.category_group, R.id.recents_group
     int listingGroup;
     boolean restored;
 
@@ -55,6 +57,7 @@ public class VideoListModel extends ViewModel {
         allTitle = context.getString(R.string.all_title) + "\t";
         recGroup = allTitle;
         listingGroup = R.id.all_group;
+        recentsTitle = context.getString(R.string.recents_title) + "\t";
         videosTitle = context.getString(R.string.group_videos) + "\t";
         setRecGroup(allTitle);
         startFetch();
@@ -83,10 +86,10 @@ public class VideoListModel extends ViewModel {
         startFetch(-1, null, null);
     }
 
-    void refresh() {
+    public void refresh() {
         synchronized(this) {
             loadRecGroupList();
-            if (pageType == TYPE_RECGROUP || pageType == TYPE_CATEGORY)
+            if (pageType == TYPE_RECGROUP)
                 loadRecGroup(recGroup);
             else if (pageType == TYPE_SERIES)
                 loadTitle();
@@ -143,10 +146,9 @@ public class VideoListModel extends ViewModel {
             setVideos("");
             return;
         }
-        if (listingGroup == R.id.category_group)
-            pageType = TYPE_CATEGORY;
-        else
+        else {
             pageType = TYPE_RECGROUP;
+        }
         this.title = recGroup;
     }
 
@@ -170,22 +172,33 @@ public class VideoListModel extends ViewModel {
         if (db == null)
             return;
         boolean hideWatched = Settings.getBoolean("pref_hide_watched");
-        StringBuilder sql = new StringBuilder("SELECT title, MIN(bg_image_url), MIN(card_image) FROM video "
-            + "WHERE rectype = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT title, ");
+        sql.append("MIN(bg_image_url), MIN(card_image) FROM videoview ");
+        if (listingGroup == R.id.recents_group)
+            sql.append("WHERE show_recent = 1 ");
+        else {
+            sql.append("WHERE rectype = 1 ");
+            if (hideWatched)
+                sql.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
+        }
         String [] parms;
-        if (hideWatched)
-            sql.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
-        if (allTitle.equals(recGroup)) {
+        if (listingGroup == R.id.all_group) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
             parms = new String[0];
         } else if (listingGroup == R.id.category_group) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') AND category = ? ");
             parms = new String[]{recGroup};
-        } else {
+        } else if (listingGroup != R.id.recents_group){
             sql.append("AND recgroup = ? ");
             parms = new String[]{recGroup};
         }
-        sql.append("GROUP BY title ORDER BY titlematch");
+        else
+            parms = new String[0];
+        sql.append("GROUP BY titlematch ");
+        if (listingGroup == R.id.recents_group)
+            sql.append("ORDER BY MAX(last_used) desc ");
+        else
+            sql.append("ORDER BY MAX(titlematch) ");
         Cursor csr = db.rawQuery(sql.toString(), parms);
         if (csr.moveToFirst()) {
             while (!csr.isAfterLast()) {
@@ -221,28 +234,36 @@ public class VideoListModel extends ViewModel {
         if (db == null)
             return;
         boolean hideWatched = Settings.getBoolean("pref_hide_watched");
-        StringBuilder sql = new StringBuilder("SELECT * FROM video "
-                + "WHERE rectype = 1 ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM videoview ");
+        if (listingGroup == R.id.recents_group)
+            sql.append("WHERE TRUE ");
+        else
+            sql.append("WHERE rectype = 1 ");
         ArrayList <String> parms = new ArrayList<>();
         if (hideWatched)
             sql.append("AND progflags & ").append(Video.FL_WATCHED).append(" == 0 ");
-        if (allTitle.equals(recGroup)) {
+        if (listingGroup == R.id.all_group) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') ");
         } else if (listingGroup == R.id.category_group) {
             sql.append("AND recgroup NOT IN ('LiveTV','Deleted') AND category = ? ");
             parms.add(recGroup);
-        } else{
+        } else if (listingGroup != R.id.recents_group)  {
             sql.append("AND recgroup = ? ");
             parms.add(recGroup);
         }
-        if (!allTitle.equals(title)) {
+        if (allTitle.equals(title)) {
+            if (listingGroup == R.id.recents_group)
+                sql.append("AND show_recent = 1 ");
+        } else {
             sql.append("AND title = ? ");
             parms.add(title);
         }
         String ascdesc = Settings.getString("pref_seq_ascdesc");
         String sort = Settings.getString("pref_seq");
-        sql.append("ORDER BY ")
-            .append(sort).append(" ").append(ascdesc);
+        sql.append("ORDER BY ");
+        if (listingGroup == R.id.recents_group)
+            sql.append("CASE show_recent WHEN 1 THEN last_used ELSE 0 END DESC, ");
+        sql.append(sort).append(" ").append(ascdesc);
         if ("airdate".equals(sort))
             sql.append(", ")
                 .append("season ").append(ascdesc).append(", ")
@@ -393,6 +414,10 @@ public class VideoListModel extends ViewModel {
 
     public String getVideoPath() {
         return videoPath;
+    }
+
+    public int getListingGroup() {
+        return listingGroup;
     }
 
 }

@@ -2,6 +2,7 @@ package org.mythtv.lfmobile;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
@@ -11,6 +12,8 @@ import androidx.lifecycle.ViewModel;
 
 import org.mythtv.lfmobile.data.BackendCache;
 import org.mythtv.lfmobile.data.Settings;
+import org.mythtv.lfmobile.data.VideoContract;
+import org.mythtv.lfmobile.data.VideoDbHelper;
 import org.mythtv.lfmobile.data.XmlNode;
 import org.mythtv.lfmobile.ui.settings.SettingsFragment;
 import org.mythtv.lfmobile.ui.videolist.VideoListModel;
@@ -38,7 +41,7 @@ public class MainActivityModel extends ViewModel {
     static MainActivityModel instance;
     long lastRestartTime;
     boolean startupDone;
-
+    public int currentNavItem;
     public MainActivityModel() {
         instance = this;
     }
@@ -51,6 +54,19 @@ public class MainActivityModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         instance = null;
+    }
+
+    void cleanupDatabase() {
+        VideoDbHelper dbh = VideoDbHelper.getInstance(MyApplication.getAppContext());
+        SQLiteDatabase db = dbh.getWritableDatabase();
+        if (db != null) {
+            // delete stale entries from bookmark table
+            String where = VideoContract.StatusEntry.COLUMN_LAST_USED + " < ? ";
+            // 60 days in milliseconds
+            String[] selectionArgs = {String.valueOf(System.currentTimeMillis() - 60L * 24 * 60 * 60 * 1000)};
+            // https://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html
+            db.delete(VideoContract.StatusEntry.TABLE_NAME, where, selectionArgs);
+        }
     }
 
     public void startMythTask() {

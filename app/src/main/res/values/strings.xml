@@ -16,6 +16,7 @@
 
     <string name="row_header_channels">Channels</string>
     <string name="all_title">All</string>
+    <string name="recents_title">Recently Viewed</string>
     <string name="group_videos">Videos</string>
     <string name="recgroup_title">Recording Group</string>
     <string name="error_cannot_play">Error: Cannot play the video.</string>
@@ -182,6 +183,7 @@
     <string name="menu_remove_lastplaypos">Remove Last Play Position</string>
     <string name="menu_delete_rerecord">Delete and Allow Rerecord</string>
     <string name="menu_rerecord">Allow Rerecord</string>
+    <string name="menu_remove_from_recent">Remove from Recently Viewed List</string>
 
     <string name="sched_use_template">Use Template</string>
     <string name="sched_search_type">Search Type</string>

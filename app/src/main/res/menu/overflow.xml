@@ -31,6 +31,10 @@
         android:checkableBehavior="all">
     </group>
     <group
+        android:id="@+id/recents_group"
+        android:checkableBehavior="all">
+    </group>
+    <group
         android:id="@+id/video_group"
         android:checkableBehavior="all">
     </group>

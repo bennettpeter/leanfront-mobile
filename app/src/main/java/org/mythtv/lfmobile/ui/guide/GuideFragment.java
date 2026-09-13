@@ -223,6 +223,7 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
                 return false;
             }
         };
+        //noinspection CommentedOutCode
         binding.dateSelect.setOnClickListener((v) -> {
             GregorianCalendar cal = new GregorianCalendar();
             // This would set calendar to the date previously selected.
@@ -262,7 +263,9 @@ public class GuideFragment extends Fragment implements MainActivity.MyFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) requireActivity()).myFragment = this;
+        MainActivity activity = ((MainActivity) requireActivity());
+        activity.myFragment = this;
+        activity.model.currentNavItem = R.id.nav_guide;
         if (menuProvider != null) {
             requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner());
         }

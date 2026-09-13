@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.view.Menu;
 import android.view.View;
@@ -31,8 +33,7 @@ import org.mythtv.lfmobile.ui.videolist.VideoListModel;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class MainActivity extends AppCompatActivity {
-    private MainActivityModel viewModel;
-
+    public MainActivityModel model;
     private AppBarConfiguration mAppBarConfiguration;
     private NavController navController;
     public MyFragment myFragment;
@@ -50,19 +51,22 @@ public class MainActivity extends AppCompatActivity {
     public static int startupView;
     static String[] views;
     public boolean reloadDB;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     public static final String LIST_PAGETYPE = "LIST_PAGETYPE";
     public static final String LIST_RECGROUP = "LIST_RECGROUP";
     public static final String LIST_TITLE = "LIST_TITLE";
     public static final String LIST_VIDEOPATH = "LIST_VIDEOPATH";
+    public static final String LIST_LISTGROUP = "LIST_LISTGROUP";
+    public static final String RESUME_NAVITEM = "RESUME_NAVITEM";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Resources res = getResources();
         views = res.getStringArray(R.array.startview_pref_values);
-        viewModel = new ViewModelProvider(this).get(MainActivityModel.class);
-        MainActivityModel.instance = viewModel;
+        model = new ViewModelProvider(this).get(MainActivityModel.class);
+        MainActivityModel.instance = model;
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mainView = binding.getRoot());
         setSupportActionBar(binding.appBarMain.toolbar);
@@ -70,11 +74,17 @@ public class MainActivity extends AppCompatActivity {
         assert navHostFragment != null;
         navController = navHostFragment.getNavController();
         getStartView();
-        if (!viewModel.startupDone) {
+        if (!model.startupDone) {
             NavGraph navGraph = navController.getNavInflater().inflate(R.navigation.mobile_navigation);
             navGraph.setStartDestination(startupView);
             navController.setGraph(navGraph);
-            viewModel.startupDone = true;
+            model.cleanupDatabase();
+            Intent intent = getIntent();
+            int resumeNav = intent.getIntExtra(MainActivity.RESUME_NAVITEM,0);
+            if (resumeNav > 0)
+                handler.postDelayed(
+                        () -> navController.navigate(resumeNav), 100);
+            model.startupDone = true;
         }
         NavigationView navigationView = binding.navView;
         if (navigationView != null) {
@@ -106,19 +116,19 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             NavigationUI.setupWithNavController(bottomNavigationView, navController);
         }
-        viewModel.toast.observe(this, (Integer msg) -> {
+        model.toast.observe(this, (Integer msg) -> {
             if (msg == 0)
                 return;
             Toast.makeText(this,
                 msg, Toast.LENGTH_LONG)
                 .show();
-            viewModel.toast.setValue(0);
+            model.toast.setValue(0);
         });
-        viewModel.navigate.observe(this, (Integer dest) -> {
+        model.navigate.observe(this, (Integer dest) -> {
             if (dest == 0)
                 return;
             navController.navigate(dest.intValue());
-            viewModel.navigate.setValue(0);
+            model.navigate.setValue(0);
         });
         binding.appBarMain.toolbar.setTitleTextAppearance(this,R.style.ToolbarTitleText);
         binding.appBarMain.toolbar.setSubtitleTextAppearance(this,R.style.ToolbarSubtitleText);
@@ -178,7 +188,9 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(LIST_RECGROUP, vlm.getRecGroup());
             intent.putExtra(LIST_TITLE,vlm.getTitle());
             intent.putExtra(LIST_VIDEOPATH,vlm.getVideoPath());
+            intent.putExtra(LIST_LISTGROUP,vlm.getListingGroup());
         }
+        intent.putExtra(RESUME_NAVITEM,model.currentNavItem);
         startActivity(intent);
         finish();
     }
@@ -201,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         if (backendIP.isEmpty()) {
             navController.navigate(R.id.nav_settings);
         }
-        viewModel.startMythTask();
+        model.startMythTask();
     }
 
     public interface MyFragment  {

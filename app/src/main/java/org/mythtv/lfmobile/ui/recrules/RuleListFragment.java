@@ -143,7 +143,9 @@ public class RuleListFragment extends Fragment implements MainActivity.MyFragmen
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)requireActivity()).myFragment = this;
+        MainActivity activity = ((MainActivity)requireActivity());
+        activity.myFragment = this;
+        activity.model.currentNavItem = R.id.nav_recrules;
         if (menuProvider != null) {
             requireActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
         }

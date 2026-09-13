@@ -195,7 +195,8 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)requireActivity()).myFragment = this;
+        MainActivity activity = ((MainActivity)requireActivity());
+        activity.myFragment = this;
         if (menuProvider != null) {
             requireActivity().addMenuProvider(menuProvider,getViewLifecycleOwner());
         }
@@ -219,6 +220,8 @@ public class ProgramListFragment extends Fragment implements MainActivity.MyFrag
                 }
             }
         }
+        else
+            activity.model.currentNavItem = R.id.nav_upcoming;
         refresh();
     }
 

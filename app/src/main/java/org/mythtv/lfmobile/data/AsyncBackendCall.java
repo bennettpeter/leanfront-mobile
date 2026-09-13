@@ -1,6 +1,9 @@
 package org.mythtv.lfmobile.data;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Looper;
 import android.os.Handler;
 import android.util.Log;
@@ -258,6 +261,29 @@ public class AsyncBackendCall implements Runnable {
                     } catch (IOException | XmlPullParserException e) {
                         Log.e(TAG, CLASS + " Exception ", e);
                     }
+                    break;
+                case Action.REMOVE_RECENT:
+                    Context context = MyApplication.getAppContext();
+                    // Gets the data repository in write mode
+                    VideoDbHelper dbh = VideoDbHelper.getInstance(context);
+                    SQLiteDatabase db = dbh.getWritableDatabase();
+                    if (db == null)
+                        break;
+                    // Create a new map of values, where column names are the keys
+                    ContentValues values = new ContentValues();
+                    values.put(VideoContract.StatusEntry.COLUMN_SHOW_RECENT, 0);
+
+                    // First try an update
+                    String selection = VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH + " = ?";
+                    String[] selectionArgs = {video.videoUrlPath};
+
+                    db.update(
+                            VideoContract.StatusEntry.TABLE_NAME,
+                            values,
+                            selection,
+                            selectionArgs);
+
+                    VideoListModel.getInstance().refresh();
                     break;
                 case Action.COMMBREAK_LOAD: {
                     // params is commBreakTable
@@ -791,6 +817,41 @@ public class AsyncBackendCall implements Runnable {
                                 + video.recordedid + "&Offset=" + pos);
             xmlResult = XmlNode.safeFetch(urlString, "POST");
         }
+
+        // local bookmarks are not supported in this version
+        long localBkmark = 0;
+
+        // Update last used
+        Context context = MyApplication.getAppContext();
+        // Gets the data repository in write mode
+        VideoDbHelper dbh = VideoDbHelper.getInstance(context);
+        SQLiteDatabase db = dbh.getWritableDatabase();
+        if (db == null)
+            return null;
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(VideoContract.StatusEntry.COLUMN_LAST_USED, System.currentTimeMillis());
+        values.put(VideoContract.StatusEntry.COLUMN_BOOKMARK, localBkmark);
+        values.put(VideoContract.StatusEntry.COLUMN_SHOW_RECENT, 1);
+
+        String selection = VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH + " = ?";
+        String[] selectionArgs = {video.videoUrlPath};
+
+        int sqlCount = db.update(
+                VideoContract.StatusEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        if (sqlCount == 0) {
+            // Try an insert instead
+            values.put(VideoContract.StatusEntry.COLUMN_VIDEO_URL_PATH, video.videoUrlPath);
+            // Insert the new row, returning the primary key value of the new row
+            db.insert(VideoContract.StatusEntry.TABLE_NAME,
+                    null, values);
+        }
+
         return xmlResult;
     }
 
