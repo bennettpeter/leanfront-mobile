@@ -15,6 +15,7 @@
   <string name="hint_guide_search">Průvodce vyhledáváním…</string>
   <string name="row_header_channels">Kanály</string>
   <string name="all_title">Vše</string>
+  <string name="recents_title">Nedávno zobrazené</string>
   <string name="group_videos">Videa</string>
   <string name="recgroup_title">Nahrávací skupina</string>
   <string name="error_cannot_play">Chyba: Nelze přehrávat video.</string>
@@ -132,6 +133,7 @@
   <string name="menu_remove_lastplaypos">Odebrat polohu poslední hry</string>
   <string name="menu_delete_rerecord">Smazat a povolte rerecord</string>
   <string name="menu_rerecord">Povolit rerecord</string>
+  <string name="menu_remove_from_recent">Odebrat ze seznamu naposledy zobrazených</string>
   <string name="sched_use_template">Použijte šablonu</string>
   <string name="sched_search_type">Typ vyhledávání</string>
   <string name="sched_title">Titul</string>

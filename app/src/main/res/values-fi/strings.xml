@@ -15,6 +15,7 @@
   <string name="hint_guide_search">Hakuopas…</string>
   <string name="row_header_channels">Kanavat</string>
   <string name="all_title">Kaikki</string>
+  <string name="recents_title">Äskettäin katsottu</string>
   <string name="group_videos">Video</string>
   <string name="recgroup_title">Nauhoitusryhmä</string>
   <string name="error_cannot_play">Virhe: Videoa ei voi toistaa.</string>
@@ -132,6 +133,7 @@
   <string name="menu_remove_lastplaypos">Poista viimeinen peliasento</string>
   <string name="menu_delete_rerecord">Poista ja sallia uudelleenkirje</string>
   <string name="menu_rerecord">Salli Rerekord</string>
+  <string name="menu_remove_from_recent">Poista äskettäin katsottujen luettelosta</string>
   <string name="sched_use_template">Käytä mallia</string>
   <string name="sched_search_type">Hakutyyppi</string>
   <string name="sched_title">Otsikko</string>

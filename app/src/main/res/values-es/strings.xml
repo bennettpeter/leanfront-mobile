@@ -15,6 +15,7 @@
   <string name="hint_guide_search">Guía de búsqueda…</string>
   <string name="row_header_channels">Canales</string>
   <string name="all_title">Todo</string>
+  <string name="recents_title">Visto recientemente</string>
   <string name="group_videos">Videos</string>
   <string name="recgroup_title">Grupo de grabación</string>
   <string name="error_cannot_play">Error: no se puede reproducir el video.</string>
@@ -132,6 +133,7 @@
   <string name="menu_remove_lastplaypos">Eliminar la última posición de juego</string>
   <string name="menu_delete_rerecord">Eliminar y permitir el rerecord</string>
   <string name="menu_rerecord">Permitir Rerecord</string>
+  <string name="menu_remove_from_recent">Eliminar de la lista de vistos recientemente</string>
   <string name="sched_use_template">Usar plantilla</string>
   <string name="sched_search_type">Tipo de búsqueda</string>
   <string name="sched_title">Título</string>

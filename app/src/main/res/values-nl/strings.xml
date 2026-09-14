@@ -15,6 +15,7 @@
   <string name="hint_guide_search">Zoekgids…</string>
   <string name="row_header_channels">Kanalen</string>
   <string name="all_title">Alle</string>
+  <string name="recents_title">Recent bekeken</string>
   <string name="group_videos">Video\'s</string>
   <string name="recgroup_title">Opnamegroep</string>
   <string name="error_cannot_play">Fout: kan de video niet afspelen.</string>
@@ -132,6 +133,7 @@
   <string name="menu_remove_lastplaypos">Verwijder de laatste speelpositie</string>
   <string name="menu_delete_rerecord">Verwijder en sta Rerecord toe</string>
   <string name="menu_rerecord">REERECORD toestaan</string>
+  <string name="menu_remove_from_recent">Verwijderen uit onlangs bekeken lijst</string>
   <string name="sched_use_template">Gebruik sjabloon</string>
   <string name="sched_search_type">Zoektype</string>
   <string name="sched_title">Titel</string>

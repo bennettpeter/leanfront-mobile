@@ -15,6 +15,7 @@
   <string name="hint_guide_search">Søkeguide …</string>
   <string name="row_header_channels">Kanaler</string>
   <string name="all_title">Alle</string>
+  <string name="recents_title">Nylig sett</string>
   <string name="group_videos">Videoer</string>
   <string name="recgroup_title">Innspillingsgruppe</string>
   <string name="error_cannot_play">Feil: Kan ikke spille av videoen.</string>
@@ -132,6 +133,7 @@
   <string name="menu_remove_lastplaypos">Fjern siste spillposisjon</string>
   <string name="menu_delete_rerecord">Slett og tillat omdirigering</string>
   <string name="menu_rerecord">Tillat Rerecord</string>
+  <string name="menu_remove_from_recent">Fjern fra listen over nylig sett</string>
   <string name="sched_use_template">Bruk mal</string>
   <string name="sched_search_type">Søketype</string>
   <string name="sched_title">Tittel</string>

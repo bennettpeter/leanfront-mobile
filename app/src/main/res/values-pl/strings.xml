@@ -15,6 +15,7 @@
   <string name="hint_guide_search">Przewodnik wyszukiwania…</string>
   <string name="row_header_channels">Kanały</string>
   <string name="all_title">Wszystko</string>
+  <string name="recents_title">Ostatnio oglądane</string>
   <string name="group_videos">Filmy</string>
   <string name="recgroup_title">Grupa nagrań</string>
   <string name="error_cannot_play">Błąd: nie można odtworzyć wideo.</string>
@@ -132,6 +133,7 @@
   <string name="menu_remove_lastplaypos">Usuń ostatnią pozycję gry</string>
   <string name="menu_delete_rerecord">Usuń i pozwól ponownie ponownie</string>
   <string name="menu_rerecord">Zezwalaj na ponowne</string>
+  <string name="menu_remove_from_recent">Usuń z listy ostatnio oglądanych</string>
   <string name="sched_use_template">Użyj szablonu</string>
   <string name="sched_search_type">Typ wyszukiwania</string>
   <string name="sched_title">Tytuł</string>

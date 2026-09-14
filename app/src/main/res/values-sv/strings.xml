@@ -15,6 +15,7 @@
   <string name="hint_guide_search">Sökguide …</string>
   <string name="row_header_channels">Kanal</string>
   <string name="all_title">Alla</string>
+  <string name="recents_title">Nyligen visade</string>
   <string name="group_videos">Videor</string>
   <string name="recgroup_title">Inspelningsgrupp</string>
   <string name="error_cannot_play">Fel: Kan inte spela videon.</string>
@@ -132,6 +133,7 @@
   <string name="menu_remove_lastplaypos">Ta bort sista spelpositionen</string>
   <string name="menu_delete_rerecord">Ta bort och tillåt rerecord</string>
   <string name="menu_rerecord">Tillåt Rerecord</string>
+  <string name="menu_remove_from_recent">Ta bort från listan över nyligen visade</string>
   <string name="sched_use_template">Använd mall</string>
   <string name="sched_search_type">Söktyp</string>
   <string name="sched_title">Titel</string>
