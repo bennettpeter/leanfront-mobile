@@ -2,6 +2,7 @@ package org.mythtv.lfmobile.ui.playback;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.IntentCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -123,10 +124,7 @@ public class PlaybackFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(PlaybackViewModel.class);
         Intent intent =  requireActivity().getIntent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO, Video.class);
-        else
-            viewModel.video = intent.getParcelableExtra(PlaybackActivity.VIDEO);
+        viewModel.video = IntentCompat.getParcelableExtra(intent,PlaybackActivity.VIDEO, Video.class);
         viewModel.bookmark = intent.getLongExtra(PlaybackActivity.BOOKMARK, 0L);
         viewModel.frameRate = intent.getFloatExtra(PlaybackActivity.FRAMERATE, 30f);
     }
