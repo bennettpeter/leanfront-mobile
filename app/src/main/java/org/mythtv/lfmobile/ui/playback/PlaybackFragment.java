@@ -266,7 +266,8 @@ public class PlaybackFragment extends Fragment {
                 int action = event.getAction();
                 if (action == MotionEvent.ACTION_DOWN) {
                     downXPos = event.getX();
-                    downPlayPos = viewModel.player.getCurrentPosition();
+                    if (viewModel.player != null)
+                        downPlayPos = viewModel.player.getCurrentPosition();
                 } else if (action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_UP)
                     dragAction(event);
                 return true;
@@ -860,6 +861,8 @@ public class PlaybackFragment extends Fragment {
     }
 
     void dragAction(MotionEvent event) {
+        if (viewModel.player == null)
+            return;
         if(!viewModel.player.isCurrentMediaItemSeekable())
             return;
         TextView skipDuration = requireView().findViewById(R.id.my_skip_duration);
