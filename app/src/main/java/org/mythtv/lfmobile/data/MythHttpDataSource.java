@@ -41,6 +41,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
         String auth = BackendCache.getInstance().authorization;
         if (auth != null && !auth.isEmpty())
             defaultRequestProperties.put("Authorization",auth);
+        defaultRequestProperties.put("Connection","close");
         mHttpDataSource = new OkHttpDataSource.Factory(MyApplication.httpClient)
                 .setUserAgent(userAgent)
                 .setDefaultRequestProperties(defaultRequestProperties)
