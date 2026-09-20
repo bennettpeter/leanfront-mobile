@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2019-2020 Peter Bennett
+ *
+ * This file is part of MythTV-leanfront.
+ *
+ * MythTV-leanfront is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * MythTV-leanfront is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with MythTV-leanfront.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.mythtv.lfmobile.data;
 
 import android.net.Uri;
@@ -5,14 +24,15 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import androidx.annotation.OptIn;
 import androidx.media3.common.C;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.BaseDataSource;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DataSpec;
-import androidx.media3.datasource.HttpDataSource;
 import androidx.media3.datasource.okhttp.OkHttpDataSource;
+import androidx.media3.datasource.HttpDataSource;
 
 import org.mythtv.lfmobile.MyApplication;
 
@@ -24,7 +44,6 @@ import java.util.Map;
 public class MythHttpDataSource extends BaseDataSource implements DataSource {
 
     private DataSpec mDataSpec;
-    //    private PlaybackFragment mPlaybackFragment;
     private final HttpDataSource mHttpDataSource;
     private long mTotalLength;
     private long mCurrentPos;
@@ -78,7 +97,7 @@ public class MythHttpDataSource extends BaseDataSource implements DataSource {
             }
             else {
                 Log.e(TAG, CLASS + " Bad Http Response Code:" +e.responseCode
-                        + " " + e.responseMessage);
+                    + " " + e.responseMessage);
                 throw e;
             }
         }
