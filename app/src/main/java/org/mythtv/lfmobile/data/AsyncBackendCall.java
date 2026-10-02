@@ -442,6 +442,7 @@ public class AsyncBackendCall implements Runnable {
                         testNode = XmlNode.fetch(urlString, null);
                     } catch (Exception e) {
                         Log.e(TAG, CLASS + " Exception in GetLastPlayPos. " + e);
+                        tResult = 0;
                     }
                     if (testNode != null) {
                         try {
