@@ -31,6 +31,11 @@ import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
 
+// For testing that leanfront works with MythTV 29 or 30
+// GetLastPlayPos -> GetLastPlayPosxxxx
+// SetLastPlayPos -> SetLastPlayPosxxxx
+// GetStreamInfo -> GetStreamInfoxxxx
+
 @SuppressWarnings({"CharsetObjectCanBeUsed", "SpellCheckingInspection"})
 public class AsyncBackendCall implements Runnable {
 
