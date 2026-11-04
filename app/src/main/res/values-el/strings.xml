@@ -40,6 +40,8 @@
   <string name="title_comm_playing">Εμπορικό ή κομμένο παιχνίδι</string>
   <string name="menu_comm_skip">Παραλείπω</string>
   <string name="menu_comm_notskip">Μην παραλείπετε</string>
+  <string name="button_yes">Ναι</string>
+  <string name="button_no">Όχι</string>
   <string name="title_select_audiosync">Ρυθμίστε τον συγχρονισμό ήχου</string>
   <string name="title_program_guide">Οδηγός προγράμματος</string>
   <string name="guide_channel">Κανάλι</string>
@@ -179,6 +181,7 @@
   <string name="sched_active">Ενεργός</string>
   <string name="sched_inactive">Αδρανής</string>
   <string name="msg_rec_rule_gone">Ο κανόνας εγγραφής δεν υπάρχει πλέον.</string>
+  <string name="msg_delete_warning">ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Αυτό θα διαγράψει το αρχείο βίντεο. Δεν μπορεί να αναιρεθεί. Είστε σίγουρος/η;</string>
   <string name="sched_input_any">Οποιαδήποτε εισαγωγή</string>
   <string name="sched_srch_None">Κανένας</string>
   <string name="sched_srch_PowerSearch">Power Search</string>

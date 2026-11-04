@@ -40,6 +40,8 @@
   <string name="title_comm_playing">Kommerzielles oder geschnittenes Spielen</string>
   <string name="menu_comm_skip">Überspringen</string>
   <string name="menu_comm_notskip">Nicht überspringen</string>
+  <string name="button_yes">Ja</string>
+  <string name="button_no">Nein</string>
   <string name="title_select_audiosync">Passen Sie die Audio -Synchronisation an</string>
   <string name="title_program_guide">Programm</string>
   <string name="guide_channel">Kanal</string>
@@ -179,6 +181,7 @@
   <string name="sched_active">Aktiv</string>
   <string name="sched_inactive">Inaktiv</string>
   <string name="msg_rec_rule_gone">Die Aufzeichnungsregel existiert nicht mehr.</string>
+  <string name="msg_delete_warning">WARNUNG: Dadurch wird die Videodatei gelöscht. Es kann nicht rückgängig gemacht werden. Sind Sie sicher?</string>
   <string name="sched_input_any">Beliebige Eingabe</string>
   <string name="sched_srch_None">Keiner</string>
   <string name="sched_srch_PowerSearch">Power-Suche</string>

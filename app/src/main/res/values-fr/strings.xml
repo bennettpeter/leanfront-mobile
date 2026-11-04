@@ -40,6 +40,8 @@
   <string name="title_comm_playing">Jeu commercial ou coupé</string>
   <string name="menu_comm_skip">Sauter</string>
   <string name="menu_comm_notskip">Ne sautez pas</string>
+  <string name="button_yes">Oui</string>
+  <string name="button_no">Non</string>
   <string name="title_select_audiosync">Ajuster la synchronisation audio</string>
   <string name="title_program_guide">Guide du programme</string>
   <string name="guide_channel">Canal</string>
@@ -179,6 +181,7 @@
   <string name="sched_active">Actif</string>
   <string name="sched_inactive">Inactif</string>
   <string name="msg_rec_rule_gone">La règle d\'enregistrement n\'existe plus.</string>
+  <string name="msg_delete_warning">AVERTISSEMENT : Cela supprimera le fichier vidéo. Elle ne peut pas être annulée. Êtes-vous sûr ?</string>
   <string name="sched_input_any">N\'importe quelle entrée</string>
   <string name="sched_srch_None">Aucun</string>
   <string name="sched_srch_PowerSearch">Recherche puissante</string>

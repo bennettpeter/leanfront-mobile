@@ -40,6 +40,8 @@
   <string name="title_comm_playing">Comercial ou corte</string>
   <string name="menu_comm_skip">Pular</string>
   <string name="menu_comm_notskip">Não pule</string>
+  <string name="button_yes">Sim</string>
+  <string name="button_no">Não</string>
   <string name="title_select_audiosync">Ajuste a sincronização de áudio</string>
   <string name="title_program_guide">Guia do Programa</string>
   <string name="guide_channel">Canal</string>
@@ -179,6 +181,7 @@
   <string name="sched_active">Ativo</string>
   <string name="sched_inactive">Inativo</string>
   <string name="msg_rec_rule_gone">A regra de gravação não existe mais.</string>
+  <string name="msg_delete_warning">AVISO: isso excluirá o arquivo de vídeo. Não pode ser desfeito. Tem certeza?</string>
   <string name="sched_input_any">Qualquer entrada</string>
   <string name="sched_srch_None">Nenhum</string>
   <string name="sched_srch_PowerSearch">Pesquisa poderosa</string>
