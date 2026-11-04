@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -337,6 +338,10 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
             onItemClick(position);
             return;
         }
+        // If this is a deleted video do not show any menu
+        if  (video.rectype == VideoContract.VideoEntry.RECTYPE_VIDEO
+                && "Deleted".equals(video.recGroup))
+            return;
         int progflags = Integer.parseInt(video.progflags);
         boolean watched = ((progflags & Video.FL_WATCHED) != 0);
         AsyncBackendCall call = new AsyncBackendCall(
@@ -369,6 +374,11 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     }
                     menu.add(Menu.NONE, Action.ALLOW_RERECORD, ix++, R.string.menu_rerecord);
                 }
+                if (video.rectype == VideoContract.VideoEntry.RECTYPE_VIDEO) {
+                    if (BackendCache.getInstance().canDeleteVideos) {
+                        menu.add(Menu.NONE, Action.DELETE, ix++, R.string.menu_delete);
+                    }
+                }
                 if (video.showRecent) {
                     //noinspection UnusedAssignment
                     menu.add(Menu.NONE, Action.REMOVE_RECENT, ix++, R.string.menu_remove_from_recent);
@@ -381,11 +391,36 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                         case Action.PLAY:
                             play((video),false);
                             return true;
+                        case Action.DELETE: {
+                            if (video.rectype == VideoContract.VideoEntry.RECTYPE_VIDEO) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+                                builder.setTitle(video.title + " " + video.subtitle);
+                                builder.setMessage(R.string.msg_delete_warning);
+                                builder.setPositiveButton(R.string.button_yes, (dlg, which) -> {
+                                    AsyncBackendCall call2 = new AsyncBackendCall(taskRunner2 -> {
+                                        XmlNode xml = taskRunner2.getXmlResult();
+                                        if (xml != null && "true".equals(xml.getString())) {
+                                            video.recGroup = "Deleted";
+                                            refresh();
+                                        }
+                                    });
+                                    call2.videos.add(video);
+                                    call2.execute(Action.DELETE_VIDEO);
+                                });
+                                builder.setNegativeButton(R.string.button_no, null);
+                                builder.show();
+                                return true;
+                            }
+                            AsyncBackendCall call2 = new AsyncBackendCall
+                                    (unused -> refresh());
+                            call2.videos.add(video);
+                            call2.execute(item.getItemId());
+                            return true;
+                        }
                         case Action.REMOVE_LASTPLAYPOS:
                         case Action.SET_UNWATCHED:
                         case Action.SET_WATCHED:
                         case Action.UNDELETE:
-                        case Action.DELETE:
                         case Action.DELETE_AND_RERECORD:
                         case Action.ALLOW_RERECORD:
                         case Action.REMOVE_RECENT:
@@ -460,8 +495,7 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
         if (video.isWatched())
             subtitle.append("\uD83D\uDC41");
         // symbols for deleted - "🗑" "🗶" "␡"
-        if (video.rectype == VideoContract.VideoEntry.RECTYPE_RECORDING
-                && "Deleted".equals(video.recGroup))
+        if ("Deleted".equals(video.recGroup))
             subtitle.append("\uD83D\uDDD1");
         subtitle.append(video.title);
         boolean haveEpisode = video.episode != null && video.episode.compareTo("0") > 0;

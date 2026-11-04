@@ -43,6 +43,10 @@
     <string name="title_comm_playing">Commercial or Cut Playing</string>
     <string name="menu_comm_skip">Skip</string>
     <string name="menu_comm_notskip">Do not Skip</string>
+
+    <string name="button_yes">Yes</string>
+    <string name="button_no">No</string>
+
     <string name="title_select_audiosync">Adjust Audio Sync</string>
 
     <string name="title_program_guide">Program Guide</string>
@@ -234,8 +238,9 @@
     <string name="sched_active">Active</string>
     <string name="sched_inactive">Inactive</string>
     <string name="msg_rec_rule_gone">Recording Rule no longer exists.</string>
-    <string name="sched_input_any">Any Input</string>
+    <string name="msg_delete_warning">WARNING: This will delete the Video file. It cannot be undone. Are you sure?</string>
 
+    <string name="sched_input_any">Any Input</string>
     <string name="sched_srch_None">None</string>
     <string name="sched_srch_PowerSearch">Power Search</string>
     <string name="sched_srch_TitleSearch">Title Search</string>

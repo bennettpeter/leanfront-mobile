@@ -74,6 +74,9 @@ public class Action {
     public static final int GET_BOOKMARK           = 70;
     public static final int GET_STREAM_INFO        = 71;
     public static final int SEARCHGUIDE_NEWTITLES  = 72;
-    public static final int TESTURL = 73;
+    public static final int TESTURL                = 73;
+    public static final int VIDEO_WSDL             = 75;
+    public static final int DELETE_VIDEO           = 76;
+
 
 }

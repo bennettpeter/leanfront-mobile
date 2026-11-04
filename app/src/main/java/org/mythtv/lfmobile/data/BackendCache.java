@@ -19,6 +19,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
     // Values from wsdl
     public boolean canUpdateRecGroup;
     public boolean canForgetHistory;
+    public boolean canDeleteVideos;
 
     // Value from AsyncBackendCall
     public long mTimeAdjustment = 0;
@@ -52,7 +53,7 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
 
     private void getWsdl() {
         AsyncBackendCall call = new AsyncBackendCall( this);
-        call.execute(Action.DVR_WSDL, Action.BACKEND_INFO, Action.GET_HOSTNAME);
+        call.execute(Action.DVR_WSDL, Action.VIDEO_WSDL, Action.BACKEND_INFO, Action.GET_HOSTNAME);
     }
 
     synchronized public static BackendCache getInstance() {
@@ -95,10 +96,9 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
             if (xml == null)
                 return;
             XmlNode schemaNode = xml.getNode(new String[]{"types", "schema"}, 1);
-            XmlNode parameterNode;
             if (schemaNode != null) {
                 // Check if the UpdateRecordedMetadata method takes the RecGroup parameter
-                parameterNode = schemaNode.getNode
+                XmlNode parameterNode = schemaNode.getNode
                         (new String[]{"UpdateRecordedMetadata", "complexType", "sequence", "RecGroup"}, 0);
                 if (parameterNode != null)
                     canUpdateRecGroup = true;
@@ -108,7 +108,20 @@ public class BackendCache implements AsyncBackendCall.OnBackendCallListener {
                 if (parameterNode != null)
                     canForgetHistory = true;
             }
-            xml = resultsList.get(2);
+            // ACTION_VIDEO_WSDL
+            xml = resultsList.get(1);
+            if (xml == null)
+                return;
+            schemaNode = xml.getNode(new String[]{"types", "schema"}, 1);
+            if (schemaNode != null) {
+                // Check if the RemoveVideoFromDB method takes the RemoveFile parameter
+                XmlNode parameterNode = schemaNode.getNode
+                        (new String[]{"RemoveVideoFromDB", "complexType", "sequence", "RemoveFile"}, 0);
+                if (parameterNode != null)
+                    canDeleteVideos = true;
+            }
+            // ACTION_GET_HOSTNAME
+            xml = resultsList.get(3);
             if (xml == null)
                 return;
             sHostName = xml.getString();
