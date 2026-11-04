@@ -171,14 +171,7 @@ public class MainActivityModel extends ViewModel {
                         connection = true;
                         if (!"true".equals(result))
                             Log.e(TAG, CLASS + " MythTask Incorrect response from DelayShutdown: " + result);
-                    } catch (FileNotFoundException | XmlPullParserException ex) {
-                        if (!mVersionMessageShown) {
-                            toastMsg = R.string.msg_no_delayshutdown;
-                            mVersionMessageShown = true;
-                        }
-                        connection = true;
-                        Log.e(TAG, CLASS + " MythTask DelayShutdown Exception ", ex);
-                    } catch (IOException e) {
+                    } catch (IOException | XmlPullParserException e) {
                         if ("Unauthorized: 401".equals(e.getMessage())) {
                             if (Settings.getString("pref_backend_userid").isEmpty()
                                     || Settings.getString("pref_backend_passwd").isEmpty()
@@ -188,11 +181,22 @@ public class MainActivityModel extends ViewModel {
                                 navigate.postValue(R.id.nav_settings);
                             } else
                                 loginNeededNow = true;
-                        } else {
-                            Log.e(TAG, CLASS + " Exception ", e);
-                            toastMsg = R.string.msg_no_connection;
                         }
-                        connectionfail = true;
+                        else {
+                            if ("Http error:404".equals(e.getMessage()) || e instanceof XmlPullParserException) {
+                                if (!mVersionMessageShown) {
+                                    toastMsg = R.string.msg_no_delayshutdown;
+                                    mVersionMessageShown = true;
+                                }
+                                connection = true;
+                                Log.e(TAG, CLASS + " MythTask DelayShutdown Exception ", e);
+                            }
+                            else {
+                                Log.e(TAG, CLASS + " Exception ", e);
+                                toastMsg = R.string.msg_no_connection;
+                                connectionfail = true;
+                            }
+                        }
                     }
                     if (connectionfail)
                         if (wakeBackend())
