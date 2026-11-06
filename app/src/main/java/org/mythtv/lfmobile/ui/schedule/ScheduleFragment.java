@@ -1049,7 +1049,9 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         EditText source = null;
         EditText dest2 = null;
         int srchPos = binding.searchType.getSelectedItemPosition();
-        String suffix = "("+getString(searchPrompts[srchPos])+")";
+        String suffix = "";
+        if (srchPos >= 0 && srchPos < searchPrompts.length)
+            suffix = "("+getString(searchPrompts[srchPos])+")";
         switch (srchPos) {
             case SRCH_MANUAL:
                 dest2 = binding.description;

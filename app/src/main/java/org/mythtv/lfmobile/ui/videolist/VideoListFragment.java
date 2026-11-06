@@ -255,14 +255,22 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
                     && !videoListModel.videoPath.isEmpty()));
         }
         if (selectedVideo != null) {
-            handler.postDelayed( () ->
-                setupPlayPos(selectedVideo, getActivity(), () -> {
-                    List<Video> videos = adapter.getCurrentList();
-                    int ix = videos.indexOf(selectedVideo);
-                    if (ix >= 0)
-                        adapter.notifyItemChanged(ix);
-                    selectedVideo = null;
-                }), 1000);
+            handler.postDelayed(
+                ( () -> {
+                        // Check again for null because it could have been nulled by something
+                        // during the delay
+                        if (selectedVideo != null)
+                            setupPlayPos(selectedVideo, getActivity(),
+                                    ( () -> {
+                                        List<Video> videos = adapter.getCurrentList();
+                                        int ix = videos.indexOf(selectedVideo);
+                                        if (ix >= 0)
+                                            adapter.notifyItemChanged(ix);
+                                        selectedVideo = null;
+                                    })
+                            );
+                    }
+                ), 1000);
         }
         videoListModel.refresh();
     }
@@ -311,6 +319,8 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     private void onItemClick(int position) {
+        if (position < 0 || position >= videoList.size())
+            return;
         if (videoListModel.pageType == VideoListModel.TYPE_RECGROUP) {
             videoListModel.pageType = VideoListModel.TYPE_SERIES;
             videoListModel.setTitle(videoList.get(position).title);
@@ -331,6 +341,8 @@ public class VideoListFragment extends Fragment implements MainActivity.MyFragme
     }
 
     private void onItemMore(View v, int position) {
+        if (position < 0 || position >= videoList.size())
+            return;
         Video video = videoList.get(position);
         selectedVideo = video;
         if (video.rectype != VideoContract.VideoEntry.RECTYPE_RECORDING
