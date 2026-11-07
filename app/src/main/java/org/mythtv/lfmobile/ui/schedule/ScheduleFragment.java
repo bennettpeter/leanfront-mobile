@@ -192,6 +192,13 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         model = new ViewModelProvider(this).get(ScheduleViewModel.class);
+        binding = FragmentScheduleBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         model.toast.observe(getViewLifecycleOwner(), (Integer msg) -> {
             if (msg == 0)
                 return;
@@ -232,13 +239,6 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
         });
         Bundle args = getArguments();
         model.init(args);
-        binding = FragmentScheduleBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         menuProvider = new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
