@@ -753,6 +753,10 @@ public class ScheduleFragment extends Fragment implements MainActivity.MyFragmen
     }
 
     private void setupSpinner(Spinner spin, String[] list) {
+        for (int ix = 0 ; ix < list.length; ix++) {
+            if (list[ix] == null)
+                list[ix] = "UNKNOWN";
+        }
         ArrayAdapter<String> ad = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
